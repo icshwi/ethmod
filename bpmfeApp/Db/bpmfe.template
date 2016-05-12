@@ -1,0 +1,8 @@
+
+# asyn record for interactive communication with XT-PICO-SXL
+record(asyn, "$(P)BMPFEAsyn")
+{
+    field(PORT,  "$(BPMFE_PORT)")
+    field(IMAX, "256")
+    field(OMAX, "256")
+}

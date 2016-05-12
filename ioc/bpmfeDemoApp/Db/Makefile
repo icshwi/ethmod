@@ -8,9 +8,10 @@ include $(TOP)/configure/CONFIG
 #DB_OPT = YES
 
 #----------------------------------------------------
-# Create and install (or just install) into <top>/db
+# Create and install (or just install)
 # databases, templates, substitutions like this
-DB += bpmfe.template
+
+#DB += NDTransform.template
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add

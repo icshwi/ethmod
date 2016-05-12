@@ -9,14 +9,16 @@ include $(TOP)/configure/CONFIG
 # build a support library
 
 LIBRARY_IOC += bpmfe
+PROD_NAME = bpmfe
 
-# xxxRecord.h will be created from xxxRecord.dbd
-#DBDINC += xxxRecord
 # install bpmfe.dbd into <top>/dbd
 DBD += bpmfe.dbd
+$(PROD_NAME)_DBD += bpmfeSupport.dbd
 
 # specify all source files to be compiled and added to the library
-#bpmfe_SRCS += xxx
+bpmfe_SRCS += bpmfe.cpp
+
+PROD_LIBS += asyn
 
 bpmfe_LIBS += $(EPICS_BASE_IOC_LIBS)
 
