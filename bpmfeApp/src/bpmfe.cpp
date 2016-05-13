@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <math.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include <epicsTypes.h>
 #include <epicsTime.h>
@@ -40,6 +41,46 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
+#ifndef HEXDUMP_COLS
+#define HEXDUMP_COLS 8
+#endif
+void hexdump(void *mem, unsigned int len) {
+	unsigned int i, j;
+
+	for (i = 0;	i < len + ((len % HEXDUMP_COLS) ?
+							(HEXDUMP_COLS - len % HEXDUMP_COLS) : 0); i++) {
+		/* print offset */
+		if (i % HEXDUMP_COLS == 0) {
+			printf("0x%06x: ", i);
+		}
+
+		/* print hex data */
+		if (i < len) {
+			printf("%02x ", 0xFF & ((char*) mem)[i]);
+		} else {
+			/* end of block, just aligning for ASCII dump */
+			printf("   ");
+		}
+
+		/* print ASCII dump */
+		if (i % HEXDUMP_COLS == (HEXDUMP_COLS - 1)) {
+			for (j = i - (HEXDUMP_COLS - 1); j <= i; j++) {
+				if (j >= len) {
+					/* end of block, not really printing */
+					putchar(' ');
+				} else if (isprint(((char*) mem)[j])) {
+					/* printable char */
+					putchar(0xFF & ((char*) mem)[j]);
+				} else {
+					/* other char */
+					putchar('.');
+				}
+			}
+			putchar('\n');
+		}
+	}
+}
+
 /*
  *
 Here is a preliminary list of I2C chips that will need support:
@@ -51,6 +92,244 @@ Here is a preliminary list of I2C chips that will need support:
 	Voltage monitor		LTC2991
 	I2C mux				TCA9546A
 */
+
+/*
+ *
+ * See design_guide_sxl_en.pdf, page 51.
+ *
+WRITE: 0x02,0x00,0x0A,0x03,0x50,0x02,0x00,0x00,0x57,0x00,0x01,0xnn,0x03
+BREAK DOWN:
+	0x02		STX
+	0x00,0x0A	Len (10 Bytes) follows, always 2 bytes long
+	0x03		function code (with all messages)
+	0x50		Slave Address
+	0x02		Count Internal Address
+	0x00,0x00	Internal Address 0x00,0x00, Count(0-4 Byte)
+	0x57		W = WRITE
+	0x00,0x01	write 1 byte, always 2 bytes
+	0xnn		Byte to write
+	0x03		ETX
+
+
+READ: 0x02,0x00,0x09,0x03,0x50,0x02,0x00,0x00,0x52,0x00,0x02,0x03
+BREAK DOWN:
+	0x02		STX
+	0x00,0x09	Len (9 Bytes) follows, always 2 bytes long
+	0x03		function code (with all messages)
+	0x50		Slave Address
+	0x02		Count Internal Address
+	0x00,0x00	Internal Address 0x00,0x00, Count(0-4 Byte)
+	0x52		R = READ
+	0x00,0x02	read 2 byte, always 2 bytes
+	0x03		ETX
+
+Responses:
+
+	MSG: (relates to the 'function code' above)
+		no ACK/NAK			(function code = 0x00)
+		NAK only			(function code = 0x01)
+		ACK only			(function code = 0x02)
+		ACK and NAK			(function code = 0x03)
+
+	NAK
+		0x15,'S'			NAK STX
+		0x15,'E'			NAK ETX
+		0x15,'A'			NAK Slave Address
+		0x15,'C'			NAK Command
+		0x15,'L'			NAK Len
+		0x15,'B'			NAK Buffer
+		0x15,'R',..			NAK Read and Data we could read
+		0x15,'W',nn,nn		NAK Write and nn,nn = Data we could write
+
+	ACK
+		0x06,'R'...			ACK Read and Data
+		0x06,'W'			ACK Write
+
+ */
+
+asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len) {
+	asynStatus status = asynSuccess;
+	int i, l, msgLen;
+	unsigned char msg[MAX_MESSAGE_SIZE] = {0};
+	l = 0;
+
+	if (i2cAddr > 0x7F) {
+		return asynError;
+	}
+	if (intAddrWidth > 4) {
+		return asynError;
+	}
+	if (len > (MAX_MESSAGE_SIZE - intAddrWidth - 10)) {
+		return asynError;
+	}
+
+	// calculate the message length wo/ STX and length included (3 bytes)
+	msgLen =  1							// function code
+			+ 1							// slave address
+			+ 1							// count internal address
+			+ intAddrWidth				// internal address width (0 - 4)
+			+ 1							// W - WRITE
+			+ 2							// bytes to write
+			+ len						// data length
+			+ 1;						// ETX
+	// build the message
+	msg[l++] = 0x02;					// STX
+	msg[l++] = (msgLen >> 8) & 0xFF;	// high byte of message length that follows
+	msg[l++] = (msgLen & 0xFF);			// high byte of message length that follows
+	msg[l++] = 0x03;					// function code
+	msg[l++] = i2cAddr;					// slave address
+	msg[l++] = intAddrWidth;			// count internal address
+	// add specified intAddrWidth amount of bytes to the message
+	switch(intAddrWidth) {
+	case 0:
+		// no additional bytes
+		break;
+	case 1:
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 2:
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 3:
+		msg[l++] = (intAddr >> 16) & 0xFF;
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 4:
+		msg[l++] = (intAddr >> 24) & 0xFF;
+		msg[l++] = (intAddr >> 16) & 0xFF;
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	}
+	msg[l++] = 0x57;					// W - WRITE
+	msg[l++] = (len >> 8) & 0xFF;		// high byte count to write
+	msg[l++] = len & 0xFF;				// low byte count to write
+	for (i = 0; i < len; i++) {
+		msg[l++] = *(data + i);			// data byte[i]
+	}
+	msg[l++] = 0x03;					// ETX
+
+	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+	memcpy(this->toBPMFE, msg, l);
+	hexdump(this->toBPMFE, l);
+
+    return status;
+}
+
+asynStatus BPMFE::I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len) {
+	asynStatus status = asynSuccess;
+	int l, msgLen;
+	unsigned char msg[MAX_MESSAGE_SIZE] = {0};
+	l = 0;
+
+	if (i2cAddr > 0x7F) {
+		return asynError;
+	}
+	if (intAddrWidth > 4) {
+		return asynError;
+	}
+	if (len > (MAX_MESSAGE_SIZE - intAddrWidth - 10)) {
+		return asynError;
+	}
+
+	// calculate the message length wo/ STX and length included (3 bytes)
+	msgLen =  1							// function code
+			+ 1							// slave address
+			+ 1							// count internal address
+			+ intAddrWidth				// internal address width (0 - 4)
+			+ 1							// R - READ
+			+ 2							// number of bytes to read
+			+ 1;						// ETX
+	// build the message
+	msg[l++] = 0x02;					// STX
+	msg[l++] = (msgLen >> 8) & 0xFF;	// high byte of message length that follows
+	msg[l++] = (msgLen & 0xFF);			// high byte of message length that follows
+	msg[l++] = 0x03;					// function code
+	msg[l++] = i2cAddr;					// slave address
+	msg[l++] = intAddrWidth;			// count internal address
+	// add specified intAddrWidth amount of bytes to the message
+	switch(intAddrWidth) {
+	case 0:
+		// no additional bytes
+		break;
+	case 1:
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 2:
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 3:
+		msg[l++] = (intAddr >> 16) & 0xFF;
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	case 4:
+		msg[l++] = (intAddr >> 24) & 0xFF;
+		msg[l++] = (intAddr >> 16) & 0xFF;
+		msg[l++] = (intAddr >> 8) & 0xFF;
+		msg[l++] = intAddr & 0xFF;
+		break;
+	}
+	msg[l++] = 0x52;					// R - READ
+	msg[l++] = (len >> 8) & 0xFF;		// high byte count to read
+	msg[l++] = len & 0xFF;				// low byte count to read
+	msg[l++] = 0x03;					// ETX
+
+	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+	memcpy(this->toBPMFE, msg, l);
+	hexdump(this->toBPMFE, l);
+
+    return status;
+}
+
+asynStatus BPMFE::handleI2CTempSensor(void) {
+	asynStatus status = asynSuccess;
+
+	unsigned char data[2];
+	unsigned short len;
+	data[0] = 0x00;
+	len = 1;
+	status = I2CWrite(0x48, 0, 0, data, len);
+	if (status) {
+		return status;
+	}
+//	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+	data[0] = 0x00;
+	data[1] = 0x00;
+	len = 2;
+	status = I2CRead(0x48, 0, 0, data, sizeof(data));
+	if (status) {
+		return status;
+	}
+//	status = readBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+	return status;
+}
+
+asynStatus BPMFE::handleI2CBus(void) {
+	asynStatus status = asynSuccess;
+
+	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+
+	status = handleI2CTempSensor();
+
+	if (status) {
+		return status;
+	}
+
+
+	return status;
+}
 
 void BPMFE::dataTask(void) {
 	int status;
@@ -76,10 +355,14 @@ void BPMFE::dataTask(void) {
     	sleep(1);
     	lock();
 
-    	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
-        epicsSnprintf(this->toBPMFE, sizeof(this->toBPMFE),
-            "%s [%d]", portName, counter);
-    	writeBPMFE(1.0);
+    	if (mIpPortType == BPMFE_IP_PORT_I2C) {
+    		handleI2CBus();
+    	} else {
+			memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+			epicsSnprintf(this->toBPMFE, sizeof(this->toBPMFE),
+				"%s [%d]", portName, counter);
+			writeBPMFE(1.0);
+    	}
 
     	counter++;
 
@@ -136,7 +419,7 @@ asynStatus BPMFE::writeBPMFE(double timeout) {
     asynStatus status;
     const char *functionName="writeBPMFE";
 
-    printf("%s: called..\n", functionName);
+//    printf("%s: called..\n", functionName);
 
     status = pasynOctetSyncIO->write(this->pasynUserCommand,
                                      this->toBPMFE, strlen(this->toBPMFE),
@@ -151,6 +434,31 @@ asynStatus BPMFE::writeBPMFE(double timeout) {
     /* Set output string so it can get back to EPICS */
     setStringParam(BPMFEStringToServer, this->toBPMFE);
     //setStringParam(BPMFEStringFromServer, this->fromBPMFE);
+
+    return(status);
+}
+
+asynStatus BPMFE::readBPMFE(double timeout) {
+    size_t nread;
+    int eomReason;
+    asynStatus status;
+    const char *functionName="readBPMFE";
+
+    printf("%s: called..\n", functionName);
+
+    status = pasynOctetSyncIO->read(this->pasynUserCommand,
+                                     this->fromBPMFE, sizeof(this->fromBPMFE),
+                                     timeout, &nread, &eomReason);
+
+    if (status) {
+    	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s, status=%d, sent\n%s\n",
+                driverName, functionName, status, this->toBPMFE);
+    }
+
+    /* Set output string so it can get back to EPICS */
+    //setStringParam(BPMFEStringToServer, this->toBPMFE);
+    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
     return(status);
 }

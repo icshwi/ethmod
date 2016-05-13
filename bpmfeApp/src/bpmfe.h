@@ -59,7 +59,13 @@ protected:
 private:
     /* These are the methods that are new to this class */
     asynStatus writeBPMFE(double timeout);
+    asynStatus readBPMFE(double timeout);
     asynStatus writeReadBPMFE(double timeout);
+
+    asynStatus I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len);
+    asynStatus I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len);
+    asynStatus handleI2CBus();
+    asynStatus handleI2CTempSensor();
 
     char *mIpPort;
     int mIpPortType;
