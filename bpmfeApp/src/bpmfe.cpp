@@ -40,6 +40,18 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
+/*
+ *
+Here is a preliminary list of I2C chips that will need support:
+	Temp sensor			TMP100NA/3K
+	Port expander		TCA9555
+	EEPROM				M24M02-DRMN6TP
+	Real time clk		PCF85063TP/1Z
+	Serial Number		DS28CM00
+	Voltage monitor		LTC2991
+	I2C mux				TCA9546A
+*/
+
 void BPMFE::dataTask(void) {
 	int status;
 	int counter;
