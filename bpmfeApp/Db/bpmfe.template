@@ -1,8 +1,45 @@
 
-# asyn record for interactive communication with XT-PICO-SXL
-record(asyn, "$(P)BMPFEAsyn")
+# These records provide status information 
+record(waveform, "$(P)$(R)StatusMessage_RBV")
 {
-    field(PORT,  "$(BPMFE_PORT)")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STATUS_MESSAGE")
+    field(FTVL, "CHAR")
+    field(NELM, "512")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)StringToServer_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STRING_TO_SERVER")
+    field(FTVL, "CHAR")
+    field(NELM, "512")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)StringFromServer_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STRING_FROM_SERVER")
+    field(FTVL, "CHAR")
+    field(NELM, "512")
+    field(SCAN, "I/O Intr")
+}
+
+# This record can be used to force a read of the detector status 
+record(bo,"$(P)$(R)ReadStatus") {
+    field(DTYP,"asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))READ_STATUS")
+    field(VAL, "1")
+    field(SCAN,"Passive")
+    info(autosaveFields, "SCAN")
+}
+
+# asyn record for interactive communication with XT-PICO-SXL
+record(asyn, "$(P)$(R)IPAsyn")
+{
+    field(PORT,  "$(IP_PORT)")
     field(IMAX, "256")
     field(OMAX, "256")
 }
