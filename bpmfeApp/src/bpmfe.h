@@ -66,6 +66,7 @@ private:
     asynStatus I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len);
     asynStatus handleI2CBus();
     asynStatus handleI2CTempSensor();
+    asynStatus handleI2CEeprom();
 
     char *mIpPort;
     int mIpPortType;
@@ -76,7 +77,9 @@ private:
     epicsEventId stopEventId;
 //    epicsTimerId timerId;
     char toBPMFE[MAX_MESSAGE_SIZE];
+    int toBPMFELen;
     char fromBPMFE[MAX_MESSAGE_SIZE];
+    int fromBPMFELen;
     asynUser *pasynUserCommand;
 };
 

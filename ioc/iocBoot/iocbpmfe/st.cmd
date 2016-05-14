@@ -35,15 +35,15 @@ epicsEnvSet("I2C_IP_PORT",       "BPMFE_I2C_COMM")
 # Serial port
 ###
 # Create the asyn port to talk to the AK-NORD server on command port 1002.
-drvAsynIPPortConfigure($(RS232_IP_PORT),"192.168.100.100:1002")
+#drvAsynIPPortConfigure($(RS232_IP_PORT),"192.168.100.100:1002")
 #asynSetTraceIOMask($(RS232_IP_PORT),0,255)
 #asynSetTraceMask($(RS232_IP_PORT),0,255)
 # Set the terminators
-asynOctetSetOutputEos($(RS232_IP_PORT), 0, "\r\n")
-asynOctetSetInputEos($(RS232_IP_PORT),  0, "\n")
+#asynOctetSetOutputEos($(RS232_IP_PORT), 0, "\r\n")
+#asynOctetSetInputEos($(RS232_IP_PORT),  0, "\n")
 
-BPMFEConfigure($(RS232_PORT), $(RS232_IP_PORT), 1)
-dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=RS232:,PORT=$(RS232_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(RS232_IP_PORT)")
+#BPMFEConfigure($(RS232_PORT), $(RS232_IP_PORT), 1)
+#dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=RS232:,PORT=$(RS232_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(RS232_IP_PORT)")
 #asynSetTraceIOMask($(RS232_PORT),0,255)
 #asynSetTraceMask($(RS232_PORT),0,255)
 
@@ -52,15 +52,15 @@ dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=RS232:,PORT=$(RS23
 # LCD Display
 ###
 # Create the asyn port to talk to the AK-NORD server on command port 1003.
-drvAsynIPPortConfigure($(LCD_IP_PORT),"192.168.100.100:1003")
+#drvAsynIPPortConfigure($(LCD_IP_PORT),"192.168.100.100:1003")
 #asynSetTraceIOMask($(LCD_IP_PORT),0,255)
 #asynSetTraceMask($(LCD_IP_PORT),0,255)
 # Set the terminators
-asynOctetSetOutputEos($(LCD_IP_PORT), 0, "\r\n")
+#asynOctetSetOutputEos($(LCD_IP_PORT), 0, "\r\n")
 #asynOctetSetInputEos($(LCD_IP_PORT), 0,  "\n")
 
-BPMFEConfigure($(LCD_PORT), $(LCD_IP_PORT), 3)
-dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=LCD:,PORT=$(LCD_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(LCD_IP_PORT)")
+#BPMFEConfigure($(LCD_PORT), $(LCD_IP_PORT), 3)
+#dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=LCD:,PORT=$(LCD_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(LCD_IP_PORT)")
 #asynSetTraceIOMask($(LCD_PORT),0,255)
 #asynSetTraceMask($(LCD_PORT),0,255)
 
@@ -68,13 +68,13 @@ dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=LCD:,PORT=$(LCD_PO
 ###
 # I2C
 ###
-# Create the asyn port to talk to the AK-NORD server on command port 1004.
-drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1004")
+# Create the asyn port to talk to the AK-NORD server on command port 1002.
+drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #asynSetTraceIOMask($(I2C_IP_PORT),0,255)
 #asynSetTraceMask($(I2C_IP_PORT),0,255)
 # Set the terminators
-asynOctetSetOutputEos($(I2C_IP_PORT), 0, "\r\n")
-#asynOctetSetInputEos($(I2C_IP_PORT), 0,  "\n")
+#asynOctetSetOutputEos($(I2C_IP_PORT), 0, "\003")
+#asynOctetSetInputEos($(I2C_IP_PORT), 0,  "\003")
 
 BPMFEConfigure($(I2C_PORT), $(I2C_IP_PORT), 4)
 dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=I2C:,PORT=$(I2C_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")

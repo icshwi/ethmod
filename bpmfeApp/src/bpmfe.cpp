@@ -213,7 +213,8 @@ asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, un
 
 	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 	memcpy(this->toBPMFE, msg, l);
-	hexdump(this->toBPMFE, l);
+	this->toBPMFELen = l;
+//	hexdump(this->toBPMFE, l);
 
     return status;
 }
@@ -280,7 +281,8 @@ asynStatus BPMFE::I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, uns
 
 	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 	memcpy(this->toBPMFE, msg, l);
-	hexdump(this->toBPMFE, l);
+	this->toBPMFELen = l;
+//	hexdump(this->toBPMFE, l);
 
     return status;
 }
@@ -304,11 +306,59 @@ asynStatus BPMFE::handleI2CTempSensor(void) {
 	data[0] = 0x00;
 	data[1] = 0x00;
 	len = 2;
-	status = I2CRead(0x48, 0, 0, data, sizeof(data));
+	status = I2CRead(0x48, 0, 0, data, len);
 	if (status) {
 		return status;
 	}
 //	status = readBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+	return status;
+}
+
+asynStatus BPMFE::handleI2CEeprom(void) {
+	asynStatus status = asynSuccess;
+	static unsigned char c = '0';
+
+	unsigned char data[5];
+	unsigned short len;
+
+	data[0] = 'H';
+	data[1] = 'i';
+	data[2] = 'n';
+	data[3] = 'x';
+	data[4] = c++;
+	len = 5;
+	status = I2CWrite(0x50, 2, 0, data, len);
+	if (status) {
+		return status;
+	}
+	printf("I2C WRITE\n");
+	this->fromBPMFELen = 2;
+	status = writeReadBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+	/* XXX: This is mandatory if we do write, then read - otherwise
+	 * the device is busy and NAKs the read! */
+	usleep(10000);
+
+	data[0] = 0x00;
+	data[1] = 0x00;
+	data[2] = 0x00;
+	data[3] = 0x00;
+	data[4] = 0x00;
+	len = 5;
+	status = I2CRead(0x50, 2, 0, data, len);
+	if (status) {
+		return status;
+	}
+	printf("I2C READ\n");
+	this->fromBPMFELen = 5 + 2;
+	status = writeReadBPMFE(1.0);
 	if (status) {
 		return status;
 	}
@@ -321,7 +371,8 @@ asynStatus BPMFE::handleI2CBus(void) {
 
 	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 
-	status = handleI2CTempSensor();
+	//status = handleI2CTempSensor();
+	status = handleI2CEeprom();
 
 	if (status) {
 		return status;
@@ -394,12 +445,18 @@ asynStatus BPMFE::writeReadBPMFE(double timeout) {
     asynStatus status;
     const char *functionName="writeReadBPMFE";
 
-    printf("%s: called..\n", functionName);
+    printf("%s: request:\n", functionName);
+	hexdump(this->toBPMFE, this->toBPMFELen);
+	nread = 0;
+//	this->fromBPMFELen = 2;
 
     status = pasynOctetSyncIO->writeRead(this->pasynUserCommand,
-                                         this->toBPMFE, strlen(this->toBPMFE),
-                                         this->fromBPMFE, sizeof(this->fromBPMFE),
+                                         this->toBPMFE, this->toBPMFELen,
+                                         this->fromBPMFE, this->fromBPMFELen,
                                          timeout, &nwrite, &nread, &eomReason);
+    printf("%s: response:\n", functionName);
+    this->fromBPMFELen = nread;
+	hexdump(this->fromBPMFE, this->fromBPMFELen);
 
     if (status) {
     	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
@@ -408,8 +465,8 @@ asynStatus BPMFE::writeReadBPMFE(double timeout) {
     }
 
     /* Set output string so it can get back to EPICS */
-    setStringParam(BPMFEStringToServer, this->toBPMFE);
-    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
+//    setStringParam(BPMFEStringToServer, this->toBPMFE);
+//    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
     return(status);
 }
@@ -420,11 +477,12 @@ asynStatus BPMFE::writeBPMFE(double timeout) {
     const char *functionName="writeBPMFE";
 
 //    printf("%s: called..\n", functionName);
+    printf("%s: request:\n", functionName);
+	hexdump(this->fromBPMFE, this->fromBPMFELen);
 
     status = pasynOctetSyncIO->write(this->pasynUserCommand,
-                                     this->toBPMFE, strlen(this->toBPMFE),
+                                     this->toBPMFE, this->toBPMFELen,
                                      timeout, &nwrite);
-
     if (status) {
     	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
                 "%s:%s, status=%d, sent\n%s\n",
@@ -432,7 +490,7 @@ asynStatus BPMFE::writeBPMFE(double timeout) {
     }
 
     /* Set output string so it can get back to EPICS */
-    setStringParam(BPMFEStringToServer, this->toBPMFE);
+//    setStringParam(BPMFEStringToServer, this->toBPMFE);
     //setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
     return(status);
@@ -445,10 +503,14 @@ asynStatus BPMFE::readBPMFE(double timeout) {
     const char *functionName="readBPMFE";
 
     printf("%s: called..\n", functionName);
-
+    this->fromBPMFELen = MAX_MESSAGE_SIZE;
     status = pasynOctetSyncIO->read(this->pasynUserCommand,
-                                     this->fromBPMFE, sizeof(this->fromBPMFE),
+                                     this->fromBPMFE, this->fromBPMFELen,
                                      timeout, &nread, &eomReason);
+
+    printf("%s: response:\n", functionName);
+    this->fromBPMFELen = nread;
+	hexdump(this->fromBPMFE, this->fromBPMFELen);
 
     if (status) {
     	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
@@ -458,7 +520,7 @@ asynStatus BPMFE::readBPMFE(double timeout) {
 
     /* Set output string so it can get back to EPICS */
     //setStringParam(BPMFEStringToServer, this->toBPMFE);
-    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
+//    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
     return(status);
 }
