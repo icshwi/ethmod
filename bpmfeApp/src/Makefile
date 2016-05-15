@@ -17,6 +17,7 @@ $(PROD_NAME)_DBD += bpmfeSupport.dbd
 
 # specify all source files to be compiled and added to the library
 bpmfe_SRCS += bpmfe.cpp
+bpmfe_SRCS += akNord.cpp
 
 PROD_LIBS += asyn
 
