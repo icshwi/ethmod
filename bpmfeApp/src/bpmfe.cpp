@@ -214,7 +214,8 @@ asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, un
 	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 	memcpy(this->toBPMFE, msg, l);
 	this->toBPMFELen = l;
-//	hexdump(this->toBPMFE, l);
+	// two status bytes to be read back
+	this->fromBPMFELen = 2;
 
     return status;
 }
@@ -282,7 +283,8 @@ asynStatus BPMFE::I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, uns
 	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 	memcpy(this->toBPMFE, msg, l);
 	this->toBPMFELen = l;
-//	hexdump(this->toBPMFE, l);
+	// data length and two status bytes to be read back
+	this->fromBPMFELen = len + 2;
 
     return status;
 }
@@ -292,6 +294,7 @@ asynStatus BPMFE::handleI2CTempSensor(void) {
 
 	unsigned char data[2];
 	unsigned short len;
+/*
 	data[0] = 0x00;
 	len = 1;
 	status = I2CWrite(0x48, 0, 0, data, len);
@@ -302,15 +305,19 @@ asynStatus BPMFE::handleI2CTempSensor(void) {
 	if (status) {
 		return status;
 	}
+*/
 
 	data[0] = 0x00;
 	data[1] = 0x00;
 	len = 2;
-	status = I2CRead(0x48, 0, 0, data, len);
+	// supply pointer register value in single byte, value 0x00 -> temperature
+	// register
+	status = I2CRead(0x48, 1, 0, data, len);
 	if (status) {
 		return status;
 	}
-//	status = readBPMFE(1.0);
+	printf("I2C READ\n");
+	status = writeReadBPMFE(1.0);
 	if (status) {
 		return status;
 	}
@@ -336,7 +343,6 @@ asynStatus BPMFE::handleI2CEeprom(void) {
 		return status;
 	}
 	printf("I2C WRITE\n");
-	this->fromBPMFELen = 2;
 	status = writeReadBPMFE(1.0);
 	if (status) {
 		return status;
@@ -357,7 +363,6 @@ asynStatus BPMFE::handleI2CEeprom(void) {
 		return status;
 	}
 	printf("I2C READ\n");
-	this->fromBPMFELen = 5 + 2;
 	status = writeReadBPMFE(1.0);
 	if (status) {
 		return status;
@@ -373,6 +378,155 @@ asynStatus BPMFE::handleI2CBus(void) {
 
 	//status = handleI2CTempSensor();
 	status = handleI2CEeprom();
+
+	if (status) {
+		return status;
+	}
+
+
+	return status;
+}
+
+asynStatus BPMFE::TTLIOWrite(unsigned char func, unsigned char bit) {
+	asynStatus status = asynSuccess;
+	int l;
+	unsigned char msg[2] = {0};
+	l = 0;
+
+	if (func > 0x06) {
+		return asynError;
+	}
+	// build the message
+	msg[l++] = func;					// TTL IO function
+	msg[l++] = bit;						// bit number
+
+	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+	memcpy(this->toBPMFE, msg, l);
+	this->toBPMFELen = l;
+	// 0 bytes to be read back
+	this->fromBPMFELen = 0;
+
+    return status;
+}
+
+asynStatus BPMFE::TTLIOSetLevel(unsigned char bit, unsigned char val) {
+	asynStatus status = asynSuccess;
+	if (val == 0) {
+		status = TTLIOWrite(TTLIO_FUNC_CLEAR_PIN, bit);
+	} else if (val == 1) {
+		status = TTLIOWrite(TTLIO_FUNC_SET_PIN, bit);
+	}
+	if (status) {
+		return status;
+	}
+	printf("TTLIO WRITE\n");
+	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+    return status;
+}
+
+asynStatus BPMFE::TTLIOSetDirection(unsigned char bit, unsigned char val) {
+	asynStatus status = asynSuccess;
+	if (val == 0) {
+		status = TTLIOWrite(TTLIO_FUNC_INPUT_PIN, bit);
+	} else if (val == 1) {
+		status = TTLIOWrite(TTLIO_FUNC_OUTPUT_PIN, bit);
+	}
+	if (status) {
+		return status;
+	}
+	printf("TTLIO WRITE\n");
+	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+    return status;
+}
+
+asynStatus BPMFE::TTLIOSetPullup(unsigned char bit, unsigned char val) {
+	asynStatus status = asynSuccess;
+	if (val == 0) {
+		status = TTLIOWrite(TTLIO_FUNC_CLEAR_PULLUP, bit);
+	} else if (val == 1) {
+		status = TTLIOWrite(TTLIO_FUNC_SET_PULLUP, bit);
+	}
+	if (status) {
+		return status;
+	}
+	printf("TTLIO WRITE\n");
+	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+    return status;
+}
+
+asynStatus BPMFE::handleTTLOutput(void) {
+	asynStatus status = asynSuccess;
+//	static unsigned char c = '0';
+
+	unsigned char func;
+	unsigned char bit;
+
+	func = 0x04;
+	bit = 0x01;
+	status = TTLIOWrite(func, bit);
+	if (status) {
+		return status;
+	}
+	printf("TTLIO WRITE\n");
+	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+	sleep(1);
+
+	func = 0x02;
+	bit = 0x01;
+	status = TTLIOWrite(func, bit);
+	if (status) {
+		return status;
+	}
+	printf("TTLIO WRITE\n");
+	status = writeBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+
+#if 0
+	/* XXX: This is mandatory if we do write, then read - otherwise
+	 * the device is busy and NAKs the read! */
+	usleep(10000);
+
+	data[0] = 0x00;
+	data[1] = 0x00;
+	data[2] = 0x00;
+	data[3] = 0x00;
+	data[4] = 0x00;
+	len = 5;
+	status = I2CRead(0x50, 2, 0, data, len);
+	if (status) {
+		return status;
+	}
+	printf("I2C READ\n");
+	status = writeReadBPMFE(1.0);
+	if (status) {
+		return status;
+	}
+#endif
+
+	return status;
+}
+
+asynStatus BPMFE::handleTTLIOBus(void) {
+	asynStatus status = asynSuccess;
+
+	memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
+
+	status = handleTTLOutput();
 
 	if (status) {
 		return status;
@@ -408,6 +562,8 @@ void BPMFE::dataTask(void) {
 
     	if (mIpPortType == BPMFE_IP_PORT_I2C) {
     		handleI2CBus();
+    	} else if (mIpPortType == BPMFE_IP_PORT_TTLIO) {
+//    		handleTTLIOBus();
     	} else {
 			memset(this->toBPMFE, 0, sizeof(this->toBPMFE));
 			epicsSnprintf(this->toBPMFE, sizeof(this->toBPMFE),
@@ -427,14 +583,56 @@ void BPMFE::dataTask(void) {
 }
 
 asynStatus BPMFE::writeInt32(asynUser *pasynUser, epicsInt32 value) {
+
     int function = pasynUser->reason;
     asynStatus status = asynSuccess;
-    const char* functionName = "writeInt32";
+    const char *functionName = "writeInt32";
 
     printf("%s: function %d, value %d\n", functionName, function, value);
+    status = setIntegerParam(function, value);
 
-    /* Set the parameter in the parameter library. */
-    status = (asynStatus) setIntegerParam(function, value);
+    if (function == mTTLIO1Level
+			|| function == mTTLIO2Level
+			|| function == mTTLIO3Level
+			|| function == mTTLIO4Level
+			|| function == mTTLIO5Level
+			|| function == mTTLIO6Level
+			|| function == mTTLIO7Level
+			|| function == mTTLIO8Level) {
+    	TTLIOSetLevel(function - mTTLIO1Level + 1, value);
+    } else if (function == mTTLIO1Direction
+			|| function == mTTLIO2Direction
+			|| function == mTTLIO3Direction
+			|| function == mTTLIO4Direction
+			|| function == mTTLIO5Direction
+			|| function == mTTLIO6Direction
+			|| function == mTTLIO7Direction
+			|| function == mTTLIO8Direction) {
+    	TTLIOSetDirection(function - mTTLIO1Direction + 1, value);
+    } else if (function == mTTLIO1Pullup
+			|| function == mTTLIO2Pullup
+			|| function == mTTLIO3Pullup
+			|| function == mTTLIO4Pullup
+			|| function == mTTLIO5Pullup
+			|| function == mTTLIO6Pullup
+			|| function == mTTLIO7Pullup
+			|| function == mTTLIO8Pullup) {
+    	TTLIOSetPullup(function - mTTLIO1Pullup + 1, value);
+    } else {
+    	status = asynError;
+    }
+
+    /* Do callbacks so higher layers see any changes */
+    callParamCallbacks();
+
+    if (status)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "%s:%s: error, status=%d function=%d, value=%d\n",
+              driverName, functionName, status, function, value);
+    else
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+              "%s:%s: function=%d, value=%d\n",
+              driverName, functionName, function, value);
 
     return status;
 }
@@ -478,7 +676,7 @@ asynStatus BPMFE::writeBPMFE(double timeout) {
 
 //    printf("%s: called..\n", functionName);
     printf("%s: request:\n", functionName);
-	hexdump(this->fromBPMFE, this->fromBPMFELen);
+	hexdump(this->toBPMFE, this->toBPMFELen);
 
     status = pasynOctetSyncIO->write(this->pasynUserCommand,
                                      this->toBPMFE, this->toBPMFELen,
@@ -570,6 +768,32 @@ BPMFE::BPMFE(const char *portName, const char *ipPort, int ipPortType)
     createParam(BPMFEStatusMessageString,       asynParamOctet, &BPMFEStatusMessage);
     createParam(BPMFEStringToServerString,      asynParamOctet, &BPMFEStringToServer);
     createParam(BPMFEStringFromServerString,    asynParamOctet, &BPMFEStringFromServer);
+
+    /* TTL IO parameters */
+    createParam(TTLIO1LevelString,              asynParamInt32, &mTTLIO1Level);
+    createParam(TTLIO2LevelString,              asynParamInt32, &mTTLIO2Level);
+    createParam(TTLIO3LevelString,              asynParamInt32, &mTTLIO3Level);
+    createParam(TTLIO4LevelString,              asynParamInt32, &mTTLIO4Level);
+    createParam(TTLIO5LevelString,              asynParamInt32, &mTTLIO5Level);
+    createParam(TTLIO6LevelString,              asynParamInt32, &mTTLIO6Level);
+    createParam(TTLIO7LevelString,              asynParamInt32, &mTTLIO7Level);
+    createParam(TTLIO8LevelString,              asynParamInt32, &mTTLIO8Level);
+    createParam(TTLIO1DirectionString,          asynParamInt32, &mTTLIO1Direction);
+    createParam(TTLIO2DirectionString,          asynParamInt32, &mTTLIO2Direction);
+    createParam(TTLIO3DirectionString,          asynParamInt32, &mTTLIO3Direction);
+    createParam(TTLIO4DirectionString,          asynParamInt32, &mTTLIO4Direction);
+    createParam(TTLIO5DirectionString,          asynParamInt32, &mTTLIO5Direction);
+    createParam(TTLIO6DirectionString,          asynParamInt32, &mTTLIO6Direction);
+    createParam(TTLIO7DirectionString,          asynParamInt32, &mTTLIO7Direction);
+    createParam(TTLIO8DirectionString,          asynParamInt32, &mTTLIO8Direction);
+    createParam(TTLIO1PullupString,             asynParamInt32, &mTTLIO1Pullup);
+    createParam(TTLIO2PullupString,             asynParamInt32, &mTTLIO2Pullup);
+    createParam(TTLIO3PullupString,             asynParamInt32, &mTTLIO3Pullup);
+    createParam(TTLIO4PullupString,             asynParamInt32, &mTTLIO4Pullup);
+    createParam(TTLIO5PullupString,             asynParamInt32, &mTTLIO5Pullup);
+    createParam(TTLIO6PullupString,             asynParamInt32, &mTTLIO6Pullup);
+    createParam(TTLIO7PullupString,             asynParamInt32, &mTTLIO7Pullup);
+    createParam(TTLIO8PullupString,             asynParamInt32, &mTTLIO8Pullup);
 
     /* Connect to desired BPM FE IP port */
     status = pasynOctetSyncIO->connect(mIpPort, 0, &this->pasynUserCommand, NULL);

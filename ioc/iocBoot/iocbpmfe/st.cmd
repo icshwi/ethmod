@@ -19,6 +19,8 @@ epicsEnvSet("LCD_PORT",          "BPMFE_LCD")
 epicsEnvSet("LCD_IP_PORT",       "BPMFE_LCD_COMM")
 epicsEnvSet("I2C_PORT",          "BPMFE_I2C")
 epicsEnvSet("I2C_IP_PORT",       "BPMFE_I2C_COMM")
+epicsEnvSet("TTLIO_PORT",        "BPMFE_TTLIO")
+epicsEnvSet("TTLIO_IP_PORT",     "BPMFE_TTLIO_COMM")
 
 # Supported IP port types (see bpmfe.h)
 #BPMFE_IP_PORT_INVALID       0
@@ -69,17 +71,43 @@ epicsEnvSet("I2C_IP_PORT",       "BPMFE_I2C_COMM")
 # I2C
 ###
 # Create the asyn port to talk to the AK-NORD server on command port 1002.
-drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
+#drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #asynSetTraceIOMask($(I2C_IP_PORT),0,255)
 #asynSetTraceMask($(I2C_IP_PORT),0,255)
 # Set the terminators
 #asynOctetSetOutputEos($(I2C_IP_PORT), 0, "\003")
 #asynOctetSetInputEos($(I2C_IP_PORT), 0,  "\003")
 
-BPMFEConfigure($(I2C_PORT), $(I2C_IP_PORT), 4)
-dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=I2C:,PORT=$(I2C_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
+#BPMFEConfigure($(I2C_PORT), $(I2C_IP_PORT), 4)
+#dbLoadRecords("$(BPMFE)/db/bpmfe.template",    "P=$(PREFIX),R=I2C:,PORT=$(I2C_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
 #asynSetTraceIOMask($(I2C_PORT),0,255)
 #asynSetTraceMask($(I2C_PORT),0,255)
+
+
+###
+# TTL-IO
+###
+# Create the asyn port to talk to the AK-NORD server on command port 1002.
+drvAsynIPPortConfigure($(TTLIO_IP_PORT),"192.168.100.100:1002")
+#asynSetTraceIOMask($(TTLIO_IP_PORT),0,255)
+#asynSetTraceMask($(TTLIO_IP_PORT),0,255)
+# Set the terminators
+#asynOctetSetOutputEos($(TTLIO_IP_PORT), 0, "\003")
+#asynOctetSetInputEos($(TTLIO_IP_PORT), 0,  "\003")
+
+BPMFEConfigure($(TTLIO_PORT), $(TTLIO_IP_PORT), 6)
+dbLoadRecords("$(BPMFE)/db/bpmfe.template",          "P=$(PREFIX),R=TTLIO:,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=1,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=2,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=3,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=4,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=5,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=6,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=7,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+dbLoadRecords("$(BPMFE)/db/bpmfe_ttlio.template",    "P=$(PREFIX),R=TTLIO:,N=8,PORT=$(TTLIO_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(TTLIO_IP_PORT)")
+#asynSetTraceIOMask($(TTLIO_PORT),0,255)
+#asynSetTraceMask($(TTLIO_PORT),0,255)
+
 
 
 #set_requestfile_path("./")
