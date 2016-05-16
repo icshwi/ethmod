@@ -57,12 +57,51 @@ asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
     }
 
     data[0] = val << 6;
-    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 1, data, 2, 0, 1.0);
+    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 1, data, 2, 1, 1.0);
     if (status) {
     	return status;
     }
 
     printf("%s: devAddr %d, muxAddr %d, muxBus %d resolution set to %d\n", functionName, devAddr, muxAddr, muxBus, val);
+
+    return status;
+}
+
+asynStatus AKI2CTemp::getTemperature(int addr) {
+	asynStatus status = asynSuccess;
+    const char *functionName = "getTemperature";
+    unsigned char data[2] = {0};
+    int devAddr, muxAddr, muxBus;
+    int rawTemp;
+    double temp;
+
+    getIntegerParam(addr, AKI2CTempDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CTempMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CTempMuxBus, &muxBus);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+
+    if (getCurrentMuxBus(muxAddr) != muxBus) {
+		data[0] = muxBus;
+		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, data, 1, 0, 1.0);
+		if (status) {
+			return status;
+		}
+		setCurrentMuxBus(muxAddr, muxBus);
+    }
+
+    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, NULL, 2, 0, 1.0);
+    if (status) {
+    	return status;
+    }
+
+    rawTemp = (mResp[2] << 8 | mResp[3]) >> 4;
+    temp = (double)rawTemp / 16.0;
+
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, rawTemp, temp);
+
+    setDoubleParam(addr, AKI2CTempTemperature, temp);
+    /* Do callbacks so higher layers see any changes */
+    callParamCallbacks(addr, addr);
 
     return status;
 }
@@ -84,9 +123,11 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     if (function == AKI2CTempResolution) {
     	status = setResolution(addr, value);
+    } else if (function == AKI2CTempReadTemperature) {
+    	status = getTemperature(addr);
     } else if (function < FIRST_AKI2CTEMP_PARAM) {
         /* If this parameter belongs to a base class call its method */
-    	status = AKBase::writeInt32(pasynUser, value);
+    	status = AKI2C::writeInt32(pasynUser, value);
     }
 
     /* Do callbacks so higher layers see any changes */
@@ -111,12 +152,12 @@ void AKI2CTemp::report(FILE *fp, int details) {
     if (details > 0) {
     }
     /* Invoke the base class method */
-    AKBase::report(fp, details);
+    AKI2C::report(fp, details);
 }
 
 /** Constructor for the AKI2CTemp class.
   * Calls constructor for the AKI2C base class.
-  * All the arguments are simply passed to the AKBase base class.
+  * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
         int numDevices, int priority, int stackSize)
@@ -141,6 +182,7 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
     createParam(AKI2CTempDevAddrString,          asynParamInt32,   &AKI2CTempDevAddr);
     createParam(AKI2CTempMuxAddrString,          asynParamInt32,   &AKI2CTempMuxAddr);
     createParam(AKI2CTempMuxBusString,           asynParamInt32,   &AKI2CTempMuxBus);
+    createParam(AKI2CTempReadTemperatureString,  asynParamInt32,   &AKI2CTempReadTemperature);
     createParam(AKI2CTempTemperatureString,      asynParamFloat64, &AKI2CTempTemperature);
     createParam(AKI2CTempResolutionString,       asynParamInt32,   &AKI2CTempResolution);
 

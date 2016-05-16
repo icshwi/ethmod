@@ -14,6 +14,7 @@
 #define AKI2CTempMuxAddrString                  "AKI2CTEMP_MUX_ADDR"
 #define AKI2CTempMuxBusString                   "AKI2CTEMP_MUX_BUS"
 #define AKI2CTempTemperatureString              "AKI2CTEMP_TEMPERATURE"
+#define AKI2CTempReadTemperatureString          "AKI2CTEMP_READ_TEMPERATURE"
 #define AKI2CTempResolutionString               "AKI2CTEMP_RESOLUTION"
 
 /** Driver for AK-NORD XT-PICO-SXL I2C temperature chip access over TCP/IP socket */
@@ -34,14 +35,14 @@ protected:
 #define FIRST_AKI2CTEMP_PARAM AKI2CTempDevAddr
     int AKI2CTempMuxAddr;
     int AKI2CTempMuxBus;
+    int AKI2CTempReadTemperature;
     int AKI2CTempTemperature;
     int AKI2CTempResolution;
 #define LAST_AKI2CTEMP_PARAM AKI2CTempResolution
 
 private:
     asynStatus setResolution(int addr, unsigned char val);
-
-
+    asynStatus getTemperature(int addr);
 };
 
 #define NUM_AKI2CTEMP_PARAMS ((int)(&LAST_AKI2CTEMP_PARAM - &FIRST_AKI2CTEMP_PARAM + 1))

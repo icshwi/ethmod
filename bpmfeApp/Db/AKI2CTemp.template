@@ -52,6 +52,14 @@ record(longin, "$(P)$(R)MuxBus_RBV")
    field(VAL,  "$(MUXBUS)")
 }
 
+record(bo, "$(P)$(R)ReadTemperature")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_READ_TEMPERATURE")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
 record(ai, "$(P)$(R)Temperature_RBV")
 {
    field(DTYP, "asynFloat64")
