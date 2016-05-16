@@ -16,6 +16,7 @@ DB += AKBase.template
 DB += AKI2C.template
 DB += AKI2CTemp.template
 DB += AKI2CEeprom.template
+DB += AKI2CIdNum.template
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add
