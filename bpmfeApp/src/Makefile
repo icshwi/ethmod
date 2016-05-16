@@ -19,6 +19,7 @@ $(PROD_NAME)_DBD += bpmfeSupport.dbd
 bpmfe_SRCS += AKBase.cpp
 bpmfe_SRCS += AKI2C.cpp
 bpmfe_SRCS += AKI2CTemp.cpp
+bpmfe_SRCS += AKI2CEeprom.cpp
 
 PROD_LIBS += asyn
 

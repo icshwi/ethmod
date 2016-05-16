@@ -150,7 +150,7 @@ Responses:
 asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len) {
 	asynStatus status = asynSuccess;
 	int i, l, msgLen;
-	unsigned char msg[MAX_MESSAGE_SIZE] = {0};
+	unsigned char msg[AK_MAX_MSG_SZ] = {0};
 	l = 0;
 
 	if (i2cAddr > 0x7F) {
@@ -159,7 +159,7 @@ asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, un
 	if (intAddrWidth > 4) {
 		return asynError;
 	}
-	if (len > (MAX_MESSAGE_SIZE - intAddrWidth - 10)) {
+	if (len > (AK_MAX_MSG_SZ - intAddrWidth - 10)) {
 		return asynError;
 	}
 
@@ -223,7 +223,7 @@ asynStatus BPMFE::I2CWrite(unsigned char i2cAddr, unsigned char intAddrWidth, un
 asynStatus BPMFE::I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, unsigned int intAddr, unsigned char *data, unsigned short len) {
 	asynStatus status = asynSuccess;
 	int l, msgLen;
-	unsigned char msg[MAX_MESSAGE_SIZE] = {0};
+	unsigned char msg[AK_MAX_MSG_SZ] = {0};
 	l = 0;
 
 	if (i2cAddr > 0x7F) {
@@ -232,7 +232,7 @@ asynStatus BPMFE::I2CRead(unsigned char i2cAddr, unsigned char intAddrWidth, uns
 	if (intAddrWidth > 4) {
 		return asynError;
 	}
-	if (len > (MAX_MESSAGE_SIZE - intAddrWidth - 10)) {
+	if (len > (AK_MAX_MSG_SZ - intAddrWidth - 10)) {
 		return asynError;
 	}
 
@@ -561,7 +561,7 @@ void BPMFE::dataTask(void) {
     	lock();
 
     	if (mIpPortType == BPMFE_IP_PORT_I2C) {
-    		handleI2CBus();
+//    		handleI2CBus();
     	} else if (mIpPortType == BPMFE_IP_PORT_TTLIO) {
 //    		handleTTLIOBus();
     	} else {
@@ -701,7 +701,7 @@ asynStatus BPMFE::readBPMFE(double timeout) {
     const char *functionName="readBPMFE";
 
     printf("%s: called..\n", functionName);
-    this->fromBPMFELen = MAX_MESSAGE_SIZE;
+    this->fromBPMFELen = AK_MAX_MSG_SZ;
     status = pasynOctetSyncIO->read(this->pasynUserCommand,
                                      this->fromBPMFE, this->fromBPMFELen,
                                      timeout, &nread, &eomReason);
@@ -797,6 +797,7 @@ BPMFE::BPMFE(const char *portName, const char *ipPort, int ipPortType)
 
     /* Connect to desired BPM FE IP port */
     status = pasynOctetSyncIO->connect(mIpPort, 0, &this->pasynUserCommand, NULL);
+    status = pasynOctetSyncIO->connect(mIpPort, 0, &this->pasynUserCommand2, NULL);
 
     setStringParam(BPMFEStatusMessage,          "");
     setStringParam(BPMFEStringToServer,         "");

@@ -35,7 +35,7 @@
 #define TTLIO_FUNC_CLEAR_PULLUP		0x05
 #define TTLIO_FUNC_SET_PULLUP		0x06
 
-#define MAX_MESSAGE_SIZE	512
+#define AK_MAX_MSG_SZ	512
 
 #define BPMFEReadStatusString                "READ_STATUS"           /**< (asynInt32,    r/w) Write 1 to force a read of status */
 #define BPMFEStatusMessageString             "STATUS_MESSAGE"        /**< (asynOctet,    r/o) Status message */
@@ -141,11 +141,12 @@ private:
 //    epicsEventId readoutEventId;
     epicsEventId stopEventId;
 //    epicsTimerId timerId;
-    char toBPMFE[MAX_MESSAGE_SIZE];
+    char toBPMFE[AK_MAX_MSG_SZ];
     int toBPMFELen;
-    char fromBPMFE[MAX_MESSAGE_SIZE];
+    char fromBPMFE[AK_MAX_MSG_SZ];
     int fromBPMFELen;
     asynUser *pasynUserCommand;
+    asynUser *pasynUserCommand2;
 };
 
 #define NUM_BPMFE_PARAMS ((int)(&LAST_BPMFE_PARAM - &FIRST_BPMFE_PARAM + 1))
