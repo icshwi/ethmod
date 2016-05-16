@@ -1,0 +1,69 @@
+# This template is for Maxim DS28CM00 I2C serial number on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+record(longout, "$(P)$(R)DevAddr")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_DEV_ADDR")
+   field(SCAN, "Passive")
+   field(VAL,  "$(DEVADDR)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)DevAddr_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_DEV_ADDR")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(DEVADDR)")
+}
+
+record(longout, "$(P)$(R)MuxAddr")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_MUX_ADDR")
+   field(SCAN, "Passive")
+   field(VAL,  "$(MUXADDR)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)MuxAddr_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_MUX_ADDR")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(MUXADDR)")
+}
+
+record(longout, "$(P)$(R)MuxBus")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_MUX_BUS")
+   field(SCAN, "Passive")
+   field(VAL,  "$(MUXBUS)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)MuxBus_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_MUX_BUS")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(MUXBUS)")
+}
+
+record(bo, "$(P)$(R)ReadIdNum")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_READ")
+   field(SCAN, "Passive")
+   field(VAL, "1")
+}
+
+record(ai, "$(P)$(R)IdNum_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_VALUE")
+   field(PREC, "0")
+   field(SCAN, "I/O Intr")
+}
