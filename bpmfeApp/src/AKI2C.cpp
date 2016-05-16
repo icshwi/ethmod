@@ -89,7 +89,7 @@ Responses:
 
 */
 
-asynStatus AKI2C::createRequest(unsigned char type, unsigned char devAddr,
+asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 		unsigned char addrWidth, unsigned char *data, unsigned short len,
 		unsigned int off) {
 	asynStatus status = asynSuccess;
@@ -180,12 +180,11 @@ asynStatus AKI2C::createRequest(unsigned char type, unsigned char devAddr,
     return status;
 }
 
-asynStatus AKI2C::ipPortWriteRead(double timeout) {
-    asynStatus status;
-    const char *functionName = "ipPortWriteRead";
+asynStatus AKI2C::unpack() {
+    const char *functionName = "unpack";
+	asynStatus status;
 
-    status = AKBase::ipPortWriteRead(timeout);
-
+	status = asynError;
     if (mRespActSz > 0) {
     	if (mResp[0] == 0x15) {
     		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
@@ -195,43 +194,45 @@ asynStatus AKI2C::ipPortWriteRead(double timeout) {
     	}
     }
 
-    return status;
+	return status;
 }
 
-asynStatus AKI2C::ipPortWrite(double timeout) {
-    asynStatus status;
-    const char *functionName = "ipPortWrite";
+asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
+		unsigned char addrWidth, unsigned char *data, unsigned short len,
+		unsigned int off, double timeout) {
+	asynStatus status = asynSuccess;
 
-    status = AKBase::ipPortWrite(timeout);
+	status = pack(type, devAddr, addrWidth, data, len, off);
+	if (status) {
+		return status;
+	}
+	status = ipPortWriteRead(timeout);
+	if (status) {
+		return status;
+	}
+	status = unpack();
+	if (status) {
+		return status;
+	}
 
-    if (mRespActSz > 0) {
-    	if (mResp[0] == 0x15) {
-    		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    	} else if (mResp[0] == 0x15) {
-    		printf("%s:  OK  - we got ACK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    		status = asynSuccess;
-    	}
-    }
-
-    return status;
+	return status;
 }
 
-asynStatus AKI2C::ipPortRead(double timeout) {
-    asynStatus status;
-    const char *functionName = "ipPortRead";
+void AKI2C::setCurrentMuxBus(int muxAddr, int muxBus) {
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if (mMuxInfos[i].addr == muxAddr) {
+			mMuxInfos[i].bus = muxBus;
+		}
+	}
+}
 
-    status = AKBase::ipPortRead(timeout);
-
-    if (mRespActSz > 0) {
-    	if (mResp[0] == 0x15) {
-    		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    	} else if (mResp[0] == 0x15) {
-    		printf("%s:  OK  - we got ACK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    		status = asynSuccess;
-    	}
-    }
-
-    return status;
+int AKI2C::getCurrentMuxBus(int muxAddr) {
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if (mMuxInfos[i].addr == muxAddr) {
+			return mMuxInfos[i].bus;
+		}
+	}
+	return -1;
 }
 
 asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {
@@ -302,6 +303,11 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
+
+	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
+		mMuxInfos[i].addr = 0x70 + i;
+		mMuxInfos[i].bus = 0;
+	}
 
 //    createParam(AKReadStatusString,          asynParamInt32, &AKReadStatus);
 //    createParam(AKStatusMessageString,       asynParamOctet, &AKStatusMessage);

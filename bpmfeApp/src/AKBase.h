@@ -8,34 +8,27 @@
 #ifndef _AKBASE_H_
 #define _AKBASE_H_
 
-//#include <epicsTime.h>
-//#include <epicsThread.h>
-//#include <epicsEvent.h>
-//#include <epicsMutex.h>
-
 #include <asynPortDriver.h>
 #include <asynOctetSyncIO.h>
 
 
-#define AK_IP_PORT_INVALID			0
-#define AK_IP_PORT_RS232			1
-#define AK_IP_PORT_RS485			2
-#define AK_IP_PORT_LCD				3
-#define AK_IP_PORT_I2C				4
-#define AK_IP_PORT_SPI				5
-#define AK_IP_PORT_TTLIO			6
-//#define AK_IP_PORT_SDCARD			7
-//#define AK_IP_PORT_DFCARD			8
+#define AK_IP_PORT_INVALID				0
+#define AK_IP_PORT_RS232				1
+#define AK_IP_PORT_RS485				2
+#define AK_IP_PORT_LCD					3
+#define AK_IP_PORT_I2C					4
+#define AK_IP_PORT_SPI					5
+#define AK_IP_PORT_TTLIO				6
 
-#define AK_MAX_MSG_SZ				512
+#define AK_MAX_MSG_SZ					512
 
-#define AK_REQ_TYPE_READ			'R'
-#define AK_REQ_TYPE_WRITE			'W'
+#define AK_REQ_TYPE_READ				'R'
+#define AK_REQ_TYPE_WRITE				'W'
 
-#define AKReadStatusString                "AK_READ_STATUS"           /**< (asynInt32,    r/w) Write 1 to force a read of status */
-#define AKStatusMessageString             "AK_STATUS_MESSAGE"        /**< (asynOctet,    r/o) Status message */
-#define AKStringToServerString            "AK_STRING_TO_SERVER"      /**< (asynOctet,    r/o) String sent to server for message-based drivers */
-#define AKStringFromServerString          "AK_STRING_FROM_SERVER"    /**< (asynOctet,    r/o) String received from server for message-based drivers */
+#define AKReadStatusString              "AK_READ_STATUS"           /**< (asynInt32,    r/w) Write 1 to force a read of status */
+#define AKStatusMessageString           "AK_STATUS_MESSAGE"        /**< (asynOctet,    r/o) Status message */
+#define AKStringToServerString          "AK_STRING_TO_SERVER"      /**< (asynOctet,    r/o) String sent to server for message-based drivers */
+#define AKStringFromServerString        "AK_STRING_FROM_SERVER"    /**< (asynOctet,    r/o) String received from server for message-based drivers */
 
 
 /** Driver for AK-NORD XT-PICO-SXL server over TCP/IP socket */

@@ -10,6 +10,12 @@
 
 #include "AKBase.h"
 
+#define AK_I2C_MUX_MAX	8
+typedef struct _I2CMuxInfo {
+	int addr;
+	int bus;
+} I2CMuxInfo;
+
 /** Driver for AK-NORD XT-PICO-SXL I2C bus access over TCP/IP socket */
 class AKI2C: public AKBase {
 public:
@@ -18,22 +24,19 @@ public:
 	        int asynFlags, int autoConnect, int priority, int stackSize);
 	virtual ~AKI2C();
 
-    /* These are the methods that we override from asynPortDriver */
+    /* These are the methods that we override from AKBase */
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     void report(FILE *fp, int details);
     /* These are new methods */
 
 protected:
-    /* Override to check for response status */
-    virtual asynStatus ipPortWrite(double timeout);
-    virtual asynStatus ipPortRead(double timeout);
-    virtual asynStatus ipPortWriteRead(double timeout);
-
     /* These are new methods */
-    asynStatus createRequest(unsigned char type, unsigned char devAddr,
+    asynStatus xfer(unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short len,
-    		unsigned int off);
+    		unsigned int off, double timeout);
 
+    void setCurrentMuxBus(int muxAddr, int muxBus);
+    int getCurrentMuxBus(int muxAddr);
 
     /* Our parameter list */
     int AKI2CDummy1;
@@ -42,9 +45,13 @@ protected:
 #define LAST_AKI2C_PARAM AKI2CDummy2
 
 private:
+    /* These are new methods */
+    asynStatus pack(unsigned char type, unsigned char devAddr,
+    		unsigned char addrWidth, unsigned char *data, unsigned short len,
+    		unsigned int off);
+    asynStatus unpack();
 
-
-
+    I2CMuxInfo mMuxInfos[AK_I2C_MUX_MAX];
 };
 
 #define NUM_AKI2C_PARAMS ((int)(&LAST_AKI2C_PARAM - &FIRST_AKI2C_PARAM + 1))

@@ -10,8 +10,11 @@ include $(TOP)/configure/CONFIG
 #----------------------------------------------------
 # Create and install (or just install) into <top>/db
 # databases, templates, substitutions like this
-DB += bpmfe.template
-DB += bpmfe_ttlio.template
+#DB += bpmfe.template
+#DB += bpmfe_ttlio.template
+DB += AKBase.template
+DB += AKI2C.template
+DB += AKI2CTemp.template
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add

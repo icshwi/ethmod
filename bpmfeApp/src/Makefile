@@ -18,6 +18,7 @@ $(PROD_NAME)_DBD += bpmfeSupport.dbd
 # specify all source files to be compiled and added to the library
 bpmfe_SRCS += AKBase.cpp
 bpmfe_SRCS += AKI2C.cpp
+bpmfe_SRCS += AKI2CTemp.cpp
 
 PROD_LIBS += asyn
 

@@ -1,0 +1,94 @@
+# This template is for TI TMP100 I2C temperature sensor on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+record(longout, "$(P)$(R)DevAddr")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_DEV_ADDR")
+   field(SCAN, "Passive")
+   field(VAL,  "$(DEVADDR)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)DevAddr_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_DEV_ADDR")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(DEVADDR)")
+}
+
+record(longout, "$(P)$(R)MuxAddr")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_MUX_ADDR")
+   field(SCAN, "Passive")
+   field(VAL,  "$(MUXADDR)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)MuxAddr_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_MUX_ADDR")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(MUXADDR)")
+}
+
+record(longout, "$(P)$(R)MuxBus")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_MUX_BUS")
+   field(SCAN, "Passive")
+   field(VAL,  "$(MUXBUS)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)MuxBus_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_MUX_BUS")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(MUXBUS)")
+}
+
+record(ai, "$(P)$(R)Temperature_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_TEMPERATURE")
+   field(PREC, "1")
+   field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)Resolution")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_RESOLUTION")
+   field(SCAN, "Passive")
+   field(ZRST, "9 bits")
+   field(ZRVL, "0")
+   field(ONST, "10 bits")
+   field(ONVL, "1")
+   field(TWST, "11 bits")
+   field(TWVL, "2")
+   field(THST, "12 bits")
+   field(THVL, "3")
+   field(VAL,  "0")
+   field(PINI, "YES")
+   info(autosaveFields, "VAL")
+}
+
+record(mbbi, "$(P)$(R)Resolution_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_RESOLUTION")
+   field(SCAN, "I/O Intr")
+   field(ZRST, "9 bits")
+   field(ZRVL, "0")
+   field(ONST, "10 bits")
+   field(ONVL, "1")
+   field(TWST, "11 bits")
+   field(TWVL, "2")
+   field(THST, "12 bits")
+   field(THVL, "3")
+}
