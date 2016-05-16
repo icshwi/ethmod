@@ -8,10 +8,10 @@
 #ifndef _AKBASE_H_
 #define _AKBASE_H_
 
-#include <epicsTime.h>
-#include <epicsThread.h>
-#include <epicsEvent.h>
-#include <epicsMutex.h>
+//#include <epicsTime.h>
+//#include <epicsThread.h>
+//#include <epicsEvent.h>
+//#include <epicsMutex.h>
 
 #include <asynPortDriver.h>
 #include <asynOctetSyncIO.h>
@@ -27,7 +27,10 @@
 //#define AK_IP_PORT_SDCARD			7
 //#define AK_IP_PORT_DFCARD			8
 
-#define MAX_MESSAGE_SIZE			512
+#define AK_MAX_MSG_SZ				512
+
+#define AK_REQ_TYPE_READ			'R'
+#define AK_REQ_TYPE_WRITE			'W'
 
 #define AKReadStatusString                "AK_READ_STATUS"           /**< (asynInt32,    r/w) Write 1 to force a read of status */
 #define AKStatusMessageString             "AK_STATUS_MESSAGE"        /**< (asynOctet,    r/o) Status message */
@@ -47,9 +50,20 @@ public:
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     void report(FILE *fp, int details);
     /* These are new methods */
-    void dataTask();  /* This should be private but is called from C so must be public */
 
 protected:
+    virtual asynStatus ipPortWrite(double timeout);
+    virtual asynStatus ipPortRead(double timeout);
+    virtual asynStatus ipPortWriteRead(double timeout);
+    /* Derived classes need access to these members */
+    char mReq[AK_MAX_MSG_SZ];
+    size_t mReqSz;
+    size_t mReqActSz;
+    char mResp[AK_MAX_MSG_SZ];
+    size_t mRespSz;
+    size_t mRespActSz;
+
+    /* Our parameter list */
     int AKReadStatus;
 #define FIRST_AKBASE_PARAM AKReadStatus
     int AKStringToServer;
@@ -59,18 +73,10 @@ protected:
 
 private:
     /* These are the methods that are new to this class */
-    asynStatus ipPortWrite(double timeout);
-    asynStatus ipPortRead(double timeout);
-    asynStatus ipPortWriteRead(double timeout);
     void hexdump(void *mem, unsigned int len);
 
     char *mIpPort;
     int mIpPortType;
-
-    char mReq[MAX_MESSAGE_SIZE];
-    size_t mReqLen;
-    char mResp[MAX_MESSAGE_SIZE];
-    size_t mRespLen;
     asynUser *mAsynUserCommand;
 };
 

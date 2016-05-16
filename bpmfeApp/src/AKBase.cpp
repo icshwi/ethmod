@@ -1,11 +1,10 @@
 /*
- * aknordBase.cpp
+ * AKBase.cpp
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar
  */
 
-#include <AKBase.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -78,50 +77,48 @@ void AKBase::hexdump(void *mem, unsigned int len) {
 asynStatus AKBase::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     int function = pasynUser->reason;
+    int addr = 0;
     asynStatus status = asynSuccess;
     const char *functionName = "writeInt32";
 
-    printf("%s: function %d, value %d\n", functionName, function, value);
-    status = setIntegerParam(function, value);
+    status = getAddress(pasynUser, &addr);
+    if (status != asynSuccess) {
+    	return(status);
+    }
+
+    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
+    status = setIntegerParam(addr, function, value);
 
     /* Do callbacks so higher layers see any changes */
-    callParamCallbacks();
+    callParamCallbacks(addr, addr);
 
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-              "%s:%s: error, status=%d function=%d, value=%d\n",
-              driverName, functionName, status, function, value);
-    else
+    if (status) {
+    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
+              driverName, functionName, status, function, addr, value);
+    } else {
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-              "%s:%s: function=%d, value=%d\n",
-              driverName, functionName, function, value);
+              "%s:%s: function=%d, addr=%d, value=%d\n",
+              driverName, functionName, function, addr, value);
+    }
 
     return status;
 }
 
 asynStatus AKBase::ipPortWriteRead(double timeout) {
-    size_t nwrite, nread;
     int eomReason;
     asynStatus status;
-    const char *functionName="writeReadBPMFE";
+    const char *functionName="ipPortWriteRead";
 
     printf("%s: request:\n", functionName);
-	hexdump(mReq, mReqLen);
-
-	nread = 0;
-	nwrite = 0;
+	hexdump(mReq, mReqSz);
 
     status = pasynOctetSyncIO->writeRead(mAsynUserCommand,
-    		mReq, mReqLen,
-			mResp, mRespLen,
-			timeout, &nwrite, &nread, &eomReason);
+    		mReq, mReqSz, mResp, mRespSz,
+			timeout, &mReqActSz, &mRespActSz, &eomReason);
 
     printf("%s: response:\n", functionName);
-	hexdump(mResp, nread);
-	/* XXX: Do some checks on the nread?? */
-    mRespLen = nread;
-	/* XXX: Do some checks on the nwrite?? */
-    mReqLen = nwrite;
+	hexdump(mResp, mRespActSz);
 
     if (status) {
     	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -133,23 +130,19 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
 //    setStringParam(BPMFEStringToServer, this->toBPMFE);
 //    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
-    return(status);
+    return status;
 }
 
 asynStatus AKBase::ipPortWrite(double timeout) {
-    size_t nwrite;
     asynStatus status;
-    const char *functionName="writeBPMFE";
+    const char *functionName="ipPortWrite";
 
     printf("%s: request:\n", functionName);
-	hexdump(mReq, mReqLen);
+	hexdump(mReq, mReqSz);
 
     status = pasynOctetSyncIO->write(mAsynUserCommand,
-    		mReq, mReqLen,
-			timeout, &nwrite);
-
-	/* XXX: Do some checks on the nwrite?? */
-    mReqLen = nwrite;
+    		mReq, mReqSz,
+			timeout, &mReqActSz);
 
     if (status) {
     	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -165,22 +158,17 @@ asynStatus AKBase::ipPortWrite(double timeout) {
 }
 
 asynStatus AKBase::ipPortRead(double timeout) {
-    size_t nread;
     int eomReason;
     asynStatus status;
     const char *functionName = "ipPortRead";
 
-    nread = 0;
-
     status = pasynOctetSyncIO->read(mAsynUserCommand,
-    		mResp, mRespLen,
-			timeout, &nread, &eomReason);
+    		mResp, mRespSz,
+			timeout, &mRespActSz, &eomReason);
 
 
     printf("%s: response:\n", functionName);
-	hexdump(mResp, nread);
-	/* XXX: Do some checks on the nread?? */
-    mRespLen = nread;
+	hexdump(mResp, mRespActSz);
 
     if (status) {
     	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
@@ -222,7 +210,7 @@ AKBase::AKBase(const char *portName, const char *ipPort, int ipPortType,
 		   asynFlags, autoConnect, priority, stackSize)
 {
     int status = asynSuccess;
-    const char *functionName = "BPMFE";
+    const char *functionName = "AKBase";
 
     mIpPort = strdup(ipPort);
     mIpPortType = ipPortType;
