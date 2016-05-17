@@ -8,6 +8,7 @@ dbLoadDatabase("$(TOP)/dbd/bpmfeDemoApp.dbd")
 bpmfeDemoApp_registerRecordDeviceDriver(pdbbase)
 epicsEnvSet("EPICS_CA_ADDR_LIST", "192.168.100.100 192.168.100.1")
 epicsEnvSet("EPICS_CA_AUTO_ADDR_LIST", "NO")
+epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "10000000")
 
 # Prefix for all records
 epicsEnvSet("PREFIX", "BPMFE:")
@@ -98,6 +99,12 @@ dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp7:
 dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp8:,PORT=$(I2C_TEMP_PORT),ADDR=7,TIMEOUT=1,DEVADDR=0x4F,MUXADDR=0x70,MUXBUS=0")
 #asynSetTraceIOMask($(I2C_TEMP_PORT),0,255)
 #asynSetTraceMask($(I2C_TEMP_PORT),0,255)
+
+# AKI2CEepromConfigure(const char *portName, const char *ipPort,
+#            int numDevices, int priority, int stackSize);
+AKI2CEepromConfigure($(I2C_EEPROM_PORT), $(I2C_IP_PORT), 2, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CEeprom.template",     "P=$(PREFIX),R=I2C1:Eeprom1:,PORT=$(I2C_EEPROM_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x71,MUXBUS=0,NELM=65536")
+dbLoadRecords("$(BPMFE)/db/AKI2CEeprom.template",     "P=$(PREFIX),R=I2C1:Eeprom2:,PORT=$(I2C_EEPROM_PORT),ADDR=1,TIMEOUT=1,DEVADDR=0x51,MUXADDR=0x71,MUXBUS=0,NELM=262144")
 
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);

@@ -30,10 +30,10 @@
 static const char *driverName = "AKI2C";
 
 
-static void exitHandler(void *drvPvt) {
-	AKI2C *pPvt = (AKI2C *)drvPvt;
-	delete pPvt;
-}
+//static void exitHandler(void *drvPvt) {
+//	AKI2C *pPvt = (AKI2C *)drvPvt;
+//	delete pPvt;
+//}
 
 /*
  *
@@ -294,15 +294,15 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 		   AK_IP_PORT_I2C,
 		   maxAddr,
 		   numParams + NUM_AKI2C_PARAMS,
-		   0, /* no new interface masks beyond those in AKBase */
-		   0, /* no new interrupt masks beyond those in AKBase */
+		   interfaceMask,
+		   interruptMask,
 		   asynFlags, autoConnect, priority, stackSize)
 {
 //    int status = asynSuccess;
     const char *functionName = "AKI2C";
 
 	/* Create an EPICS exit handler */
-	epicsAtExit(exitHandler, this);
+//	epicsAtExit(exitHandler, this);
 
 	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
 		mMuxInfos[i].addr = 0x70 + i;

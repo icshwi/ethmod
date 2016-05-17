@@ -29,10 +29,10 @@
 static const char *driverName = "AKBase";
 
 
-static void exitHandler(void *drvPvt) {
-	AKBase *pPvt = (AKBase *)drvPvt;
-	delete pPvt;
-}
+//static void exitHandler(void *drvPvt) {
+//	AKBase *pPvt = (AKBase *)drvPvt;
+//	delete pPvt;
+//}
 
 #ifndef HEXDUMP_COLS
 #define HEXDUMP_COLS 8
@@ -214,10 +214,10 @@ AKBase::AKBase(const char *portName, const char *ipPort, int ipPortType,
 
     mIpPort = strdup(ipPort);
     mIpPortType = ipPortType;
-    printf("%s: starting IP port %s, type %d\n", functionName, mIpPort, mIpPortType);
+    printf("%s: IP port %s, type %d\n", functionName, mIpPort, mIpPortType);
 
 	/* Create an EPICS exit handler */
-	epicsAtExit(exitHandler, this);
+//	epicsAtExit(exitHandler, this);
 
     createParam(AKReadStatusString,          asynParamInt32, &AKReadStatus);
     createParam(AKStatusMessageString,       asynParamOctet, &AKStatusMessage);

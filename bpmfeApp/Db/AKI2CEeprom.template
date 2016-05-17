@@ -57,7 +57,8 @@ record(bo, "$(P)$(R)Read")
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_READ")
    field(SCAN, "Passive")
-    field(VAL, "1")
+   field(VAL,  "1")
+   field(FLNK, "$(P)$(R)Data_RBV PP")
 }
 
 record(bo, "$(P)$(R)Write")
@@ -65,7 +66,8 @@ record(bo, "$(P)$(R)Write")
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_WRITE")
    field(SCAN, "Passive")
-    field(VAL, "1")
+   field(VAL,  "1")
+   field(FLNK, "$(P)$(R)Data PP")
 }
 
 record(waveform, "$(P)$(R)Data")
@@ -84,4 +86,55 @@ record(waveform, "$(P)$(R)Data_RBV")
     field(FTVL, "UCHAR")
     field(NELM, "$(NELM)")
     field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Size")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_SIZE")
+   field(SCAN, "Passive")
+   field(VAL,  "$(NELM)")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)Size_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_SIZE")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "$(NELM)")
+}
+
+record(longout, "$(P)$(R)Offset")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_OFFSET")
+   field(SCAN, "Passive")
+   field(VAL,  "0")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)Offset_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_OFFSET")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "0")
+}
+
+record(longout, "$(P)$(R)Length")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_LENGTH")
+   field(SCAN, "Passive")
+   field(VAL,  "10")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)Length_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_LENGTH")
+   field(SCAN, "I/O Intr")
+   field(VAL,  "10")
 }

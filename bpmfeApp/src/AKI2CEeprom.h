@@ -16,6 +16,9 @@
 #define AKI2CEepromMuxAddrString                  "AKI2CEEPROM_MUX_ADDR"
 #define AKI2CEepromMuxBusString                   "AKI2CEEPROM_MUX_BUS"
 #define AKI2CEepromDataString                     "AKI2CEEPROM_DATA"
+#define AKI2CEepromSizeString                     "AKI2CEEPROM_SIZE"
+#define AKI2CEepromOffsetString                   "AKI2CEEPROM_OFFSET"
+#define AKI2CEepromLengthString                   "AKI2CEEPROM_LENGTH"
 #define AKI2CEepromReadString                     "AKI2CEEPROM_READ"
 #define AKI2CEepromWriteString                    "AKI2CEEPROM_WRITE"
 
@@ -42,6 +45,9 @@ protected:
     int AKI2CEepromMuxAddr;
     int AKI2CEepromMuxBus;
     int AKI2CEepromData;
+    int AKI2CEepromSize;
+    int AKI2CEepromOffset;
+    int AKI2CEepromLength;
     int AKI2CEepromRead;
     int AKI2CEepromWrite;
 #define LAST_AKI2CEEPROM_PARAM AKI2CEepromWrite
@@ -50,8 +56,8 @@ private:
     asynStatus setData(int addr, unsigned char *data, unsigned short len, unsigned int off);
     asynStatus getData(int addr, unsigned char *data, unsigned short *len, unsigned int off);
 
-    unsigned char *mData;
-    unsigned short mDataLen;
+//    unsigned char *mData;
+//    unsigned short mDataLen;
 };
 
 #define NUM_AKI2CEEPROM_PARAMS ((int)(&LAST_AKI2CEEPROM_PARAM - &FIRST_AKI2CEEPROM_PARAM + 1))
