@@ -89,6 +89,48 @@ Responses:
 
 */
 
+char const *AKI2C::status2Msg(unsigned char status, unsigned char code) {
+	if (status == AK_I2C_STATUS_OK) {
+		switch(code) {
+		case 'R':
+			return "Read OK";
+			break;
+		case 'W':
+			return "Write OK";
+			break;
+		}
+	} else if (status == AK_I2C_STATUS_FAIL) {
+		switch(code) {
+		case 'R':
+			return "Read error";
+			break;
+		case 'W':
+			return "Write error";
+			break;
+		case 'S':
+			return "STX error";
+			break;
+		case 'E':
+			return "ETX error";
+			break;
+		case 'A':
+			return "Slave address error";
+			break;
+		case 'C':
+			return "Command error";
+			break;
+		case 'L':
+			return "Length error";
+			break;
+		case 'B':
+			return "Buffer error";
+			break;
+		}
+	}
+
+	return "Unknown!";
+}
+
 asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 		unsigned char addrWidth, unsigned char *data, unsigned short len,
 		unsigned int off) {
@@ -189,18 +231,23 @@ asynStatus AKI2C::unpack(unsigned char type, unsigned char *data, unsigned short
 	}
 
 	status = asynError;
-    if (mRespActSz > 0) {
-    	if (mResp[0] == 0x15) {
+    if (mRespActSz >= 2) {
+    	if (mResp[0] == AK_I2C_STATUS_FAIL) {
     		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
 	    	*len = 0;
-    	} else if (mResp[0] == 0x15) {
+    	} else if (mResp[0] == AK_I2C_STATUS_OK) {
     		printf("%s:  OK  - we got ACK! %02X %02X\n", functionName, mResp[0], mResp[1]);
     	    if ((type == AK_REQ_TYPE_READ) && data && len) {
     	    	memcpy(data, &mResp[AK_I2C_RESP_HDR_SZ], *len * sizeof(unsigned char));
     	    }
     		status = asynSuccess;
+    	} else {
+    		printf("%s: FAIL - unknown response code! %02X %02X\n", functionName, mResp[0], mResp[1]);
     	}
     }
+
+//    mStatus = mResp[0];
+    setStringParam(AKStatusMessage, status2Msg(mResp[0], mResp[1]));
 
 	return status;
 }
@@ -228,16 +275,16 @@ asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
 
 void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfos[i].addr == muxAddr) {
-			mMuxInfos[i].bus = muxBus;
+		if (mMuxInfo[i].addr == muxAddr) {
+			mMuxInfo[i].bus = muxBus;
 		}
 	}
 }
 
 int AKI2C::getMuxBus(int muxAddr) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfos[i].addr == muxAddr) {
-			return mMuxInfos[i].bus;
+		if (mMuxInfo[i].addr == muxAddr) {
+			return mMuxInfo[i].bus;
 		}
 	}
 	return -1;
@@ -331,8 +378,8 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 //	epicsAtExit(exitHandler, this);
 
 	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
-		mMuxInfos[i].addr = 0x70 + i;
-		mMuxInfos[i].bus = 0;
+		mMuxInfo[i].addr = 0x70 + i;
+		mMuxInfo[i].bus = 0;
 	}
 
 //    createParam(AKReadStatusString,          asynParamInt32, &AKReadStatus);

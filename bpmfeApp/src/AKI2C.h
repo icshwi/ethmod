@@ -10,9 +10,12 @@
 
 #include "AKBase.h"
 
-#define AK_I2C_RESP_HDR_SZ	2
+#define AK_I2C_RESP_HDR_SZ			2
+#define AK_I2C_STATUS_MSG_SZ		32
+#define AK_I2C_STATUS_OK			0x06
+#define AK_I2C_STATUS_FAIL			0x15
 
-#define AK_I2C_MUX_MAX	8
+#define AK_I2C_MUX_MAX				8
 typedef struct _I2CMuxInfo {
 	int addr;
 	int bus;
@@ -49,12 +52,15 @@ protected:
 
 private:
     /* These are new methods */
+    char const *status2Msg(unsigned char status, unsigned char code);
     asynStatus pack(unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short len,
     		unsigned int off);
     asynStatus unpack(unsigned char type, unsigned char *data, unsigned short *len);
 
-    I2CMuxInfo mMuxInfos[AK_I2C_MUX_MAX];
+    I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
+//    unsigned char mStatus;
+    char mStatusMsg[AK_I2C_STATUS_MSG_SZ];
 };
 
 #define NUM_AKI2C_PARAMS ((int)(&LAST_AKI2C_PARAM - &FIRST_AKI2C_PARAM + 1))
