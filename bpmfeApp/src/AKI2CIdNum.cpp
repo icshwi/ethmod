@@ -41,6 +41,7 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
     const char *functionName = "getIdNum";
     unsigned char data[8] = {0};
     int devAddr, muxAddr, muxBus;
+    unsigned short len;
     long long int rawIdNum;
     double idNum;
 
@@ -49,28 +50,25 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
     getIntegerParam(addr, AKI2CIdNumMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    if (getCurrentMuxBus(muxAddr) != muxBus) {
-		data[0] = muxBus;
-		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, data, 1, 0, 1.0);
-		if (status) {
-			return status;
-		}
-		setCurrentMuxBus(muxAddr, muxBus);
-    }
+    status = setMuxBus(muxAddr, muxBus);
+	if (status) {
+		return status;
+	}
 
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, NULL, 8, 0, 1.0);
+	len = 8;
+    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
     if (status) {
     	return status;
     }
 
-    rawIdNum = (long long int)mResp[0] << 56
-			| (long long int)mResp[1] << 48
-			| (long long int)mResp[2] << 40
-			| (long long int)mResp[3] << 32
-			| (long long int)mResp[4] << 24
-			| (long long int)mResp[5] << 16
-			| (long long int)mResp[6] << 8
-			| (long long int)mResp[7];
+    rawIdNum = (long long int)data[0] << 56
+			| (long long int)data[1] << 48
+			| (long long int)data[2] << 40
+			| (long long int)data[3] << 32
+			| (long long int)data[4] << 24
+			| (long long int)data[5] << 16
+			| (long long int)data[6] << 8
+			| (long long int)data[7];
     idNum = (double)rawIdNum;
 
     printf("%s: devAddr %d, muxAddr %d, muxBus %d serial %lld, %f\n", functionName, devAddr, muxAddr, muxBus, rawIdNum, idNum);

@@ -10,6 +10,8 @@
 
 #include "AKBase.h"
 
+#define AK_I2C_RESP_HDR_SZ	2
+
 #define AK_I2C_MUX_MAX	8
 typedef struct _I2CMuxInfo {
 	int addr;
@@ -32,11 +34,12 @@ public:
 protected:
     /* These are new methods */
     asynStatus xfer(unsigned char type, unsigned char devAddr,
-    		unsigned char addrWidth, unsigned char *data, unsigned short len,
+    		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout);
 
-    void setCurrentMuxBus(int muxAddr, int muxBus);
-    int getCurrentMuxBus(int muxAddr);
+    void updateMuxBus(int muxAddr, int muxBus);
+    int getMuxBus(int muxAddr);
+    asynStatus setMuxBus(int muxAddr, int muxBus);
 
     /* Our parameter list */
     int AKI2CDummy1;
@@ -49,7 +52,7 @@ private:
     asynStatus pack(unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short len,
     		unsigned int off);
-    asynStatus unpack();
+    asynStatus unpack(unsigned char type, unsigned char *data, unsigned short *len);
 
     I2CMuxInfo mMuxInfos[AK_I2C_MUX_MAX];
 };

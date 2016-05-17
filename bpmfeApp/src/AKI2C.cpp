@@ -180,16 +180,24 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
     return status;
 }
 
-asynStatus AKI2C::unpack() {
+asynStatus AKI2C::unpack(unsigned char type, unsigned char *data, unsigned short *len) {
     const char *functionName = "unpack";
 	asynStatus status;
+
+	if ((type != AK_REQ_TYPE_WRITE) && (type != AK_REQ_TYPE_READ)) {
+		return asynError;
+	}
 
 	status = asynError;
     if (mRespActSz > 0) {
     	if (mResp[0] == 0x15) {
     		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
+	    	*len = 0;
     	} else if (mResp[0] == 0x15) {
     		printf("%s:  OK  - we got ACK! %02X %02X\n", functionName, mResp[0], mResp[1]);
+    	    if ((type == AK_REQ_TYPE_READ) && data && len) {
+    	    	memcpy(data, &mResp[AK_I2C_RESP_HDR_SZ], *len * sizeof(unsigned char));
+    	    }
     		status = asynSuccess;
     	}
     }
@@ -198,11 +206,11 @@ asynStatus AKI2C::unpack() {
 }
 
 asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
-		unsigned char addrWidth, unsigned char *data, unsigned short len,
+		unsigned char addrWidth, unsigned char *data, unsigned short *len,
 		unsigned int off, double timeout) {
 	asynStatus status = asynSuccess;
 
-	status = pack(type, devAddr, addrWidth, data, len, off);
+	status = pack(type, devAddr, addrWidth, data, *len, off);
 	if (status) {
 		return status;
 	}
@@ -210,7 +218,7 @@ asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
 	if (status) {
 		return status;
 	}
-	status = unpack();
+	status = unpack(type, data, len);
 	if (status) {
 		return status;
 	}
@@ -218,7 +226,7 @@ asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
 	return status;
 }
 
-void AKI2C::setCurrentMuxBus(int muxAddr, int muxBus) {
+void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
 		if (mMuxInfos[i].addr == muxAddr) {
 			mMuxInfos[i].bus = muxBus;
@@ -226,13 +234,31 @@ void AKI2C::setCurrentMuxBus(int muxAddr, int muxBus) {
 	}
 }
 
-int AKI2C::getCurrentMuxBus(int muxAddr) {
+int AKI2C::getMuxBus(int muxAddr) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
 		if (mMuxInfos[i].addr == muxAddr) {
 			return mMuxInfos[i].bus;
 		}
 	}
 	return -1;
+}
+
+asynStatus AKI2C::setMuxBus(int muxAddr, int muxBus) {
+    unsigned char data;
+    unsigned short len;
+	asynStatus status = asynSuccess;
+
+	if (getMuxBus(muxAddr) != muxBus) {
+		data = muxBus;
+		len = 1;
+		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0, 1.0);
+		if (status) {
+			return status;
+		}
+		updateMuxBus(muxAddr, muxBus);
+    }
+
+	return status;
 }
 
 asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {

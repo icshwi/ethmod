@@ -46,16 +46,12 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
     getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    if (getCurrentMuxBus(muxAddr) != muxBus) {
-		data[0] = muxBus;
-		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, data, 1, 0, 1.0);
-		if (status) {
-			return status;
-		}
-		setCurrentMuxBus(muxAddr, muxBus);
-    }
+    status = setMuxBus(muxAddr, muxBus);
+	if (status) {
+		return status;
+	}
 
-    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 2, data, len, off, 1.0);
+    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off, 1.0);
     if (status) {
     	return status;
     }
@@ -74,16 +70,12 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
     getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    if (getCurrentMuxBus(muxAddr) != muxBus) {
-		data[0] = muxBus;
-		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, data, 1, 0, 1.0);
-		if (status) {
-			return status;
-		}
-		setCurrentMuxBus(muxAddr, muxBus);
-    }
+    status = setMuxBus(muxAddr, muxBus);
+	if (status) {
+		return status;
+	}
 
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 2, NULL, *len, off, 1.0);
+    status = xfer(AK_REQ_TYPE_READ, devAddr, 2, data, len, off, 1.0);
     if (status) {
     	return status;
     }
