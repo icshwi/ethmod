@@ -61,7 +61,7 @@ asynStatus AKI2CRTC::setDateTime(int addr, unsigned char year, unsigned char mon
     data[1] = minute;
     data[2] = hour;
     data[3] = day;
-    data[4] = day;
+    data[4] = weekday;
     data[5] = month;
     data[6] = year;
 	len = 7;
@@ -108,8 +108,8 @@ asynStatus AKI2CRTC::getDateTime(int addr, unsigned char *year, unsigned char *m
     setIntegerParam(addr, AKI2CRTCSeconds, data[0]);
     setIntegerParam(addr, AKI2CRTCMinutes, data[1]);
     setIntegerParam(addr, AKI2CRTCHours, data[2]);
-    setIntegerParam(addr, AKI2CRTCWeekdays, data[3]);
-    setIntegerParam(addr, AKI2CRTCDays, data[4]);
+    setIntegerParam(addr, AKI2CRTCDays, data[3]);
+    setIntegerParam(addr, AKI2CRTCWeekdays, data[4]);
     setIntegerParam(addr, AKI2CRTCMonths, data[5]);
     setIntegerParam(addr, AKI2CRTCYears, data[6]);
     /* Do callbacks so higher layers see any changes */
@@ -133,13 +133,9 @@ asynStatus AKI2CRTC::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
-    if (function == AKI2CRTCSeconds
-    		|| function == AKI2CRTCMinutes
-			|| function == AKI2CRTCHours
-			|| function == AKI2CRTCWeekdays
-			|| function == AKI2CRTCDays
-			|| function == AKI2CRTCMonths
-			|| function == AKI2CRTCYears) {
+    if (function == AKI2CRTCRead) {
+    	//status = getDateTime(addr, value);
+    } else if (function == AKI2CRTCWrite) {
     	//status = setDateTime(addr, value);
     } else if (function < FIRST_AKI2CRTC_PARAM) {
         /* If this parameter belongs to a base class call its method */
@@ -198,11 +194,13 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
     createParam(AKI2CRTCDevAddrString,          asynParamInt32,   &AKI2CRTCDevAddr);
     createParam(AKI2CRTCMuxAddrString,          asynParamInt32,   &AKI2CRTCMuxAddr);
     createParam(AKI2CRTCMuxBusString,           asynParamInt32,   &AKI2CRTCMuxBus);
+    createParam(AKI2CRTCReadString,             asynParamInt32,   &AKI2CRTCRead);
+    createParam(AKI2CRTCWriteString,            asynParamInt32,   &AKI2CRTCWrite);
     createParam(AKI2CRTCSecondsString,          asynParamInt32,   &AKI2CRTCSeconds);
     createParam(AKI2CRTCMinutesString,          asynParamInt32,   &AKI2CRTCMinutes);
     createParam(AKI2CRTCHoursString,            asynParamInt32,   &AKI2CRTCHours);
-    createParam(AKI2CRTCWeekDaysString,         asynParamInt32,   &AKI2CRTCWeekdays);
     createParam(AKI2CRTCDaysString,             asynParamInt32,   &AKI2CRTCDays);
+    createParam(AKI2CRTCWeekDaysString,         asynParamInt32,   &AKI2CRTCWeekdays);
     createParam(AKI2CRTCMonthsString,           asynParamInt32,   &AKI2CRTCMonths);
     createParam(AKI2CRTCYearsString,            asynParamInt32,   &AKI2CRTCYears);
 

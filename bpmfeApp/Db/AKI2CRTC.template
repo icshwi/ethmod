@@ -1,0 +1,83 @@
+
+record(waveform, "$(P)$(R)Date_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_DATE")
+    field(FTVL, "CHAR")
+    field(NELM, "16")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)Time_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_TIME")
+    field(FTVL, "CHAR")
+    field(NELM, "16")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)Seconds")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_SECONDS")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Minutes")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_MINUTES")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Hours")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_HOURS")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Weekdays")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_WEEKDAYS")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Days")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_DAYS")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Months")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_MONTHS")
+   field(SCAN, "Passive")
+}
+
+record(longout, "$(P)$(R)Years")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CRTC_YEARS")
+   field(SCAN, "Passive")
+}
+
+record(bo, "$(P)$(R)Read")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_READ")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)Write")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_WRITE")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}

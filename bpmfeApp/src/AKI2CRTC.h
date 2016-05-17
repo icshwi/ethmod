@@ -13,6 +13,8 @@
 #define AKI2CRTCDevAddrString                  "AKI2CRTC_DEV_ADDR"
 #define AKI2CRTCMuxAddrString                  "AKI2CRTC_MUX_ADDR"
 #define AKI2CRTCMuxBusString                   "AKI2CRTC_MUX_BUS"
+#define AKI2CRTCReadString                     "AKI2CRTC_READ"
+#define AKI2CRTCWriteString                    "AKI2CRTC_WRITE"
 #define AKI2CRTCSecondsString                  "AKI2CRTC_SECONDS"
 #define AKI2CRTCMinutesString                  "AKI2CRTC_MINUTES"
 #define AKI2CRTCHoursString                    "AKI2CRTC_HOURS"
@@ -39,6 +41,8 @@ protected:
 #define FIRST_AKI2CRTC_PARAM AKI2CRTCDevAddr
     int AKI2CRTCMuxAddr;
     int AKI2CRTCMuxBus;
+    int AKI2CRTCRead;
+    int AKI2CRTCWrite;
     int AKI2CRTCSeconds;
     int AKI2CRTCMinutes;
     int AKI2CRTCHours;
