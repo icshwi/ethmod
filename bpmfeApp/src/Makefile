@@ -21,6 +21,7 @@ bpmfe_SRCS += AKI2C.cpp
 bpmfe_SRCS += AKI2CTemp.cpp
 bpmfe_SRCS += AKI2CEeprom.cpp
 bpmfe_SRCS += AKI2CIdNum.cpp
+bpmfe_SRCS += AKI2CRTC.cpp
 
 PROD_LIBS += asyn
 

@@ -1,3 +1,4 @@
 registrar(AKI2CTempRegister)
 registrar(AKI2CEepromRegister)
 registrar(AKI2CIdNumRegister)
+registrar(AKI2CRTCRegister)
