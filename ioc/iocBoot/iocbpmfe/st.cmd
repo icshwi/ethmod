@@ -22,6 +22,7 @@ epicsEnvSet("LCD_IP_PORT",       "AK_LCD_COMM")
 epicsEnvSet("I2C_TEMP_PORT",     "AK_I2C_TEMP")
 epicsEnvSet("I2C_EEPROM_PORT",   "AK_I2C_EEPROM")
 epicsEnvSet("I2C_IDNUM_PORT",    "AK_I2C_IDNUM")
+epicsEnvSet("I2C_RTC_PORT",      "AK_I2C_RTC")
 epicsEnvSet("I2C_IP_PORT",       "AK_I2C_COMM")
 epicsEnvSet("TTLIO_PORT",        "AK_TTLIO")
 epicsEnvSet("TTLIO_IP_PORT",     "AK_TTLIO_COMM")
@@ -109,10 +110,18 @@ dbLoadRecords("$(BPMFE)/db/AKI2CEeprom.template",     "P=$(PREFIX),R=I2C1:Eeprom
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",     "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x5F,MUXADDR=0x70,MUXBUS=0")
+dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x5F,MUXADDR=0x70,MUXBUS=0")
 
 #asynSetTraceIOMask($(I2C_EEPROM_PORT),0,255)
 #asynSetTraceMask($(I2C_EEPROM_PORT),0,255)
+
+# AKI2CRTCConfigure(const char *portName, const char *ipPort,
+#            int numDevices, int priority, int stackSize);
+AKI2CRTCConfigure($(I2C_RTC_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CRTC.template",        "P=$(PREFIX),R=I2C1:RTC1:,PORT=$(I2C_RTC_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x51,MUXADDR=0x70,MUXBUS=0")
+
+#asynSetTraceIOMask($(I2C_RTC_PORT),0,255)
+#asynSetTraceMask($(I2C_RTC_PORT),0,255)
 
 
 ###

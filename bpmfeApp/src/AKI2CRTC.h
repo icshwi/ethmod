@@ -19,9 +19,11 @@
 #define AKI2CRTCMinutesString                  "AKI2CRTC_MINUTES"
 #define AKI2CRTCHoursString                    "AKI2CRTC_HOURS"
 #define AKI2CRTCDaysString                     "AKI2CRTC_DAYS"
-#define AKI2CRTCWeekDaysString                 "AKI2CRTC_WEEKDAYS"
+#define AKI2CRTCWeekdaysString                 "AKI2CRTC_WEEKDAYS"
 #define AKI2CRTCMonthsString                   "AKI2CRTC_MONTHS"
 #define AKI2CRTCYearsString                    "AKI2CRTC_YEARS"
+#define AKI2CRTCDateString                     "AKI2CRTC_DATE"
+#define AKI2CRTCTimeString                     "AKI2CRTC_TIME"
 
 /** Driver for AK-NORD XT-PICO-SXL I2C real time clock chip access over TCP/IP socket */
 class AKI2CRTC: public AKI2C {
@@ -50,15 +52,13 @@ protected:
     int AKI2CRTCWeekdays;
     int AKI2CRTCMonths;
     int AKI2CRTCYears;
-#define LAST_AKI2CRTC_PARAM AKI2CRTCYears
+    int AKI2CRTCDate;
+    int AKI2CRTCTime;
+#define LAST_AKI2CRTC_PARAM AKI2CRTCTime
 
 private:
-    asynStatus setDateTime(int addr, unsigned char year, unsigned char month,
-    		unsigned char weekday, unsigned char day, unsigned char hour, unsigned char minute,
-			unsigned char second);
-    asynStatus getDateTime(int addr, unsigned char *year, unsigned char *month,
-    		unsigned char *weekday, unsigned char *day, unsigned char *hour, unsigned char *minute,
-			unsigned char *second);
+    asynStatus setDateTime(int addr);
+    asynStatus getDateTime(int addr);
 };
 
 #define NUM_AKI2CRTC_PARAMS ((int)(&LAST_AKI2CRTC_PARAM - &FIRST_AKI2CRTC_PARAM + 1))

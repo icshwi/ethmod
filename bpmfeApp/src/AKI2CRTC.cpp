@@ -38,53 +38,57 @@ static void exitHandler(void *drvPvt) {
 }
 
 /* XXX: Untested! */
-asynStatus AKI2CRTC::setDateTime(int addr, unsigned char year, unsigned char month,
-		unsigned char weekday, unsigned char day, unsigned char hour, unsigned char minute,
-		unsigned char second) {
+asynStatus AKI2CRTC::setDateTime(int addr) {
 	asynStatus status = asynSuccess;
-    const char *functionName = "setResolution";
+    const char *functionName = "setDateTime";
     unsigned char data[7] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
+	int years, months, weekdays, days, hours, minutes, seconds;
 
     getIntegerParam(addr, AKI2CRTCDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CRTCMuxAddr, &muxAddr);
     getIntegerParam(addr, AKI2CRTCMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+    getIntegerParam(addr, AKI2CRTCSeconds, &seconds);
+    getIntegerParam(addr, AKI2CRTCMinutes, &minutes);
+    getIntegerParam(addr, AKI2CRTCHours, &hours);
+    getIntegerParam(addr, AKI2CRTCDays, &days);
+    getIntegerParam(addr, AKI2CRTCWeekdays, &weekdays);
+    getIntegerParam(addr, AKI2CRTCMonths, &months);
+    getIntegerParam(addr, AKI2CRTCYears, &years);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d %d:%d:%d\n",
+    		functionName, devAddr, muxAddr, muxBus,
+			years, months, weekdays, days, hours, minutes, seconds);
 
     status = setMuxBus(muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
-    data[0] = second;
-    data[1] = minute;
-    data[2] = hour;
-    data[3] = day;
-    data[4] = weekday;
-    data[5] = month;
-    data[6] = year;
+    data[0] = seconds;
+    data[1] = minutes;
+    data[2] = hours;
+    data[3] = days;
+    data[4] = weekdays;
+    data[5] = months;
+    data[6] = years;
 	len = 7;
     status = xfer(AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 4, 1.0);
     if (status) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d:%d:%d\n",
-    		functionName, devAddr, muxAddr, muxBus, year, month, day, hour, minute, second);
-
     return status;
 }
 
 /* XXX: Untested! */
-asynStatus AKI2CRTC::getDateTime(int addr, unsigned char *year, unsigned char *month,
-		unsigned char *weekday, unsigned char *day, unsigned char *hour, unsigned char *minute,
-		unsigned char *second) {
+asynStatus AKI2CRTC::getDateTime(int addr) {
 	asynStatus status = asynSuccess;
-    const char *functionName = "getRTCerature";
+    const char *functionName = "getDateTime";
     unsigned char data[7] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
+    char dateTime[16];
 
     getIntegerParam(addr, AKI2CRTCDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CRTCMuxAddr, &muxAddr);
@@ -102,8 +106,9 @@ asynStatus AKI2CRTC::getDateTime(int addr, unsigned char *year, unsigned char *m
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d:%d:%d\n",
-    		functionName, devAddr, muxAddr, muxBus, data[6], data[5], data[4], data[2], data[1], data[0]);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d %d:%d:%d\n",
+    		functionName, devAddr, muxAddr, muxBus,
+			data[6], data[5], data[4], data[3], data[2], data[1], data[0]);
 
     setIntegerParam(addr, AKI2CRTCSeconds, data[0]);
     setIntegerParam(addr, AKI2CRTCMinutes, data[1]);
@@ -112,6 +117,13 @@ asynStatus AKI2CRTC::getDateTime(int addr, unsigned char *year, unsigned char *m
     setIntegerParam(addr, AKI2CRTCWeekdays, data[4]);
     setIntegerParam(addr, AKI2CRTCMonths, data[5]);
     setIntegerParam(addr, AKI2CRTCYears, data[6]);
+    memset(dateTime, 0, sizeof(dateTime));
+    sprintf(dateTime, "%d-%d-%d", data[6], data[5], data[4]);
+    setStringParam(addr, AKI2CRTCDate, dateTime);
+    memset(dateTime, 0, sizeof(dateTime));
+    sprintf(dateTime, "%d:%d:%d", data[2], data[1], data[0]);
+    setStringParam(addr, AKI2CRTCTime, dateTime);
+
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks(addr, addr);
 
@@ -134,9 +146,9 @@ asynStatus AKI2CRTC::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     status = setIntegerParam(addr, function, value);
 
     if (function == AKI2CRTCRead) {
-    	//status = getDateTime(addr, value);
+    	status = getDateTime(addr);
     } else if (function == AKI2CRTCWrite) {
-    	//status = setDateTime(addr, value);
+    	status = setDateTime(addr);
     } else if (function < FIRST_AKI2CRTC_PARAM) {
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
@@ -200,9 +212,11 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
     createParam(AKI2CRTCMinutesString,          asynParamInt32,   &AKI2CRTCMinutes);
     createParam(AKI2CRTCHoursString,            asynParamInt32,   &AKI2CRTCHours);
     createParam(AKI2CRTCDaysString,             asynParamInt32,   &AKI2CRTCDays);
-    createParam(AKI2CRTCWeekDaysString,         asynParamInt32,   &AKI2CRTCWeekdays);
+    createParam(AKI2CRTCWeekdaysString,         asynParamInt32,   &AKI2CRTCWeekdays);
     createParam(AKI2CRTCMonthsString,           asynParamInt32,   &AKI2CRTCMonths);
     createParam(AKI2CRTCYearsString,            asynParamInt32,   &AKI2CRTCYears);
+    createParam(AKI2CRTCDateString,             asynParamInt32,   &AKI2CRTCDate);
+    createParam(AKI2CRTCTimeString,             asynParamInt32,   &AKI2CRTCTime);
 
 //    status = 0;
 //    for (int i = 0; i < numDevices; i++) {
