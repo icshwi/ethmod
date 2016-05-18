@@ -98,6 +98,9 @@ char const *AKI2C::status2Msg(unsigned char status, unsigned char code) {
 		case 'W':
 			return "Write OK";
 			break;
+		default:
+			return "Unknown OK code";
+			break;
 		}
 	} else if (status == AK_I2C_STATUS_FAIL) {
 		switch(code) {
@@ -125,7 +128,12 @@ char const *AKI2C::status2Msg(unsigned char status, unsigned char code) {
 		case 'B':
 			return "Buffer error";
 			break;
+		default:
+			return "Unknown FAIL code";
+			break;
 		}
+	} else {
+		return "Unknown status";
 	}
 
 	return "Unknown!";
@@ -139,13 +147,12 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 	unsigned char msg[AK_MAX_MSG_SZ] = {0};
 	l = 0;
 
-	if ((type != AK_REQ_TYPE_WRITE) && (type != AK_REQ_TYPE_READ)) {
-		return asynError;
-	}
 	if (devAddr > 0x7F) {
+	    sprintf(mStatusMsg, "Invalid I2C address");
 		return asynError;
 	}
 	if (addrWidth > 4) {
+		sprintf(mStatusMsg, "Invalid I2C address width");
 		return asynError;
 	}
 
@@ -161,9 +168,11 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 		msgLen += len;					// data length
 	}
 	if (msgLen > AK_MAX_MSG_SZ) {
+		sprintf(mStatusMsg, "Invalid I2C request length");
 		return asynError;
 	}
 	if ((type == AK_REQ_TYPE_READ) && (len + 2 > AK_MAX_MSG_SZ)) {
+		sprintf(mStatusMsg, "Invalid I2C response length");
 		return asynError;
 	}
 
@@ -222,15 +231,10 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
     return status;
 }
 
-asynStatus AKI2C::unpack(unsigned char type, unsigned char *data, unsigned short *len) {
+asynStatus AKI2C::unpack(unsigned char type, unsigned char *data,
+		unsigned short *len, asynStatus status) {
     const char *functionName = "unpack";
-	asynStatus status;
 
-	if ((type != AK_REQ_TYPE_WRITE) && (type != AK_REQ_TYPE_READ)) {
-		return asynError;
-	}
-
-	status = asynError;
     if (mRespActSz >= 2) {
     	if (mResp[0] == AK_I2C_STATUS_FAIL) {
     		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
@@ -244,31 +248,47 @@ asynStatus AKI2C::unpack(unsigned char type, unsigned char *data, unsigned short
     	} else {
     		printf("%s: FAIL - unknown response code! %02X %02X\n", functionName, mResp[0], mResp[1]);
     	}
+    	sprintf(mStatusMsg, "%s", status2Msg(mResp[0], mResp[1]));
+    } else {
+    	sprintf(mStatusMsg, "Invalid I2C response size received");
     }
-
-//    mStatus = mResp[0];
-    setStringParam(AKStatusMessage, status2Msg(mResp[0], mResp[1]));
 
 	return status;
 }
 
-asynStatus AKI2C::xfer(unsigned char type, unsigned char devAddr,
+asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 		unsigned char addrWidth, unsigned char *data, unsigned short *len,
 		unsigned int off, double timeout) {
 	asynStatus status = asynSuccess;
+    const char *functionName = "xfer";
 
-	status = pack(type, devAddr, addrWidth, data, *len, off);
-	if (status) {
-		return status;
+	if ((type != AK_REQ_TYPE_WRITE) && (type != AK_REQ_TYPE_READ)) {
+		sprintf(mStatusMsg, "Invalid request type");
+	    status = asynError;
 	}
-	status = ipPortWriteRead(timeout);
-	if (status) {
-		return status;
+
+	if (status == asynSuccess) {
+		status = pack(type, devAddr, addrWidth, data, *len, off);
 	}
-	status = unpack(type, data, len);
-	if (status) {
-		return status;
+	if (status == asynSuccess) {
+		status = ipPortWriteRead(timeout);
+		// status is checked in the unpack() below
+		status = unpack(type, data, len, status);
 	}
+
+    if (status) {
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s, status=%d\n",
+                driverName, functionName, status);
+    }
+
+    setStringParam(asynAddr, AKStatusMessage, mStatusMsg);
+    char m[AK_MAX_MSG_SZ] = {0};
+    getStringParam(asynAddr, AKStatusMessage, AK_MAX_MSG_SZ, m);
+    printf("Status message: '%s'\n", m);
+
+    /* Do callbacks so higher layers see any changes */
+    callParamCallbacks(asynAddr, asynAddr);
 
 	return status;
 }
@@ -290,20 +310,22 @@ int AKI2C::getMuxBus(int muxAddr) {
 	return -1;
 }
 
-asynStatus AKI2C::setMuxBus(int muxAddr, int muxBus) {
+asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
     unsigned char data;
     unsigned short len;
 	asynStatus status = asynSuccess;
 
-	if (getMuxBus(muxAddr) != muxBus) {
-		data = muxBus;
-		len = 1;
-		status = xfer(AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0, 1.0);
-		if (status) {
-			return status;
-		}
-		updateMuxBus(muxAddr, muxBus);
-    }
+	if (getMuxBus(muxAddr) == muxBus) {
+		return asynSuccess;
+	}
+
+	data = muxBus;
+	len = 1;
+	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0, 1.0);
+	if (status) {
+		return status;
+	}
+	updateMuxBus(muxAddr, muxBus);
 
 	return status;
 }

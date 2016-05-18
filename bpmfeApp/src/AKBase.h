@@ -55,6 +55,7 @@ protected:
     char mResp[AK_MAX_MSG_SZ];
     size_t mRespSz;
     size_t mRespActSz;
+    char mStatusMsg[AK_MAX_MSG_SZ];
 
     /* Our parameter list */
     int AKReadStatus;

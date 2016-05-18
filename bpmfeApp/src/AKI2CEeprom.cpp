@@ -46,15 +46,15 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
     getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
-    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off, 1.0);
-    if (status) {
-    	return status;
-    }
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off, 1.0);
+//    if (status) {
+//    	return status;
+//    }
 
     return status;
 }
@@ -70,19 +70,15 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
     getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 2, data, len, off, 1.0);
-    if (status) {
-    	return status;
-    }
-
-//    setDoubleParam(addr, AKI2CTempTemperature, temp);
-    /* Do callbacks so higher layers see any changes */
-//    callParamCallbacks(addr, addr);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 2, data, len, off, 1.0);
+//    if (status) {
+//    	return status;
+//    }
 
     return status;
 }
@@ -141,10 +137,14 @@ asynStatus AKI2CEeprom::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
     	return(status);
     }
 
+    printf("%s: function %d, addr %d, nElements %ld\n", functionName, function, addr, nElements);
+
     if (function == AKI2CEepromData) {
         getIntegerParam(addr, AKI2CEepromLength, &length);
         getIntegerParam(addr, AKI2CEepromOffset, &offset);
 		status = getData(addr, (unsigned char *)value, (unsigned short *)&length, offset);
+		*nIn = length;
+	    printf("%s: returning length %d, from offset %d\n", functionName, length, offset);
 
 //        if (nElements <= AK_I2C_EEPROM_MAX_SZ) {
 //			/* XXX: offset should be configurable? */
@@ -183,6 +183,8 @@ asynStatus AKI2CEeprom::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
     if (status != asynSuccess) {
     	return(status);
     }
+
+    printf("%s: function %d, addr %d, nElements %ld\n", functionName, function, addr, nElements);
 
     if (function == AKI2CEepromData) {
         getIntegerParam(addr, AKI2CEepromLength, &length);

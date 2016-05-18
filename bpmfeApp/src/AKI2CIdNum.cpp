@@ -50,13 +50,13 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
     getIntegerParam(addr, AKI2CIdNumMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
 	len = 8;
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
     if (status) {
     	return status;
     }

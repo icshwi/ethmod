@@ -122,7 +122,7 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
 
     if (status) {
     	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d",
+                "%s:%s, status=%d\n",
                 driverName, functionName, status);
     }
 
@@ -146,7 +146,7 @@ asynStatus AKBase::ipPortWrite(double timeout) {
 
     if (status) {
     	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d",
+                "%s:%s, status=%d\n",
                 driverName, functionName, status);
     }
 
@@ -172,7 +172,7 @@ asynStatus AKBase::ipPortRead(double timeout) {
 
     if (status) {
     	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d",
+                "%s:%s, status=%d\n",
                 driverName, functionName, status);
     }
 

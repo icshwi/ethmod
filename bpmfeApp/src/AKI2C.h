@@ -36,13 +36,13 @@ public:
 
 protected:
     /* These are new methods */
-    asynStatus xfer(unsigned char type, unsigned char devAddr,
+    asynStatus xfer(int asynAddr, unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout);
 
     void updateMuxBus(int muxAddr, int muxBus);
     int getMuxBus(int muxAddr);
-    asynStatus setMuxBus(int muxAddr, int muxBus);
+    asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
 
     /* Our parameter list */
     int AKI2CDummy1;
@@ -56,7 +56,8 @@ private:
     asynStatus pack(unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short len,
     		unsigned int off);
-    asynStatus unpack(unsigned char type, unsigned char *data, unsigned short *len);
+    asynStatus unpack(unsigned char type, unsigned char *data,
+    		unsigned short *len, asynStatus status);
 
     I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
 //    unsigned char mStatus;

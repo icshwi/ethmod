@@ -49,14 +49,14 @@ asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
     getIntegerParam(addr, AKI2CTempMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
     data[0] = val << 6;
 	len = 2;
-    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 1, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 1, 1.0);
     if (status) {
     	return status;
     }
@@ -81,13 +81,13 @@ asynStatus AKI2CTemp::getTemperature(int addr) {
     getIntegerParam(addr, AKI2CTempMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
     len = 2;
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
     if (status) {
     	return status;
     }

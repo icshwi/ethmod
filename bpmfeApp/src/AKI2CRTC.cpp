@@ -60,7 +60,7 @@ asynStatus AKI2CRTC::setDateTime(int addr) {
     		functionName, devAddr, muxAddr, muxBus,
 			years, months, weekdays, days, hours, minutes, seconds);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
@@ -73,7 +73,7 @@ asynStatus AKI2CRTC::setDateTime(int addr) {
     data[5] = months;
     data[6] = years;
 	len = 7;
-    status = xfer(AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 4, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 4, 1.0);
     if (status) {
     	return status;
     }
@@ -95,13 +95,13 @@ asynStatus AKI2CRTC::getDateTime(int addr) {
     getIntegerParam(addr, AKI2CRTCMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(muxAddr, muxBus);
+    status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
 		return status;
 	}
 
     len = 7;
-    status = xfer(AK_REQ_TYPE_READ, devAddr, 1, data, &len, 4, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 4, 1.0);
     if (status) {
     	return status;
     }
