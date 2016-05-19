@@ -45,9 +45,9 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
     long long int rawIdNum;
     double idNum;
 
-    getIntegerParam(addr, AKI2CIdNumDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CIdNumMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CIdNumMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -71,7 +71,7 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
 			| (long long int)data[7];
     idNum = (double)rawIdNum;
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d serial %lld, %f\n", functionName, devAddr, muxAddr, muxBus, rawIdNum, idNum);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d serial %lld, %08llX, %f\n", functionName, devAddr, muxAddr, muxBus, rawIdNum, rawIdNum, idNum);
 
     setDoubleParam(addr, AKI2CIdNumValue, idNum);
     /* Do callbacks so higher layers see any changes */
@@ -151,9 +151,6 @@ AKI2CIdNum::AKI2CIdNum(const char *portName, const char *ipPort,
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CIdNumDevAddrString,          asynParamInt32,   &AKI2CIdNumDevAddr);
-    createParam(AKI2CIdNumMuxAddrString,          asynParamInt32,   &AKI2CIdNumMuxAddr);
-    createParam(AKI2CIdNumMuxBusString,           asynParamInt32,   &AKI2CIdNumMuxBus);
     createParam(AKI2CIdNumReadString,             asynParamInt32,   &AKI2CIdNumRead);
     createParam(AKI2CIdNumValueString,            asynParamFloat64, &AKI2CIdNumValue);
 

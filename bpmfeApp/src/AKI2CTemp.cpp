@@ -44,9 +44,9 @@ asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
     int devAddr, muxAddr, muxBus;
     unsigned short len;
 
-    getIntegerParam(addr, AKI2CTempDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CTempMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CTempMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -76,9 +76,9 @@ asynStatus AKI2CTemp::getTemperature(int addr) {
     double temp;
     unsigned short len;
 
-    getIntegerParam(addr, AKI2CTempDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CTempMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CTempMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -121,7 +121,7 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     if (function == AKI2CTempResolution) {
     	status = setResolution(addr, value);
-    } else if (function == AKI2CTempReadTemperature) {
+    } else if (function == AKI2CTempRead) {
     	status = getTemperature(addr);
     } else if (function < FIRST_AKI2CTEMP_PARAM) {
         /* If this parameter belongs to a base class call its method */
@@ -169,7 +169,7 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
 		   1, /* autoConnect YES */
 		   priority, stackSize)
 {
-    int status = asynSuccess;
+//    int status = asynSuccess;
     const char *functionName = "AKI2CTemp";
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
@@ -177,23 +177,20 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CTempDevAddrString,          asynParamInt32,   &AKI2CTempDevAddr);
-    createParam(AKI2CTempMuxAddrString,          asynParamInt32,   &AKI2CTempMuxAddr);
-    createParam(AKI2CTempMuxBusString,           asynParamInt32,   &AKI2CTempMuxBus);
-    createParam(AKI2CTempReadTemperatureString,  asynParamInt32,   &AKI2CTempReadTemperature);
+    createParam(AKI2CTempReadString,             asynParamInt32,   &AKI2CTempRead);
     createParam(AKI2CTempTemperatureString,      asynParamFloat64, &AKI2CTempTemperature);
     createParam(AKI2CTempResolutionString,       asynParamInt32,   &AKI2CTempResolution);
 
-    status = 0;
-    for (int i = 0; i < numDevices; i++) {
-    	status |= setDoubleParam(i, AKI2CTempTemperature, 0.0);
-    }
-
-    if (status) {
-    	printf("%s: failed to set parameter defaults!\n", functionName);
-        printf("%s: init FAIL!\n", functionName);
-    	return;
-    }
+//    status = 0;
+//    for (int i = 0; i < numDevices; i++) {
+//    	status |= setDoubleParam(i, AKI2CTempTemperature, 0.0);
+//    }
+//
+//    if (status) {
+//    	printf("%s: failed to set parameter defaults!\n", functionName);
+//        printf("%s: init FAIL!\n", functionName);
+//    	return;
+//    }
 
     printf("%s: init complete OK!\n", functionName);
 }

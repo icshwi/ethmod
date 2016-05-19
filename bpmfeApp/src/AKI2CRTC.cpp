@@ -46,9 +46,9 @@ asynStatus AKI2CRTC::setDateTime(int addr) {
     unsigned short len;
 	int years, months, weekdays, days, hours, minutes, seconds;
 
-    getIntegerParam(addr, AKI2CRTCDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CRTCMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CRTCMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     getIntegerParam(addr, AKI2CRTCSeconds, &seconds);
     getIntegerParam(addr, AKI2CRTCMinutes, &minutes);
     getIntegerParam(addr, AKI2CRTCHours, &hours);
@@ -90,9 +90,9 @@ asynStatus AKI2CRTC::getDateTime(int addr) {
     unsigned short len;
     char dateTime[16];
 
-    getIntegerParam(addr, AKI2CRTCDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CRTCMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CRTCMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -195,7 +195,6 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
 		   1, /* autoConnect YES */
 		   priority, stackSize)
 {
-    int status = asynSuccess;
     const char *functionName = "AKI2CRTC";
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
@@ -203,9 +202,6 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CRTCDevAddrString,          asynParamInt32,   &AKI2CRTCDevAddr);
-    createParam(AKI2CRTCMuxAddrString,          asynParamInt32,   &AKI2CRTCMuxAddr);
-    createParam(AKI2CRTCMuxBusString,           asynParamInt32,   &AKI2CRTCMuxBus);
     createParam(AKI2CRTCReadString,             asynParamInt32,   &AKI2CRTCRead);
     createParam(AKI2CRTCWriteString,            asynParamInt32,   &AKI2CRTCWrite);
     createParam(AKI2CRTCSecondsString,          asynParamInt32,   &AKI2CRTCSeconds);
@@ -217,17 +213,6 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
     createParam(AKI2CRTCYearsString,            asynParamInt32,   &AKI2CRTCYears);
     createParam(AKI2CRTCDateString,             asynParamInt32,   &AKI2CRTCDate);
     createParam(AKI2CRTCTimeString,             asynParamInt32,   &AKI2CRTCTime);
-
-//    status = 0;
-//    for (int i = 0; i < numDevices; i++) {
-//    	status |= setDoubleParam(i, AKI2CRTCRTCerature, 0.0);
-//    }
-
-    if (status) {
-    	printf("%s: failed to set parameter defaults!\n", functionName);
-        printf("%s: init FAIL!\n", functionName);
-    	return;
-    }
 
     printf("%s: init complete OK!\n", functionName);
 }

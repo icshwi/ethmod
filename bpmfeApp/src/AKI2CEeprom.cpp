@@ -41,9 +41,9 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
     const char *functionName = "setData";
     int devAddr, muxAddr, muxBus;
 
-    getIntegerParam(addr, AKI2CEepromDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CEepromMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -52,9 +52,6 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
 	}
 
     status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off, 1.0);
-//    if (status) {
-//    	return status;
-//    }
 
     return status;
 }
@@ -65,9 +62,9 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
     const char *functionName = "getData";
     int devAddr, muxAddr, muxBus;
 
-    getIntegerParam(addr, AKI2CEepromDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CEepromMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CEepromMuxBus, &muxBus);
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
     printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
@@ -76,9 +73,6 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
 	}
 
     status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 2, data, len, off, 1.0);
-//    if (status) {
-//    	return status;
-//    }
 
     return status;
 }
@@ -99,10 +93,7 @@ asynStatus AKI2CEeprom::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     status = setIntegerParam(addr, function, value);
 
     if (0) {
-//    if (function == AKI2CEepromRead) {
-//    	status = setData(addr, mData, mDataLen, 0);
-//    } else if (function == AKI2CEepromWrite) {
-//    	status = getData(addr, mData, &mDataLen, 0);
+
     } else if (function < FIRST_AKI2CEEPROM_PARAM) {
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
@@ -145,15 +136,6 @@ asynStatus AKI2CEeprom::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
 		status = getData(addr, (unsigned char *)value, (unsigned short *)&length, offset);
 		*nIn = length;
 	    printf("%s: returning length %d, from offset %d\n", functionName, length, offset);
-
-//        if (nElements <= AK_I2C_EEPROM_MAX_SZ) {
-//			/* XXX: offset should be configurable? */
-//			status = getData(addr, (unsigned char *)value, (unsigned short *)nIn, 0);
-//			memcpy(value, mData, nElements*sizeof(unsigned char));
-//			*nIn = nElements;
-//    	} else {
-//    		status = asynError;
-//    	}
     } else {
 		status = AKI2C::readInt8Array(pasynUser, value, nElements, nIn);
     }
@@ -190,14 +172,6 @@ asynStatus AKI2CEeprom::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
         getIntegerParam(addr, AKI2CEepromLength, &length);
         getIntegerParam(addr, AKI2CEepromOffset, &offset);
 		status = setData(addr, (unsigned char*)value, (unsigned short)length, offset);
-
-//    	if (nElements <= AK_I2C_EEPROM_MAX_SZ) {
-//			memcpy(mData, value, nElements*sizeof(unsigned char));
-//			/* XXX: offset should be configurable? */
-//			status = setData(addr, (unsigned char*)value, (unsigned short)nElements, 0);
-//    	} else {
-//    		status = asynError;
-//    	}
     } else {
 		status = AKI2C::writeInt8Array(pasynUser, value, nElements);
     }
@@ -248,14 +222,9 @@ AKI2CEeprom::AKI2CEeprom(const char *portName, const char *ipPort,
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
 
-//    mData = (unsigned char *)calloc(1, AK_I2C_EEPROM_MAX_SZ);
-
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CEepromDevAddrString,          asynParamInt32,     &AKI2CEepromDevAddr);
-    createParam(AKI2CEepromMuxAddrString,          asynParamInt32,     &AKI2CEepromMuxAddr);
-    createParam(AKI2CEepromMuxBusString,           asynParamInt32,     &AKI2CEepromMuxBus);
     createParam(AKI2CEepromDataString,             asynParamInt8Array, &AKI2CEepromData);
     createParam(AKI2CEepromReadString,             asynParamInt32,     &AKI2CEepromRead);
     createParam(AKI2CEepromWriteString,            asynParamInt32,     &AKI2CEepromWrite);
@@ -276,8 +245,6 @@ AKI2CEeprom::~AKI2CEeprom() {
     const char *functionName = "~AKI2CEeprom";
 
     printf("%s: shutting down ...\n", functionName);
-
-//    free(mData);
 
     printf("%s: shutdown complete!\n", functionName);
 }
@@ -317,8 +284,3 @@ void AKI2CEepromRegister(void) {
 epicsExportRegistrar(AKI2CEepromRegister);
 
 } /* extern "C" */
-
-
-
-
-

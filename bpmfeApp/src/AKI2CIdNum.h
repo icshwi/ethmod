@@ -10,9 +10,6 @@
 
 #include "AKI2C.h"
 
-#define AKI2CIdNumDevAddrString                  "AKI2CIDNUM_DEV_ADDR"
-#define AKI2CIdNumMuxAddrString                  "AKI2CIDNUM_MUX_ADDR"
-#define AKI2CIdNumMuxBusString                   "AKI2CIDNUM_MUX_BUS"
 #define AKI2CIdNumReadString                     "AKI2CIDNUM_READ"
 #define AKI2CIdNumValueString                    "AKI2CIDNUM_VALUE"
 
@@ -30,11 +27,8 @@ public:
 
 protected:
     /* Our parameter list */
-    int AKI2CIdNumDevAddr;
-#define FIRST_AKI2CIDNUM_PARAM AKI2CIdNumDevAddr
-    int AKI2CIdNumMuxAddr;
-    int AKI2CIdNumMuxBus;
     int AKI2CIdNumRead;
+#define FIRST_AKI2CIDNUM_PARAM AKI2CIdNumRead
     int AKI2CIdNumValue;
 #define LAST_AKI2CIDNUM_PARAM AKI2CIdNumValue
 

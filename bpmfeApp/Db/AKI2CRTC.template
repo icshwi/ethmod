@@ -1,4 +1,7 @@
 
+include "AKBase.template"
+include "AKI2C.template"
+
 record(waveform, "$(P)$(R)Date_RBV")
 {
     field(DTYP, "asynOctetRead")

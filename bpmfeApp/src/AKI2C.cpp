@@ -29,12 +29,6 @@
 
 static const char *driverName = "AKI2C";
 
-
-//static void exitHandler(void *drvPvt) {
-//	AKI2C *pPvt = (AKI2C *)drvPvt;
-//	delete pPvt;
-//}
-
 /*
  *
  * See design_guide_sxl_en.pdf, page 51.
@@ -345,7 +339,7 @@ asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
-    if (function == AKI2CDummy1) {
+    if (0) {
 
     } else if (function < FIRST_AKI2C_PARAM) {
         /* If this parameter belongs to a base class call its method */
@@ -396,22 +390,14 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 //    int status = asynSuccess;
     const char *functionName = "AKI2C";
 
-	/* Create an EPICS exit handler */
-//	epicsAtExit(exitHandler, this);
-
 	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
 		mMuxInfo[i].addr = 0x70 + i;
 		mMuxInfo[i].bus = 0;
 	}
 
-//    createParam(AKReadStatusString,          asynParamInt32, &AKReadStatus);
-//    createParam(AKStatusMessageString,       asynParamOctet, &AKStatusMessage);
-//    createParam(AKStringToServerString,      asynParamOctet, &AKStringToServer);
-//    createParam(AKStringFromServerString,    asynParamOctet, &AKStringFromServer);
-//
-//    setStringParam(AKStatusMessage,          "");
-//    setStringParam(AKStringToServer,         "");
-//    setStringParam(AKStringFromServer,       "");
+    createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
+    createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);
+    createParam(AKI2CMuxBusString,           asynParamInt32,   &AKI2CMuxBus);
 
     printf("%s: init complete OK!\n", functionName);
 }

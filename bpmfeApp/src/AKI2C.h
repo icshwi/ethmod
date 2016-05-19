@@ -21,6 +21,10 @@ typedef struct _I2CMuxInfo {
 	int bus;
 } I2CMuxInfo;
 
+#define AKI2CDevAddrString                  "AKI2C_DEV_ADDR"
+#define AKI2CMuxAddrString                  "AKI2C_MUX_ADDR"
+#define AKI2CMuxBusString                   "AKI2C_MUX_BUS"
+
 /** Driver for AK-NORD XT-PICO-SXL I2C bus access over TCP/IP socket */
 class AKI2C: public AKBase {
 public:
@@ -45,10 +49,11 @@ protected:
     asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
 
     /* Our parameter list */
-    int AKI2CDummy1;
-#define FIRST_AKI2C_PARAM AKI2CDummy1
-    int AKI2CDummy2;
-#define LAST_AKI2C_PARAM AKI2CDummy2
+    int AKI2CDevAddr;
+#define FIRST_AKI2C_PARAM AKI2CDevAddr
+    int AKI2CMuxAddr;
+    int AKI2CMuxBus;
+#define LAST_AKI2C_PARAM AKI2CMuxBus
 
 private:
     /* These are new methods */

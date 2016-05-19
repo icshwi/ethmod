@@ -10,11 +10,8 @@
 
 #include "AKI2C.h"
 
-#define AKI2CTempDevAddrString                  "AKI2CTEMP_DEV_ADDR"
-#define AKI2CTempMuxAddrString                  "AKI2CTEMP_MUX_ADDR"
-#define AKI2CTempMuxBusString                   "AKI2CTEMP_MUX_BUS"
 #define AKI2CTempTemperatureString              "AKI2CTEMP_TEMPERATURE"
-#define AKI2CTempReadTemperatureString          "AKI2CTEMP_READ_TEMPERATURE"
+#define AKI2CTempReadString                     "AKI2CTEMP_READ"
 #define AKI2CTempResolutionString               "AKI2CTEMP_RESOLUTION"
 
 /** Driver for AK-NORD XT-PICO-SXL I2C temperature chip access over TCP/IP socket */
@@ -31,11 +28,8 @@ public:
 
 protected:
     /* Our parameter list */
-    int AKI2CTempDevAddr;
-#define FIRST_AKI2CTEMP_PARAM AKI2CTempDevAddr
-    int AKI2CTempMuxAddr;
-    int AKI2CTempMuxBus;
-    int AKI2CTempReadTemperature;
+    int AKI2CTempRead;
+#define FIRST_AKI2CTEMP_PARAM AKI2CTempRead
     int AKI2CTempTemperature;
     int AKI2CTempResolution;
 #define LAST_AKI2CTEMP_PARAM AKI2CTempResolution
