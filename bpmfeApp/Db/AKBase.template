@@ -1,4 +1,13 @@
 
+# asyn record for interactive communication with XT-PICO-SXL
+# NOTE: Even though it is only one per single IP port, we have a record for
+#       each device.
+record(asyn, "$(P)$(R)IPAsyn") {
+    field(PORT,  "$(IP_PORT)")
+    field(IMAX, "256")
+    field(OMAX, "256")
+}
+
 # These records provide status information 
 record(waveform, "$(P)$(R)StatusMessage_RBV")
 {

@@ -89,6 +89,7 @@ asynStatus AKI2CRTC::getDateTime(int addr) {
     int devAddr, muxAddr, muxBus;
     unsigned short len;
     char dateTime[16];
+	int years, months, weekdays, days, hours, minutes, seconds;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
@@ -106,22 +107,34 @@ asynStatus AKI2CRTC::getDateTime(int addr) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d %d:%d:%d\n",
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d RAW %d %d %d %d %d %d %d\n",
     		functionName, devAddr, muxAddr, muxBus,
 			data[6], data[5], data[4], data[3], data[2], data[1], data[0]);
 
-    setIntegerParam(addr, AKI2CRTCSeconds, data[0]);
-    setIntegerParam(addr, AKI2CRTCMinutes, data[1]);
-    setIntegerParam(addr, AKI2CRTCHours, data[2]);
-    setIntegerParam(addr, AKI2CRTCDays, data[3]);
-    setIntegerParam(addr, AKI2CRTCWeekdays, data[4]);
-    setIntegerParam(addr, AKI2CRTCMonths, data[5]);
-    setIntegerParam(addr, AKI2CRTCYears, data[6]);
+    seconds = (data[0] >> 4) * 10 + (data[0] & 0x0F);
+    minutes = (data[1] >> 4) * 10 + (data[1] & 0x0F);
+    hours = (data[2] >> 4) * 10 + (data[2] & 0x0F);
+    days = (data[3] >> 4) * 10 + (data[3] & 0x0F);
+    weekdays = (data[4] >> 4) * 10 + (data[4] & 0x0F);
+    months = (data[5] >> 4) * 10 + (data[5] & 0x0F);
+    years = 2000 + (data[6] >> 4) * 10 + (data[6] & 0x0F);
+
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d datetime set to %d-%d-%d %d %d:%d:%d\n",
+    		functionName, devAddr, muxAddr, muxBus,
+			years, months, weekdays, days, hours, minutes, seconds);
+
+    setIntegerParam(addr, AKI2CRTCSeconds, seconds);
+    setIntegerParam(addr, AKI2CRTCMinutes, minutes);
+    setIntegerParam(addr, AKI2CRTCHours, hours);
+    setIntegerParam(addr, AKI2CRTCDays, days);
+    setIntegerParam(addr, AKI2CRTCWeekdays, weekdays);
+    setIntegerParam(addr, AKI2CRTCMonths, months);
+    setIntegerParam(addr, AKI2CRTCYears, years);
     memset(dateTime, 0, sizeof(dateTime));
-    sprintf(dateTime, "%d-%d-%d", data[6], data[5], data[4]);
+    sprintf(dateTime, "%d-%d-%d", years, months, days);
     setStringParam(addr, AKI2CRTCDate, dateTime);
     memset(dateTime, 0, sizeof(dateTime));
-    sprintf(dateTime, "%d:%d:%d", data[2], data[1], data[0]);
+    sprintf(dateTime, "%d:%d:%d", hours, minutes, seconds);
     setStringParam(addr, AKI2CRTCTime, dateTime);
 
     /* Do callbacks so higher layers see any changes */
@@ -211,8 +224,8 @@ AKI2CRTC::AKI2CRTC(const char *portName, const char *ipPort,
     createParam(AKI2CRTCWeekdaysString,         asynParamInt32,   &AKI2CRTCWeekdays);
     createParam(AKI2CRTCMonthsString,           asynParamInt32,   &AKI2CRTCMonths);
     createParam(AKI2CRTCYearsString,            asynParamInt32,   &AKI2CRTCYears);
-    createParam(AKI2CRTCDateString,             asynParamInt32,   &AKI2CRTCDate);
-    createParam(AKI2CRTCTimeString,             asynParamInt32,   &AKI2CRTCTime);
+    createParam(AKI2CRTCDateString,             asynParamOctet,   &AKI2CRTCDate);
+    createParam(AKI2CRTCTimeString,             asynParamOctet,   &AKI2CRTCTime);
 
     printf("%s: init complete OK!\n", functionName);
 }
