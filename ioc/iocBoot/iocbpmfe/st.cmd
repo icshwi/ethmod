@@ -6,6 +6,7 @@ errlogInit(20000)
 ## Register all support components
 dbLoadDatabase("$(TOP)/dbd/bpmfeDemoApp.dbd")
 bpmfeDemoApp_registerRecordDeviceDriver(pdbbase)
+#epicsEnvSet("EPICS_CA_ADDR_LIST", "127.0.0.1")
 epicsEnvSet("EPICS_CA_ADDR_LIST", "192.168.100.100 192.168.100.1")
 epicsEnvSet("EPICS_CA_AUTO_ADDR_LIST", "NO")
 epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "10000000")
@@ -25,6 +26,7 @@ epicsEnvSet("I2C_TEMP_PORT",     "AK_I2C_TEMP")
 epicsEnvSet("I2C_EEPROM_PORT",   "AK_I2C_EEPROM")
 epicsEnvSet("I2C_IDNUM_PORT",    "AK_I2C_IDNUM")
 epicsEnvSet("I2C_RTC_PORT",      "AK_I2C_RTC")
+epicsEnvSet("I2C_IOEXP_PORT",    "AK_I2C_IOEXP")
 epicsEnvSet("I2C_IP_PORT",       "AK_I2C_COMM")
 epicsEnvSet("TTLIO_PORT",        "AK_TTLIO")
 epicsEnvSet("TTLIO_IP_PORT",     "AK_TTLIO_COMM")
@@ -78,6 +80,7 @@ epicsEnvSet("TTLIO_IP_PORT",     "AK_TTLIO_COMM")
 # I2C
 ###
 # Create the asyn port to talk to the AK-NORD server on command port 1002.
+#drvAsynIPPortConfigure($(I2C_IP_PORT),"127.0.0.1:9999")
 drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #asynSetTraceIOMask($(I2C_IP_PORT),0,255)
 #asynSetTraceMask($(I2C_IP_PORT),0,255)
@@ -90,6 +93,7 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 # AKI2CTempConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 #AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 8, 0, 0)
+#AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 1, 0, 0)
 #dbLoadRecords("$(BPMFE)/db/AK.template",          "P=$(PREFIX),R=I2C1:,      PORT=$(I2C_TEMP_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
 ##dbLoadRecords("$(BPMFE)/db/AKI2C.template",           "P=$(PREFIX),R=I2C1:,      PORT=$(I2C_TEMP_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TEMP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x48,MUXADDR=0x70,MUXBUS=0")
@@ -113,10 +117,10 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
-AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x70,MUXBUS=0")
-asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
-asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
+#AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x70,MUXBUS=0")
+#asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
+#asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 
 # AKI2CRTCConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
@@ -124,6 +128,14 @@ asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 #dbLoadRecords("$(BPMFE)/db/AKI2CRTC.template",        "P=$(PREFIX),R=I2C1:RTC1:,PORT=$(I2C_RTC_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x51,MUXADDR=0x70,MUXBUS=0")
 #asynSetTraceIOMask($(I2C_RTC_PORT),0,255)
 #asynSetTraceMask($(I2C_RTC_PORT),0,255)
+
+# AKI2CIOExpConfigure(const char *portName, const char *ipPort,
+#            int numDevices, int priority, int stackSize);
+#AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 16, 0, 0)
+AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
+#asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
+#asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
 
 
 ###

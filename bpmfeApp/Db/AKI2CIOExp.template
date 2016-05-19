@@ -1,0 +1,91 @@
+# This template is for TI TCA9555 I2C port expander on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+include "AKBase.template"
+include "AKI2C.template"
+
+record(bo, "$(P)$(R)ReadInput")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_READ_INPUT")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)ReadOutput")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_READ_OUTPUT")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)ReadPolarity")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_READ_POLARITY")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)ReadDirection")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_READ_DIRECTION")
+   field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)PinLevel")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_LEVEL")
+   field(SCAN, "Passive")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+}
+
+record(bi, "$(P)$(R)PinLevel_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_LEVEL")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+}
+
+record(bo, "$(P)$(R)PinDirection")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_DIRECTION")
+   field(SCAN, "Passive")
+   field(ZNAM, "Output")
+   field(ONAM, "Input")
+}
+
+record(bi, "$(P)$(R)PinDirection_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_DIRECTION")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Output")
+   field(ONAM, "Input")
+}
+
+record(bo, "$(P)$(R)PinPolarity")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_POLARITY")
+   field(SCAN, "Passive")
+   field(ZNAM, "Non-inverted")
+   field(ONAM, "Inverted")
+}
+
+record(bi, "$(P)$(R)PinPolarity_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIOEXP_PIN_POLARITY")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Non-inverted")
+   field(ONAM, "Inverted")
+}
