@@ -110,14 +110,14 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
     asynStatus status;
     const char *functionName="ipPortWriteRead";
 
-    printf("%s: request:\n", functionName);
+    printf("%s: request (%ld bytes):\n", functionName, mReqSz);
 	hexdump(mReq, mReqSz);
 
     status = pasynOctetSyncIO->writeRead(mAsynUserCommand,
     		mReq, mReqSz, mResp, mRespSz,
 			timeout, &mReqActSz, &mRespActSz, &eomReason);
 
-    printf("%s: response:\n", functionName);
+    printf("%s: response (%ld bytes):\n", functionName, mRespActSz);
 	hexdump(mResp, mRespActSz);
 
     if (status) {
@@ -137,13 +137,14 @@ asynStatus AKBase::ipPortWrite(double timeout) {
     asynStatus status;
     const char *functionName="ipPortWrite";
 
-    printf("%s: request:\n", functionName);
+    printf("%s: request (%ld bytes):\n", functionName, mReqSz);
 	hexdump(mReq, mReqSz);
 
     status = pasynOctetSyncIO->write(mAsynUserCommand,
     		mReq, mReqSz,
 			timeout, &mReqActSz);
 
+    printf("%s: request actual size %ld bytes\n", functionName, mReqActSz);
     if (status) {
     	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                 "%s:%s, status=%d\n",
@@ -167,7 +168,7 @@ asynStatus AKBase::ipPortRead(double timeout) {
 			timeout, &mRespActSz, &eomReason);
 
 
-    printf("%s: response:\n", functionName);
+    printf("%s: response (%d bytes):\n", functionName, mRespActSz);
 	hexdump(mResp, mRespActSz);
 
     if (status) {

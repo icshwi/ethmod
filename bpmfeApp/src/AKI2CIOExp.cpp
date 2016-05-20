@@ -36,14 +36,23 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
-/* XXX: Untested! */
-asynStatus AKI2CIOExp::write(int addr, unsigned char reg, unsigned char pin) {
+int AKI2CIOExp::changeBit(int val, int bit, int level) {
+	if (level) {
+		return (val | (1 << bit));
+	} else {
+		return (val & ~(1 << bit));
+	}
+}
+
+asynStatus AKI2CIOExp::write(int addr, unsigned char reg, unsigned char level) {
 	asynStatus status = asynSuccess;
     const char *functionName = "write";
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
     int val = 0;
+    int param;
+    unsigned int *localVal;
 
     if (addr >= AK_I2C_IOEXP_MAX_PINS) {
     	return asynError;
@@ -62,26 +71,29 @@ asynStatus AKI2CIOExp::write(int addr, unsigned char reg, unsigned char pin) {
 		return status;
 	}
 
+	param = 0;
+	localVal = NULL;
 	switch (reg) {
-    case AK_I2C_IOEXP_INPUT0:
-    	val = (mPinIn & ~(pin << addr)) | (pin << addr);
-        setIntegerParam(addr, AKI2CIOExpPinLevel, pin);
-    	break;
     case AK_I2C_IOEXP_OUTPUT0:
-    	val = (mPinOut & ~(pin << addr)) | (pin << addr);
-        setIntegerParam(addr, AKI2CIOExpPinLevel, pin);
+        param = AKI2CIOExpPinLevel;
+        localVal = &mPinOut;
     	break;
     case AK_I2C_IOEXP_POLARITY0:
-    	val = (mPinPol & ~(pin << addr)) | (pin << addr);
-        setIntegerParam(addr, AKI2CIOExpPinPolarity, pin);
+        param = AKI2CIOExpPinPolarity;
+        localVal = &mPinPol;
     	break;
     case AK_I2C_IOEXP_DIRECTION0:
-    	val = (mPinDir & ~(pin << addr)) | (pin << addr);
-        setIntegerParam(addr, AKI2CIOExpPinDirection, pin);
+        param = AKI2CIOExpPinDirection;
+        localVal = &mPinDir;
     	break;
+    default:
+    	return asynError;
     }
-	printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d ports raw %02X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d pin %d, value %d\n", functionName, devAddr, muxAddr, muxBus, reg, addr, pin);
+
+	val = changeBit(*localVal, addr, level);
+
+	printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d pin %d ports raw %08X\n", functionName, devAddr, muxAddr, muxBus, reg, addr, val);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d pin %d, value %d\n", functionName, devAddr, muxAddr, muxBus, reg, addr, level);
 
 	data[0] = val & 0xff;
 	data[1] = (val >> 8) & 0xff;
@@ -91,19 +103,20 @@ asynStatus AKI2CIOExp::write(int addr, unsigned char reg, unsigned char pin) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d resolution set to %d\n", functionName, devAddr, muxAddr, muxBus, val);
+    /* Update the local copy of the value and set the asyn parameter value */
+    *localVal = val;
+    setIntegerParam(addr, param, level);
 
     return status;
 }
 
-/* XXX: Untested! */
 asynStatus AKI2CIOExp::read(int addr, unsigned char reg) {
 	asynStatus status = asynSuccess;
     const char *functionName = "read";
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
     int val;
-    int pin;
+    int level;
     unsigned short len;
 
     if (addr >= AK_I2C_IOEXP_MAX_PINS) {
@@ -131,26 +144,26 @@ asynStatus AKI2CIOExp::read(int addr, unsigned char reg) {
     }
 
     val = (mResp[3] << 8) | mResp[2];
-	printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d ports raw %02X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
-    pin = (val & (1 << addr)) ? 1 : 0;
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d pin %d, value %d\n", functionName, devAddr, muxAddr, muxBus, reg, addr, pin);
+	printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d ports raw %08X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
+    level = (val >> addr) & 1;
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d pin %d, value %d\n", functionName, devAddr, muxAddr, muxBus, reg, addr, level);
 
 	switch (reg) {
     case AK_I2C_IOEXP_INPUT0:
     	mPinIn = val;
-        setIntegerParam(addr, AKI2CIOExpPinLevel, pin);
+        setIntegerParam(addr, AKI2CIOExpPinLevel, level);
     	break;
     case AK_I2C_IOEXP_OUTPUT0:
     	mPinOut = val;
-        setIntegerParam(addr, AKI2CIOExpPinLevel, pin);
+        setIntegerParam(addr, AKI2CIOExpPinLevel, level);
     	break;
     case AK_I2C_IOEXP_POLARITY0:
     	mPinPol = val;
-        setIntegerParam(addr, AKI2CIOExpPinPolarity, pin);
+        setIntegerParam(addr, AKI2CIOExpPinPolarity, level);
     	break;
     case AK_I2C_IOEXP_DIRECTION0:
     	mPinDir = val;
-        setIntegerParam(addr, AKI2CIOExpPinDirection, pin);
+        setIntegerParam(addr, AKI2CIOExpPinDirection, level);
     	break;
     }
 
@@ -251,16 +264,10 @@ AKI2CIOExp::AKI2CIOExp(const char *portName, const char *ipPort,
     createParam(AKI2CIOExpPinPolarityString,       asynParamInt32,   &AKI2CIOExpPinPolarity);
     createParam(AKI2CIOExpPinDirectionString,      asynParamInt32,   &AKI2CIOExpPinDirection);
 
-//    status = 0;
-//    for (int i = 0; i < numDevices; i++) {
-//    	status |= setDoubleParam(i, AKI2CTempTemperature, 0.0);
-//    }
-//
-//    if (status) {
-//    	printf("%s: failed to set parameter defaults!\n", functionName);
-//        printf("%s: init FAIL!\n", functionName);
-//    	return;
-//    }
+    /* XXX: We rely on the fact that local values are initialized to proper
+     * values as seen by the chip - need to read input, output, polarity
+     * and direction registers before setting pin level, direction...
+     * Improve?*/
 
     printf("%s: init complete OK!\n", functionName);
 }

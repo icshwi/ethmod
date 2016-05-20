@@ -117,10 +117,10 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
-AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x70,MUXBUS=0")
-asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
-asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
+#AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x70,MUXBUS=0")
+#asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
+#asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 
 # AKI2CRTCConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
@@ -132,10 +132,10 @@ asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 # AKI2CIOExpConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 #AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 16, 0, 0)
-#AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
-#dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
-#asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
-#asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
+AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
+asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
+asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
 
 
 ###

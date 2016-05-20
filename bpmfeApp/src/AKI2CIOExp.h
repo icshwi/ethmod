@@ -55,6 +55,9 @@ protected:
 #define LAST_AKI2CIOEXP_PARAM AKI2CIOExpPinPolarity
 
 private:
+//    int clearBit(int val, int bit);
+//    int setBit(int val, int bit);
+    int changeBit(int val, int bit, int level);
     asynStatus read(int addr, unsigned char reg);
     asynStatus write(int addr, unsigned char reg, unsigned char val);
     asynStatus writeOutput(int addr);
