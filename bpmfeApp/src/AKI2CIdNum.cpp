@@ -35,15 +35,42 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
-/* XXX: Untested! */
+asynStatus AKI2CIdNum::setConfig(int addr, unsigned char val) {
+	asynStatus status = asynSuccess;
+    const char *functionName = "setResolution";
+    unsigned char data[1] = {0};
+    int devAddr, muxAddr, muxBus;
+    unsigned short len;
+
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+
+    status = setMuxBus(addr, muxAddr, muxBus);
+	if (status) {
+		return status;
+	}
+
+    data[0] = val;
+	len = 1;
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 0x08, 1.0);
+    if (status) {
+    	return status;
+    }
+
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d resolution set to %d\n", functionName, devAddr, muxAddr, muxBus, val);
+
+    return status;
+}
+
 asynStatus AKI2CIdNum::getIdNumber(int addr) {
 	asynStatus status = asynSuccess;
     const char *functionName = "getIdNum";
     unsigned char data[8] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
-    long long int rawIdNum;
-    double idNum;
+    char idNum[20] = {0};
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
@@ -56,24 +83,18 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
 	}
 
 	len = 8;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 1.0);
+	/* XXX: Sometimes the chip does not respond - does 3 sec timeout fix this? */
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 3.0);
     if (status) {
     	return status;
     }
 
-    rawIdNum = (long long int)data[0] << 56
-			| (long long int)data[1] << 48
-			| (long long int)data[2] << 40
-			| (long long int)data[3] << 32
-			| (long long int)data[4] << 24
-			| (long long int)data[5] << 16
-			| (long long int)data[6] << 8
-			| (long long int)data[7];
-    idNum = (double)rawIdNum;
+    sprintf(idNum, "%02X%02X%02X%02X%02X%02X%02X%02X",
+    		data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d serial %lld, %08llX, %f\n", functionName, devAddr, muxAddr, muxBus, rawIdNum, rawIdNum, idNum);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d serial %s\n", functionName, devAddr, muxAddr, muxBus, idNum);
 
-    setDoubleParam(addr, AKI2CIdNumValue, idNum);
+    setStringParam(addr, AKI2CIdNumValue, idNum);
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks(addr, addr);
 
@@ -97,6 +118,8 @@ asynStatus AKI2CIdNum::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     if (function == AKI2CIdNumRead) {
     	status = getIdNumber(addr);
+    } else if (function == AKI2CIdNumConfig) {
+        	status = setConfig(addr, value);
     } else if (function < FIRST_AKI2CIDNUM_PARAM) {
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
@@ -152,10 +175,11 @@ AKI2CIdNum::AKI2CIdNum(const char *portName, const char *ipPort,
 	epicsAtExit(exitHandler, this);
 
     createParam(AKI2CIdNumReadString,             asynParamInt32,   &AKI2CIdNumRead);
-    createParam(AKI2CIdNumValueString,            asynParamFloat64, &AKI2CIdNumValue);
+    createParam(AKI2CIdNumConfigString,           asynParamInt32,   &AKI2CIdNumConfig);
+    createParam(AKI2CIdNumValueString,            asynParamOctet,   &AKI2CIdNumValue);
 
     for (int i = 0; i < numDevices; i++) {
-    	status |= setDoubleParam(i, AKI2CIdNumValue , 0.0);
+    	status |= setStringParam(i, AKI2CIdNumValue, "");
     }
 
     if (status) {

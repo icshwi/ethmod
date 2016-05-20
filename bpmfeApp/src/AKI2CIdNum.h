@@ -11,6 +11,7 @@
 #include "AKI2C.h"
 
 #define AKI2CIdNumReadString                     "AKI2CIDNUM_READ"
+#define AKI2CIdNumConfigString                   "AKI2CIDNUM_CONFIG"
 #define AKI2CIdNumValueString                    "AKI2CIDNUM_VALUE"
 
 /** Driver for AK-NORD XT-PICO-SXL I2C serial number chip access over TCP/IP socket */
@@ -29,11 +30,13 @@ protected:
     /* Our parameter list */
     int AKI2CIdNumRead;
 #define FIRST_AKI2CIDNUM_PARAM AKI2CIdNumRead
+    int AKI2CIdNumConfig;
     int AKI2CIdNumValue;
 #define LAST_AKI2CIDNUM_PARAM AKI2CIdNumValue
 
 private:
     asynStatus getIdNumber(int addr);
+    asynStatus setConfig(int addr, unsigned char val);
 };
 
 #define NUM_AKI2CIDNUM_PARAMS ((int)(&LAST_AKI2CIDNUM_PARAM - &FIRST_AKI2CIDNUM_PARAM + 1))

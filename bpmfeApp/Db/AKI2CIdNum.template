@@ -12,10 +12,29 @@ record(bo, "$(P)$(R)Read")
    field(VAL, "1")
 }
 
-record(ai, "$(P)$(R)IdNum_RBV")
+record(waveform, "$(P)$(R)IdNum_RBV")
 {
-   field(DTYP, "asynFloat64")
+   field(DTYP, "asynOctetRead")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_VALUE")
-   field(PREC, "0")
+   field(FTVL, "CHAR")
+   field(NELM, "20")
    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)Config")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_CONFIG")
+   field(SCAN, "Passive")
+   field(ZNAM, "I2C")
+   field(ONAM, "SMBUS")
+}
+
+record(bi, "$(P)$(R)Config_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CIDNUM_CONFIG")
+   field(SCAN, "Passive")
+   field(ZNAM, "I2C")
+   field(ONAM, "SMBUS")
 }
