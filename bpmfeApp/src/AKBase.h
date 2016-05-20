@@ -1,5 +1,5 @@
 /*
- * AKBase.h
+erdx54v  * AKBase.h
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar
@@ -25,10 +25,7 @@
 #define AK_REQ_TYPE_READ				'R'
 #define AK_REQ_TYPE_WRITE				'W'
 
-#define AKReadStatusString              "AK_READ_STATUS"           /**< (asynInt32,    r/w) Write 1 to force a read of status */
 #define AKStatusMessageString           "AK_STATUS_MESSAGE"        /**< (asynOctet,    r/o) Status message */
-#define AKStringToServerString          "AK_STRING_TO_SERVER"      /**< (asynOctet,    r/o) String sent to server for message-based drivers */
-#define AKStringFromServerString        "AK_STRING_FROM_SERVER"    /**< (asynOctet,    r/o) String received from server for message-based drivers */
 
 
 /** Driver for AK-NORD XT-PICO-SXL server over TCP/IP socket */
@@ -58,11 +55,8 @@ protected:
     char mStatusMsg[AK_MAX_MSG_SZ];
 
     /* Our parameter list */
-    int AKReadStatus;
-#define FIRST_AKBASE_PARAM AKReadStatus
-    int AKStringToServer;
-    int AKStringFromServer;
     int AKStatusMessage;
+#define FIRST_AKBASE_PARAM AKStatusMessage
 #define LAST_AKBASE_PARAM AKStatusMessage
 
 private:

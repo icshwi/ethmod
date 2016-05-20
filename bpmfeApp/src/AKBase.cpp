@@ -28,12 +28,6 @@
 
 static const char *driverName = "AKBase";
 
-
-//static void exitHandler(void *drvPvt) {
-//	AKBase *pPvt = (AKBase *)drvPvt;
-//	delete pPvt;
-//}
-
 #ifndef HEXDUMP_COLS
 #define HEXDUMP_COLS 8
 #endif
@@ -126,10 +120,6 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
                 driverName, functionName, status);
     }
 
-    /* Set output string so it can get back to EPICS */
-//    setStringParam(BPMFEStringToServer, this->toBPMFE);
-//    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
-
     return status;
 }
 
@@ -151,10 +141,6 @@ asynStatus AKBase::ipPortWrite(double timeout) {
                 driverName, functionName, status);
     }
 
-    /* Set output string so it can get back to EPICS */
-//    setStringParam(BPMFEStringToServer, this->toBPMFE);
-//    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
-
     return status;
 }
 
@@ -168,7 +154,7 @@ asynStatus AKBase::ipPortRead(double timeout) {
 			timeout, &mRespActSz, &eomReason);
 
 
-    printf("%s: response (%d bytes):\n", functionName, mRespActSz);
+    printf("%s: response (%ld bytes):\n", functionName, mRespActSz);
 	hexdump(mResp, mRespActSz);
 
     if (status) {
@@ -176,10 +162,6 @@ asynStatus AKBase::ipPortRead(double timeout) {
                 "%s:%s, status=%d\n",
                 driverName, functionName, status);
     }
-
-    /* Set output string so it can get back to EPICS */
-//    setStringParam(BPMFEStringToServer, this->toBPMFE);
-//    setStringParam(BPMFEStringFromServer, this->fromBPMFE);
 
     return status;
 }
@@ -217,17 +199,9 @@ AKBase::AKBase(const char *portName, const char *ipPort, int ipPortType,
     mIpPortType = ipPortType;
     printf("%s: IP port %s, type %d\n", functionName, mIpPort, mIpPortType);
 
-	/* Create an EPICS exit handler */
-//	epicsAtExit(exitHandler, this);
-
-    createParam(AKReadStatusString,          asynParamInt32, &AKReadStatus);
     createParam(AKStatusMessageString,       asynParamOctet, &AKStatusMessage);
-    createParam(AKStringToServerString,      asynParamOctet, &AKStringToServer);
-    createParam(AKStringFromServerString,    asynParamOctet, &AKStringFromServer);
 
     setStringParam(AKStatusMessage,          "");
-    setStringParam(AKStringToServer,         "");
-    setStringParam(AKStringFromServer,       "");
 
     /* Connect to desired IP port */
     status = pasynOctetSyncIO->connect(mIpPort, 0, &mAsynUserCommand, NULL);
