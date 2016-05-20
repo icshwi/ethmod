@@ -42,7 +42,7 @@ protected:
     /* These are new methods */
     asynStatus xfer(int asynAddr, unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
-    		unsigned int off, double timeout);
+    		unsigned int off, double timeout = 2.0);
 
     void updateMuxBus(int muxAddr, int muxBus);
     int getMuxBus(int muxAddr);

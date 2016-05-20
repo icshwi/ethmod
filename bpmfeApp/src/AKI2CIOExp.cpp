@@ -98,7 +98,7 @@ asynStatus AKI2CIOExp::write(int addr, unsigned char reg, unsigned char level) {
 	data[0] = val & 0xff;
 	data[1] = (val >> 8) & 0xff;
 	len = 2;
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
@@ -138,7 +138,7 @@ asynStatus AKI2CIOExp::read(int addr, unsigned char reg) {
 
 	/* read both port 0 and port 1 in one transfer - hence len == 2 */
     len = 2;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }

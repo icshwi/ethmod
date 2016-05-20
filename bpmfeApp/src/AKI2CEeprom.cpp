@@ -51,7 +51,7 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
 		return status;
 	}
 
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 2, data, &len, off);
 
     return status;
 }
@@ -72,7 +72,7 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
 		return status;
 	}
 
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 2, data, len, off, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 2, data, len, off);
 
     return status;
 }

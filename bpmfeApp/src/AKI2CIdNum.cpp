@@ -54,7 +54,7 @@ asynStatus AKI2CIdNum::setConfig(int addr, unsigned char val) {
 
     data[0] = val;
 	len = 1;
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 0x08, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 0x08);
     if (status) {
     	return status;
     }
@@ -83,8 +83,7 @@ asynStatus AKI2CIdNum::getIdNumber(int addr) {
 	}
 
 	len = 8;
-	/* XXX: Sometimes the chip does not respond - does 3 sec timeout fix this? */
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0, 3.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0);
     if (status) {
     	return status;
     }

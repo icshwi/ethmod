@@ -34,7 +34,7 @@ record(mbbo, "$(P)$(R)Resolution")
    field(THST, "12 bits")
    field(THVL, "3")
    field(VAL,  "0")
-   field(PINI, "YES")
+#   field(PINI, "YES")
    info(autosaveFields, "VAL")
 }
 

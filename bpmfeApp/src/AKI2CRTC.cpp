@@ -73,7 +73,7 @@ asynStatus AKI2CRTC::setDateTime(int addr) {
     data[5] = months;
     data[6] = years;
 	len = 7;
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 4, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 4);
     if (status) {
     	return status;
     }
@@ -102,7 +102,7 @@ asynStatus AKI2CRTC::getDateTime(int addr) {
 	}
 
     len = 7;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 4, 1.0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 4);
     if (status) {
     	return status;
     }

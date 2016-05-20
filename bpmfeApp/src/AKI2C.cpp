@@ -315,7 +315,7 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 
 	data = muxBus;
 	len = 1;
-	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0, 1.0);
+	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0);
 	if (status) {
 		return status;
 	}
