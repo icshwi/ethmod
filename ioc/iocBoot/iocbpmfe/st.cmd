@@ -142,7 +142,7 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 # AKI2CLTC2991Configure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2C_LTC2991.template",        "P=$(PREFIX),R=I2C1:VMon:1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x4F,MUXADDR=0x70,MUXBUS=0")
+dbLoadRecords("$(BPMFE)/db/AKI2C_LTC2991.template",        "P=$(PREFIX),R=I2C1:VMon1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x4F,MUXADDR=0x70,MUXBUS=0")
 asynSetTraceIOMask($(I2C_LTC2991_PORT),0,255)
 asynSetTraceMask($(I2C_LTC2991_PORT),0,255)
 

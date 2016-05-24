@@ -132,6 +132,22 @@ asynStatus AKI2C_LTC2991::read(int addr) {
     		| (unsigned int)data[AKI2C_LTC2991_V4_LSB_REG];
     convertToVoltage(addr, AKI2C_LTC2991_V4_Value,
     		AKI2C_LTC2991_V4_Offset, AKI2C_LTC2991_V4_Factor, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_V5_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_V5_LSB_REG];
+    convertToVoltage(addr, AKI2C_LTC2991_V5_Value,
+    		AKI2C_LTC2991_V5_Offset, AKI2C_LTC2991_V5_Factor, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_V6_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_V6_LSB_REG];
+    convertToVoltage(addr, AKI2C_LTC2991_V6_Value,
+    		AKI2C_LTC2991_V6_Offset, AKI2C_LTC2991_V6_Factor, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_V7_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_V7_LSB_REG];
+    convertToVoltage(addr, AKI2C_LTC2991_V7_Value,
+    		AKI2C_LTC2991_V7_Offset, AKI2C_LTC2991_V7_Factor, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_V8_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_V8_LSB_REG];
+    convertToVoltage(addr, AKI2C_LTC2991_V8_Value,
+    		AKI2C_LTC2991_V8_Offset, AKI2C_LTC2991_V8_Factor, raw);
 
     /* Done in calling method.. */
 //    /* Do callbacks so higher layers see any changes */
@@ -221,11 +237,6 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
 
     createParam(AKI2CLTC2991ReadString,          asynParamInt32,   &AKI2C_LTC2991_Read);
     createParam(AKI2CLTC2991TriggerString,       asynParamInt32,   &AKI2C_LTC2991_Trigger);
-//    createParam(AKI2CLTC2991V1V2EnableString,    asynParamInt32,   &AKI2C_LTC2991_V1V2_Enable);
-//    createParam(AKI2CLTC2991V1V2TypeString,      asynParamInt32,   &AKI2C_LTC2991_V1V2_Type);
-//    createParam(AKI2CLTC2991V1V2FilterString,    asynParamInt32,   &AKI2C_LTC2991_V1V2_Filter);
-//    createParam(AKI2CLTC2991V1V2TUnitString,     asynParamInt32,   &AKI2C_LTC2991_V1V2_TUnit);
-//    createParam(AKI2CLTC2991V1V2VModeString,     asynParamInt32,   &AKI2C_LTC2991_V1V2_VMode);
     createParam(AKI2CLTC2991V1ValueString,       asynParamFloat64, &AKI2C_LTC2991_V1_Value);
     createParam(AKI2CLTC2991V1OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V1_Offset);
     createParam(AKI2CLTC2991V1FactorString,      asynParamFloat64, &AKI2C_LTC2991_V1_Factor);
@@ -238,6 +249,18 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     createParam(AKI2CLTC2991V4ValueString,       asynParamFloat64, &AKI2C_LTC2991_V4_Value);
     createParam(AKI2CLTC2991V4OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V4_Offset);
     createParam(AKI2CLTC2991V4FactorString,      asynParamFloat64, &AKI2C_LTC2991_V4_Factor);
+    createParam(AKI2CLTC2991V5ValueString,       asynParamFloat64, &AKI2C_LTC2991_V5_Value);
+    createParam(AKI2CLTC2991V5OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V5_Offset);
+    createParam(AKI2CLTC2991V5FactorString,      asynParamFloat64, &AKI2C_LTC2991_V5_Factor);
+    createParam(AKI2CLTC2991V6ValueString,       asynParamFloat64, &AKI2C_LTC2991_V6_Value);
+    createParam(AKI2CLTC2991V6OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V6_Offset);
+    createParam(AKI2CLTC2991V6FactorString,      asynParamFloat64, &AKI2C_LTC2991_V6_Factor);
+    createParam(AKI2CLTC2991V7ValueString,       asynParamFloat64, &AKI2C_LTC2991_V7_Value);
+    createParam(AKI2CLTC2991V7OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V7_Offset);
+    createParam(AKI2CLTC2991V7FactorString,      asynParamFloat64, &AKI2C_LTC2991_V7_Factor);
+    createParam(AKI2CLTC2991V8ValueString,       asynParamFloat64, &AKI2C_LTC2991_V8_Value);
+    createParam(AKI2CLTC2991V8OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V8_Offset);
+    createParam(AKI2CLTC2991V8FactorString,      asynParamFloat64, &AKI2C_LTC2991_V8_Factor);
 
     status = 0;
     for (int i = 0; i < numDevices; i++) {
@@ -253,11 +276,18 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Value, 0.0);
     	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Offset, 0.0);
     	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Factor, 1.0);
-//    	status |= setIntegerParam(i, AKI2C_LTC2991_V1V2_Enable, 0);
-//    	status |= setIntegerParam(i, AKI2C_LTC2991_V1V2_Type, 0);
-//    	status |= setIntegerParam(i, AKI2C_LTC2991_V1V2_TUnit, 0);
-//    	status |= setIntegerParam(i, AKI2C_LTC2991_V1V2_VMode, 0);
-//    	status |= setIntegerParam(i, AKI2C_LTC2991_V1V2_Filter, 0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Value, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Offset, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Factor, 1.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Value, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Offset, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Factor, 1.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Value, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Offset, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Factor, 1.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Value, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Offset, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Factor, 1.0);
     }
 
     if (status) {

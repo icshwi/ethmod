@@ -37,7 +37,7 @@
 #    wait       : (optional) integer that specifies the time to wait (in milliseconds) before sending the status to the client. If set to 0 or not specified, then the status is immediately sent (i.e. right after the command is received).
 
 COMMANDS = [
-            ["TempRead",        "0200080348010052000203".decode("HEX"), 1],
+            ["TempRead",        "0200080348010052000203".decode("HEX"), 1, 1000],
             ["TempWrite",       "02000a03480101570002000003".decode("HEX"), 2],
             ["IdRead",          "0200080350010052000803".decode("HEX"), 3],
             ["RTCRead",         "0200080351010452000703".decode("HEX"), 4],
