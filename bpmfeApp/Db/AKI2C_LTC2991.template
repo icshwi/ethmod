@@ -339,3 +339,19 @@ record(ai, "$(P)$(R)FactorV8_RBV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
 }
+
+record(ai, "$(P)$(R)ValueVcc_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_VCC_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ValueTInt_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_TINT_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}

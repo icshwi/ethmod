@@ -73,8 +73,12 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
     double offset = 0.0;
     double factor = 1.0;
 
-    getDoubleParam(addr, offsetParam, &offset);
-    getDoubleParam(addr, factorParam, &factor);
+    if (offsetParam != -1) {
+    	getDoubleParam(addr, offsetParam, &offset);
+    }
+    if (factorParam != -1) {
+    	getDoubleParam(addr, factorParam, &factor);
+    }
 
     if (raw & 0x8000) {
     	/* Data is valid */
@@ -82,6 +86,21 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
     	/* LSB = 305.18 uV ; 2.5V / 2^13 */
     	volts = factor * ((double)raw * 305.18 / 1000000.0) + offset;
     	setDoubleParam(addr, valueParam, volts);
+    }
+}
+
+void AKI2C_LTC2991::convertToTemperature(int addr, int valueParam,
+		unsigned int raw) {
+//    asynStatus status = asynSuccess;
+    //const char *functionName = "convertToVoltage";
+    double temp = 0.0;
+
+    if (raw & 0x8000) {
+    	/* Data is valid */
+    	raw &= 0x7FFF;
+    	/* LSB = 0.0625 degrees */
+    	temp = (double)raw * 0.0625;
+    	setDoubleParam(addr, valueParam, temp);
     }
 }
 
@@ -148,6 +167,13 @@ asynStatus AKI2C_LTC2991::read(int addr) {
     		| (unsigned int)data[AKI2C_LTC2991_V8_LSB_REG];
     convertToVoltage(addr, AKI2C_LTC2991_V8_Value,
     		AKI2C_LTC2991_V8_Offset, AKI2C_LTC2991_V8_Factor, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_VCC_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_VCC_LSB_REG];
+    convertToVoltage(addr, AKI2C_LTC2991_Vcc_Value,
+    		-1, -1, raw);
+    raw = ((unsigned int)data[AKI2C_LTC2991_TINT_MSB_REG] << 8)
+    		| (unsigned int)data[AKI2C_LTC2991_TINT_LSB_REG];
+    convertToTemperature(addr, AKI2C_LTC2991_TInt_Value, raw);
 
     /* Done in calling method.. */
 //    /* Do callbacks so higher layers see any changes */
@@ -261,6 +287,8 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     createParam(AKI2CLTC2991V8ValueString,       asynParamFloat64, &AKI2C_LTC2991_V8_Value);
     createParam(AKI2CLTC2991V8OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V8_Offset);
     createParam(AKI2CLTC2991V8FactorString,      asynParamFloat64, &AKI2C_LTC2991_V8_Factor);
+    createParam(AKI2CLTC2991VccValueString,      asynParamFloat64, &AKI2C_LTC2991_Vcc_Value);
+    createParam(AKI2CLTC2991TIntValueString,     asynParamFloat64, &AKI2C_LTC2991_TInt_Value);
 
     status = 0;
     for (int i = 0; i < numDevices; i++) {
@@ -288,6 +316,8 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Value, 0.0);
     	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Offset, 0.0);
     	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Factor, 1.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_Vcc_Value, 0.0);
+    	status |= setDoubleParam(i, AKI2C_LTC2991_TInt_Value, 0.0);
     }
 
     if (status) {

@@ -35,6 +35,10 @@
 #define AKI2C_LTC2991_V7_LSB_REG				0x17
 #define AKI2C_LTC2991_V8_MSB_REG				0x18
 #define AKI2C_LTC2991_V8_LSB_REG				0x19
+#define AKI2C_LTC2991_VCC_MSB_REG				0x1A
+#define AKI2C_LTC2991_VCC_LSB_REG				0x1B
+#define AKI2C_LTC2991_TINT_MSB_REG				0x1C
+#define AKI2C_LTC2991_TINT_LSB_REG				0x1D
 
 /* Enable all Vx channels, Internal temperature and Vcc sensoring */
 #define AKI2C_LTC2991_CH_ENABLE_VAL				0xF8
@@ -71,6 +75,8 @@
 #define AKI2CLTC2991V8ValueString             "AKI2C_LTC2991_V8_VALUE"
 #define AKI2CLTC2991V8OffsetString            "AKI2C_LTC2991_V8_OFFSET"
 #define AKI2CLTC2991V8FactorString            "AKI2C_LTC2991_V8_FACTOR"
+#define AKI2CLTC2991VccValueString            "AKI2C_LTC2991_VCC_VALUE"
+#define AKI2CLTC2991TIntValueString           "AKI2C_LTC2991_TINT_VALUE"
 
 /** Driver for AK-NORD XT-PICO-SXL I2C LTC2991 sensor chip access over TCP/IP socket */
 class AKI2C_LTC2991: public AKI2C {
@@ -113,11 +119,14 @@ protected:
     int AKI2C_LTC2991_V8_Value;
     int AKI2C_LTC2991_V8_Factor;
     int AKI2C_LTC2991_V8_Offset;
-#define LAST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_V8_Offset
+    int AKI2C_LTC2991_Vcc_Value;
+    int AKI2C_LTC2991_TInt_Value;
+#define LAST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_TInt_Value
 
 private:
     void convertToVoltage(int addr, int valueParam,
     		int offsetParam, int factorParam, unsigned int raw);
+    void convertToTemperature(int addr, int valueParam, unsigned int raw);
     asynStatus write(int addr, unsigned char reg, unsigned char val);
     asynStatus read(int addr);
 };
