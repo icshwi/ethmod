@@ -28,6 +28,11 @@
 #include "AKI2C.h"
 
 static const char *driverName = "AKI2C";
+//static I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
+
+I2CMuxInfo AKI2C::mMuxInfo[AK_I2C_MUX_MAX] = {
+		{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}
+};
 
 /*
  *
@@ -289,38 +294,33 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 	return status;
 }
 
-// XXX: Can not do MUX bus changes like this since different chips inherit this
-// class and they work with their own copies of the mux info struct!
-// Find a better way or just set the mux bus every time when accessing the chip..
+void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if (mMuxInfo[i].addr == muxAddr) {
+			mMuxInfo[i].bus = muxBus;
+		}
+	}
+}
 
-
-//void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
-//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-//		if (mMuxInfo[i].addr == muxAddr) {
-//			mMuxInfo[i].bus = muxBus;
-//		}
-//	}
-//}
-//
-//int AKI2C::getMuxBus(int muxAddr) {
-//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-//		if (mMuxInfo[i].addr == muxAddr) {
-//			return mMuxInfo[i].bus;
-//		}
-//	}
-//	return -1;
-//}
+int AKI2C::getMuxBus(int muxAddr) {
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if (mMuxInfo[i].addr == muxAddr) {
+			return mMuxInfo[i].bus;
+		}
+	}
+	return -1;
+}
 
 asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
     unsigned char data;
     unsigned short len;
 	asynStatus status = asynSuccess;
 
-//	printf("%s: MUX %02X want bus %d\n", __func__, muxAddr, muxBus);
+	printf("%s: MUX %02X want bus %d\n", __func__, muxAddr, muxBus);
 
-//	if (getMuxBus(muxAddr) == muxBus) {
-//		return asynSuccess;
-//	}
+	if (getMuxBus(muxAddr) == muxBus) {
+		return asynSuccess;
+	}
 
 	printf("%s: SETTING MUX %02X bus %d\n", __func__, muxAddr, muxBus);
 	data = muxBus;
@@ -329,9 +329,9 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 	if (status) {
 		return status;
 	}
-//	updateMuxBus(muxAddr, muxBus);
+	updateMuxBus(muxAddr, muxBus);
 
-//	printf("%s: MUX %02X have bus %d\n", __func__, muxAddr, muxBus);
+	printf("%s: MUX %02X have bus %d\n", __func__, muxAddr, muxBus);
 
 //	sleep(1);
 
@@ -412,11 +412,23 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
     int devAddr;
     char *addrs = strdup(devAddrs);
     char *addr = NULL;
+    bool muxStored = false;
 
-//	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
-//		mMuxInfo[i].addr = 0x70 + i;
-//		mMuxInfo[i].bus = 0;
-//	}
+    /* Store the MUX address if needed. */
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		/* If MUX address is already listed there is nothing to do.. */
+		if (mMuxInfo[i].addr == muxAddr) {
+			muxStored = true;
+			break;
+		}
+		/* Store MUX address in first empty slot.. */
+		if (mMuxInfo[i].addr == 0) {
+			mMuxInfo[i].addr = muxAddr;
+			muxStored = true;
+			break;
+		}
+	}
+	assert(muxStored == true);
 
     createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
     createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);
@@ -429,6 +441,7 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
     		addr = strtok(NULL, " ,");
     	}
     	assert(addr != NULL);
+
     	devAddr = strtol(addr, NULL, 0);
     	setIntegerParam(i, AKI2CDevAddr, devAddr);
     	setIntegerParam(i, AKI2CMuxAddr, muxAddr);

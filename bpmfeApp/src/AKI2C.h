@@ -15,11 +15,11 @@
 #define AK_I2C_STATUS_OK			0x06
 #define AK_I2C_STATUS_FAIL			0x15
 
-//#define AK_I2C_MUX_MAX				8
-//typedef struct _I2CMuxInfo {
-//	int addr;
-//	int bus;
-//} I2CMuxInfo;
+#define AK_I2C_MUX_MAX				8
+typedef struct _I2CMuxInfo {
+	int addr;
+	int bus;
+} I2CMuxInfo;
 
 #define AKI2CDevAddrString                  "AKI2C_DEV_ADDR"
 #define AKI2CMuxAddrString                  "AKI2C_MUX_ADDR"
@@ -46,8 +46,8 @@ protected:
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout = 0.3);
 
-//    void updateMuxBus(int muxAddr, int muxBus);
-//    int getMuxBus(int muxAddr);
+    void updateMuxBus(int muxAddr, int muxBus);
+    int getMuxBus(int muxAddr);
     asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
 
     /* Our parameter list */
@@ -66,7 +66,7 @@ private:
     asynStatus unpack(unsigned char type, unsigned char *data,
     		unsigned short *len, asynStatus status);
 
-//    I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
+    static I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
 //    unsigned char mStatus;
 //    char mStatusMsg[AK_I2C_STATUS_MSG_SZ];
 //    unsigned char mMuxAddr;
