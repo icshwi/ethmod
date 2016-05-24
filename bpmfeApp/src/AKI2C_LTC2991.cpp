@@ -104,7 +104,7 @@ void AKI2C_LTC2991::convertToTemperature(int addr, int valueParam,
     }
 }
 
-asynStatus AKI2C_LTC2991::read(int addr) {
+asynStatus AKI2C_LTC2991::read(int addr, unsigned char reg) {
     asynStatus status = asynSuccess;
     const char *functionName = "read";
     unsigned char data[32] = {0};
@@ -124,7 +124,7 @@ asynStatus AKI2C_LTC2991::read(int addr) {
 
 	/* Read all 29 registers at once */
     len = 29;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
@@ -199,11 +199,8 @@ asynStatus AKI2C_LTC2991::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
 
     if (function == AKI2C_LTC2991_Read) {
-    	status = read(addr);
+    	status = read(addr, AKI2C_LTC2991_STATUS_LOW_REG);
     } else if (function == AKI2C_LTC2991_Trigger) {
-    	status = write(addr, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL);
-    	status = write(addr, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL);
-    	status = write(addr, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL);
     	/* The acquisition is triggered by writing to this register */
     	status = write(addr, AKI2C_LTC2991_CH_ENABLE_REG, AKI2C_LTC2991_CH_ENABLE_VAL);
     } else if (function < FIRST_AKI2C_LTC2991_PARAM) {
@@ -326,6 +323,13 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     	printf("%s: failed to set parameter defaults!\n", functionName);
         printf("%s: init FAIL!\n", functionName);
     	return;
+    }
+
+    /* set some defaults */
+    for (int i = 0; i < devCount; i++) {
+		status = write(i, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL);
+		status = write(i, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL);
+		status = write(i, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL);
     }
 
     printf("%s: init complete OK!\n", functionName);

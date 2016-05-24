@@ -35,11 +35,40 @@ static void exitHandler(void *drvPvt) {
 	AKI2CTemp *pPvt = (AKI2CTemp *)drvPvt;
 	delete pPvt;
 }
+//
+///* XXX: Untested! */
+//asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
+//	asynStatus status = asynSuccess;
+//    const char *functionName = "setResolution";
+//    unsigned char data[2] = {0};
+//    int devAddr, muxAddr, muxBus;
+//    unsigned short len;
+//
+//    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+//    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+//    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
+//    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+//
+//    status = setMuxBus(addr, muxAddr, muxBus);
+//	if (status) {
+//		return status;
+//	}
+//
+//    data[0] = val << 6;
+//	len = 2;
+//    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 1);
+//    if (status) {
+//    	return status;
+//    }
+//
+//    printf("%s: devAddr %d, muxAddr %d, muxBus %d resolution set to %d\n", functionName, devAddr, muxAddr, muxBus, val);
+//
+//    return status;
+//}
 
-/* XXX: Untested! */
-asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
-	asynStatus status = asynSuccess;
-    const char *functionName = "setResolution";
+asynStatus AKI2CTemp::write(int addr, unsigned char reg, unsigned char val) {
+    asynStatus status = asynSuccess;
+    const char *functionName = "write";
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
@@ -54,26 +83,63 @@ asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
 		return status;
 	}
 
-    data[0] = val << 6;
+    data[0] = val;
 	len = 2;
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, 1);
+    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d resolution set to %d\n", functionName, devAddr, muxAddr, muxBus, val);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %02X = %02X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
 
     return status;
 }
+//
+//asynStatus AKI2CTemp::getTemperature(int addr) {
+//	asynStatus status = asynSuccess;
+//    const char *functionName = "getTemperature";
+//    unsigned char data[2] = {0};
+//    int devAddr, muxAddr, muxBus;
+//    int rawTemp;
+//    double temp;
+//    unsigned short len;
+//
+//    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+//    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
+//    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
+//    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+//
+//    status = setMuxBus(addr, muxAddr, muxBus);
+//	if (status) {
+//		return status;
+//	}
+//
+//    len = 2;
+//    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0);
+//    if (status) {
+//    	return status;
+//    }
+//
+//    rawTemp = (mResp[2] << 8 | mResp[3]) >> 4;
+//    temp = (double)rawTemp / 16.0;
+//
+//    printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, rawTemp, temp);
+//
+////    setDoubleParam(addr, AKI2CTempValue, temp);
+////    /* Do callbacks so higher layers see any changes */
+////    callParamCallbacks(addr, addr);
+//
+//    return status;
+//}
 
-asynStatus AKI2CTemp::getTemperature(int addr) {
-	asynStatus status = asynSuccess;
-    const char *functionName = "getTemperature";
+asynStatus AKI2CTemp::read(int addr, unsigned char reg) {
+    asynStatus status = asynSuccess;
+    const char *functionName = "read";
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
-    int rawTemp;
-    double temp;
     unsigned short len;
+    unsigned int raw;
+    double temp;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
@@ -85,22 +151,22 @@ asynStatus AKI2CTemp::getTemperature(int addr) {
 		return status;
 	}
 
+	/* Read only 1 register - temperature */
     len = 2;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, 0);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
 
-    rawTemp = (mResp[2] << 8 | mResp[3]) >> 4;
-    temp = (double)rawTemp / 16.0;
+    /* Convert to degrees */
+    raw = (mResp[2] << 8 | mResp[3]) >> 4;
+    temp = (double)raw / 16.0;
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, rawTemp, temp);
+    printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
 
-    setDoubleParam(addr, AKI2CTempTemperature, temp);
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
+    setDoubleParam(addr, AKI2CTempValue, temp);
 
-    return status;
+	return status;
 }
 
 asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
@@ -118,10 +184,8 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     printf("AKI2CTemp::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
-    if (function == AKI2CTempResolution) {
-    	status = setResolution(addr, value);
-    } else if (function == AKI2CTempRead) {
-    	status = getTemperature(addr);
+    if (function == AKI2CTempRead) {
+    	status = read(addr, AKI2C_TMP100_TEMPERATURE_REG);
     } else if (function < FIRST_AKI2CTEMP_PARAM) {
         printf("AKI2CTemp::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2CTEMP_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2CTEMP_PARAM);
         /* If this parameter belongs to a base class call its method */
@@ -171,7 +235,7 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
 		   1, /* autoConnect YES */
 		   priority, stackSize)
 {
-//    int status = asynSuccess;
+    int status = asynSuccess;
     const char *functionName = "AKI2CTemp";
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
@@ -180,19 +244,23 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
 	epicsAtExit(exitHandler, this);
 
     createParam(AKI2CTempReadString,             asynParamInt32,   &AKI2CTempRead);
-    createParam(AKI2CTempTemperatureString,      asynParamFloat64, &AKI2CTempTemperature);
-    createParam(AKI2CTempResolutionString,       asynParamInt32,   &AKI2CTempResolution);
+    createParam(AKI2CTempValueString,            asynParamFloat64, &AKI2CTempValue);
 
-//    status = 0;
-//    for (int i = 0; i < numDevices; i++) {
-//    	status |= setDoubleParam(i, AKI2CTempTemperature, 0.0);
-//    }
-//
-//    if (status) {
-//    	printf("%s: failed to set parameter defaults!\n", functionName);
-//        printf("%s: init FAIL!\n", functionName);
-//    	return;
-//    }
+    status = 0;
+    for (int i = 0; i < devCount; i++) {
+    	status |= setDoubleParam(i, AKI2CTempValue, 0.0);
+    }
+
+    if (status) {
+    	printf("%s: failed to set parameter defaults!\n", functionName);
+        printf("%s: init FAIL!\n", functionName);
+    	return;
+    }
+
+    /* set some defaults */
+    for (int i = 0; i < devCount; i++) {
+		status = write(i, AKI2C_TMP100_CONFIG_REG, AKI2C_TMP100_RESOLUTION_12BIT);
+    }
 
     printf("%s: init complete OK!\n", functionName);
 }

@@ -12,43 +12,10 @@ record(bo, "$(P)$(R)Read")
     field(VAL, "1")
 }
 
-record(ai, "$(P)$(R)Temperature_RBV")
+record(ai, "$(P)$(R)Value_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_TEMPERATURE")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_VALUE")
    field(PREC, "1")
    field(SCAN, "I/O Intr")
-}
-
-record(mbbo, "$(P)$(R)Resolution")
-{
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_RESOLUTION")
-   field(SCAN, "Passive")
-   field(ZRST, "9 bits")
-   field(ZRVL, "0")
-   field(ONST, "10 bits")
-   field(ONVL, "1")
-   field(TWST, "11 bits")
-   field(TWVL, "2")
-   field(THST, "12 bits")
-   field(THVL, "3")
-   field(VAL,  "0")
-#   field(PINI, "YES")
-   info(autosaveFields, "VAL")
-}
-
-record(mbbi, "$(P)$(R)Resolution_RBV")
-{
-   field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_RESOLUTION")
-   field(SCAN, "I/O Intr")
-   field(ZRST, "9 bits")
-   field(ZRVL, "0")
-   field(ONST, "10 bits")
-   field(ONVL, "1")
-   field(TWST, "11 bits")
-   field(TWVL, "2")
-   field(THST, "12 bits")
-   field(THVL, "3")
 }

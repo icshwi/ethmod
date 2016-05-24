@@ -130,7 +130,7 @@ private:
     		int offsetParam, int factorParam, unsigned int raw);
     void convertToTemperature(int addr, int valueParam, unsigned int raw);
     asynStatus write(int addr, unsigned char reg, unsigned char val);
-    asynStatus read(int addr);
+    asynStatus read(int addr, unsigned char reg);
 };
 
 #define NUM_AKI2C_LTC2991_PARAMS ((int)(&LAST_AKI2C_LTC2991_PARAM - &FIRST_AKI2C_LTC2991_PARAM + 1))
