@@ -18,7 +18,9 @@
 class AKI2CIdNum: public AKI2C {
 public:
 	AKI2CIdNum(const char *portName, const char *ipPort,
-	        int numDevices, int priority, int stackSize);
+	        int devCount, const char *devAddrs,
+			int muxAddr, int muxBus,
+			int priority, int stackSize);
 	virtual ~AKI2CIdNum();
 
     /* These are the methods that we override from AKI2C */

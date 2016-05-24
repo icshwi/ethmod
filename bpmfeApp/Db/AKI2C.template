@@ -1,29 +1,11 @@
 # This template is for I2C on an AK-NORD XT-Pico-SXL, with I2C mux
 
-record(longout, "$(P)$(R)DevAddr")
-{
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_DEV_ADDR")
-   field(SCAN, "Passive")
-   field(VAL,  "$(DEVADDR)")
-   field(PINI, "YES")
-}
-
 record(longin, "$(P)$(R)DevAddr_RBV")
 {
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_DEV_ADDR")
    field(SCAN, "I/O Intr")
-   field(VAL,  "$(DEVADDR)")
-}
-
-record(longout, "$(P)$(R)MuxAddr")
-{
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_MUX_ADDR")
-   field(SCAN, "Passive")
-   field(VAL,  "$(MUXADDR)")
-   field(PINI, "YES")
+   field(VAL,  "-1")
 }
 
 record(longin, "$(P)$(R)MuxAddr_RBV")
@@ -31,16 +13,7 @@ record(longin, "$(P)$(R)MuxAddr_RBV")
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_MUX_ADDR")
    field(SCAN, "I/O Intr")
-   field(VAL,  "$(MUXADDR)")
-}
-
-record(longout, "$(P)$(R)MuxBus")
-{
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_MUX_BUS")
-   field(SCAN, "Passive")
-   field(VAL,  "$(MUXBUS)")
-   field(PINI, "YES")
+   field(VAL,  "-1")
 }
 
 record(longin, "$(P)$(R)MuxBus_RBV")
@@ -48,5 +21,5 @@ record(longin, "$(P)$(R)MuxBus_RBV")
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_MUX_BUS")
    field(SCAN, "I/O Intr")
-   field(VAL,  "$(MUXBUS)")
+   field(VAL,  "-1")
 }

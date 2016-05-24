@@ -82,7 +82,9 @@
 class AKI2C_LTC2991: public AKI2C {
 public:
 	AKI2C_LTC2991(const char *portName, const char *ipPort,
-	        int numDevices, int priority, int stackSize);
+	        int devCount, const char *devAddrs,
+			int muxAddr, int muxBus,
+			int priority, int stackSize);
 	virtual ~AKI2C_LTC2991();
 
     /* These are the methods that we override from AKI2C */

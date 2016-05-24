@@ -26,7 +26,9 @@
 class AKI2CRTC: public AKI2C {
 public:
 	AKI2CRTC(const char *portName, const char *ipPort,
-	        int numDevices, int priority, int stackSize);
+	        int devCount, const char *devAddrs,
+			int muxAddr, int muxBus,
+			int priority, int stackSize);
 	virtual ~AKI2CRTC();
 
     /* These are the methods that we override from AKI2C */

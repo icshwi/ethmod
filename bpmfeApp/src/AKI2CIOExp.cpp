@@ -237,10 +237,12 @@ void AKI2CIOExp::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2CIOExp::AKI2CIOExp(const char *portName, const char *ipPort,
-        int numDevices, int priority, int stackSize)
+        int devCount, const char *devAddrs,
+		int muxAddr, int muxBus,
+		int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
-		   numDevices,
+		   devCount, devAddrs, muxAddr, muxBus,
 		   NUM_AKI2CIOEXP_PARAMS,
 		   0, /* no new interface masks beyond those in AKBase */
 		   0, /* no new interrupt masks beyond those in AKBase */
@@ -285,8 +287,11 @@ AKI2CIOExp::~AKI2CIOExp() {
 extern "C" {
 
 int AKI2CIOExpConfigure(const char *portName, const char *ipPort,
-        int numDevices, int priority, int stackSize) {
-    new AKI2CIOExp(portName, ipPort, numDevices, priority, stackSize);
+        int devCount, const char *devAddrs,
+		int muxAddr, int muxBus,
+		int priority, int stackSize) {
+    new AKI2CIOExp(portName, ipPort, devCount, devAddrs,
+    		muxAddr, muxBus, priority, stackSize);
     return(asynSuccess);
 }
 
@@ -294,18 +299,25 @@ int AKI2CIOExpConfigure(const char *portName, const char *ipPort,
 
 static const iocshArg initArg0 = { "portName",        iocshArgString};
 static const iocshArg initArg1 = { "ipPort",          iocshArgString};
-static const iocshArg initArg2 = { "numDevices",      iocshArgInt};
-static const iocshArg initArg3 = { "priority",        iocshArgInt};
-static const iocshArg initArg4 = { "stackSize",       iocshArgInt};
+static const iocshArg initArg2 = { "devCount",        iocshArgInt};
+static const iocshArg initArg3 = { "devAddrs",        iocshArgString};
+static const iocshArg initArg4 = { "muxAddr",         iocshArgInt};
+static const iocshArg initArg5 = { "muxBus",          iocshArgInt};
+static const iocshArg initArg6 = { "priority",        iocshArgInt};
+static const iocshArg initArg7 = { "stackSize",       iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
                                             &initArg1,
                                             &initArg2,
 											&initArg3,
-											&initArg4};
-static const iocshFuncDef initFuncDef = {"AKI2CIOExpConfigure", 5, initArgs};
+											&initArg4,
+											&initArg5,
+											&initArg6,
+											&initArg7};
+static const iocshFuncDef initFuncDef = {"AKI2CIOExpConfigure", 8, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
-	AKI2CIOExpConfigure(args[0].sval, args[1].sval, args[2].ival,
-			args[3].ival, args[4].ival);
+	AKI2CIOExpConfigure(args[0].sval, args[1].sval,
+			args[2].ival, args[3].sval,
+			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
 }
 
 void AKI2CIOExpRegister(void) {

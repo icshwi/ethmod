@@ -261,7 +261,7 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 	    status = asynError;
 	}
 
-	timeout = 0.3;
+//	timeout = 0.3;
 
 	if (status == asynSuccess) {
 		status = pack(type, devAddr, addrWidth, data, *len, off);
@@ -338,44 +338,44 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 	return status;
 }
 
-asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {
-
-    int function = pasynUser->reason;
-    int addr = 0;
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeInt32";
-
-    status = getAddress(pasynUser, &addr);
-    if (status != asynSuccess) {
-    	return(status);
-    }
-
-    printf("AKI2C::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
-    status = setIntegerParam(addr, function, value);
-
-    if (0) {
-
-    } else if (function < FIRST_AKI2C_PARAM) {
-        printf("AKI2C::%s: function %d, addr %d, value %d calling AKBase::writeInt32\n", functionName, function, addr, value);
-        /* If this parameter belongs to a base class call its method */
-    	status = AKBase::writeInt32(pasynUser, value);
-    }
-
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
-
-    if (status) {
-    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
-              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
-              driverName, functionName, status, function, addr, value);
-    } else {
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-              "%s:%s: function=%d, addr=%d, value=%d\n",
-              driverName, functionName, function, addr, value);
-    }
-
-    return status;
-}
+//asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {
+//
+//    int function = pasynUser->reason;
+//    int addr = 0;
+//    asynStatus status = asynSuccess;
+//    const char *functionName = "writeInt32";
+//
+//    status = getAddress(pasynUser, &addr);
+//    if (status != asynSuccess) {
+//    	return(status);
+//    }
+//
+//    printf("AKI2C::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
+//    status = setIntegerParam(addr, function, value);
+//
+//    if (0) {
+//
+//    } else if (function < FIRST_AKI2C_PARAM) {
+//        printf("AKI2C::%s: function %d, addr %d, value %d calling AKBase::writeInt32\n", functionName, function, addr, value);
+//        /* If this parameter belongs to a base class call its method */
+//    	status = AKBase::writeInt32(pasynUser, value);
+//    }
+//
+//    /* Do callbacks so higher layers see any changes */
+//    callParamCallbacks(addr, addr);
+//
+//    if (status) {
+//    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+//              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
+//              driverName, functionName, status, function, addr, value);
+//    } else {
+//        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+//              "%s:%s: function=%d, addr=%d, value=%d\n",
+//              driverName, functionName, function, addr, value);
+//    }
+//
+//    return status;
+//}
 
 void AKI2C::report(FILE *fp, int details) {
 
@@ -391,19 +391,27 @@ void AKI2C::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKBase base class.
   */
 AKI2C::AKI2C(const char *portName, const char *ipPort,
-		int maxAddr, int numParams, int interfaceMask, int interruptMask,
+        int devCount, const char *devAddrs,
+		int muxAddr, int muxBus,
+		int numParams, int interfaceMask, int interruptMask,
         int asynFlags, int autoConnect, int priority, int stackSize)
    : AKBase(portName,
 		   ipPort,
 		   AK_IP_PORT_I2C,
-		   maxAddr,
+		   devCount,
 		   numParams + NUM_AKI2C_PARAMS,
 		   interfaceMask,
 		   interruptMask,
 		   asynFlags, autoConnect, priority, stackSize)
+//,
+//		   mMuxAddr(muxAddr),
+//		   mMuxBus(muxBus)
 {
 //    int status = asynSuccess;
     const char *functionName = "AKI2C";
+    int devAddr;
+    char *addrs = strdup(devAddrs);
+    char *addr = NULL;
 
 //	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
 //		mMuxInfo[i].addr = 0x70 + i;
@@ -413,6 +421,26 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
     createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
     createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);
     createParam(AKI2CMuxBusString,           asynParamInt32,   &AKI2CMuxBus);
+
+    for (int i = 0; i < devCount; i++) {
+    	if (addr == NULL) {
+    		addr = strtok(addrs, " ,");
+    	} else {
+    		addr = strtok(NULL, " ,");
+    	}
+    	assert(addr != NULL);
+    	devAddr = strtol(addr, NULL, 0);
+    	setIntegerParam(i, AKI2CDevAddr, devAddr);
+    	setIntegerParam(i, AKI2CMuxAddr, muxAddr);
+    	setIntegerParam(i, AKI2CMuxBus, muxBus);
+        printf("%s: PORT %s I2C device at %02X, MUX addr %02X, bus %d\n",
+        		functionName, portName, devAddr, muxAddr, muxBus);
+
+        /* Do callbacks so higher layers see any changes */
+    	callParamCallbacks(i, i);
+    }
+
+    free(addrs);
 
     printf("%s: init complete OK!\n", functionName);
 }
