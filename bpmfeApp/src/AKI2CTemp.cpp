@@ -66,7 +66,6 @@ asynStatus AKI2CTemp::setResolution(int addr, unsigned char val) {
     return status;
 }
 
-/* XXX: Untested! */
 asynStatus AKI2CTemp::getTemperature(int addr) {
 	asynStatus status = asynSuccess;
     const char *functionName = "getTemperature";

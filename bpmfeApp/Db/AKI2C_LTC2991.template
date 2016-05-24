@@ -1,0 +1,181 @@
+# This template is for LTC2991 I2C sensor on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+include "AKBase.template"
+include "AKI2C.template"
+
+record(bo, "$(P)$(R)Read")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_READ")
+   field(SCAN, "Passive")
+   field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)Trigger")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_TRIGGER")
+   field(SCAN, "Passive")
+   field(VAL, "1")
+}
+
+record(ai, "$(P)$(R)ValueV1_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V1_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)OffsetV1")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V1_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)OffsetV1_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V1_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)FactorV1")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V1_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)FactorV1_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V1_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ValueV2_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V2_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)OffsetV2")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V2_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)OffsetV2_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V2_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)FactorV2")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V2_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)FactortV2_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V2_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ValueV3_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V3_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)OffsetV3")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V3_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)OffsetV3_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V3_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)FactorV3")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V3_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)FactortV3_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V3_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ValueV4_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V4_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)OffsetV4")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V4_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)OffsetV4_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V4_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)FactorV4")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V4_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)FactortV4_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_V4_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}

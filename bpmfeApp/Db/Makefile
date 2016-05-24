@@ -19,6 +19,7 @@ DB += AKI2CEeprom.template
 DB += AKI2CIdNum.template
 DB += AKI2CRTC.template
 DB += AKI2CIOExp.template
+DB += AKI2C_LTC2991.template
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add

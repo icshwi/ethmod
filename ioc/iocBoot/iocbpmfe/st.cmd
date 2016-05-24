@@ -19,15 +19,19 @@ epicsEnvSet("PREFIX", "BPMFE:")
 
 epicsEnvSet("RS232_PORT",        "AK_RS232")
 epicsEnvSet("RS232_IP_PORT",     "AK_RS232_COMM")
+
 epicsEnvSet("LCD_PORT",          "AK_LCD")
 epicsEnvSet("LCD_IP_PORT",       "AK_LCD_COMM")
+
 #epicsEnvSet("I2C_PORT",          "AK_I2C")
 epicsEnvSet("I2C_TEMP_PORT",     "AK_I2C_TEMP")
 epicsEnvSet("I2C_EEPROM_PORT",   "AK_I2C_EEPROM")
 epicsEnvSet("I2C_IDNUM_PORT",    "AK_I2C_IDNUM")
 epicsEnvSet("I2C_RTC_PORT",      "AK_I2C_RTC")
 epicsEnvSet("I2C_IOEXP_PORT",    "AK_I2C_IOEXP")
+epicsEnvSet("I2C_LTC2991_PORT",  "AK_I2C_LTC2991")
 epicsEnvSet("I2C_IP_PORT",       "AK_I2C_COMM")
+
 epicsEnvSet("TTLIO_PORT",        "AK_TTLIO")
 epicsEnvSet("TTLIO_IP_PORT",     "AK_TTLIO_COMM")
 
@@ -93,8 +97,8 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 # AKI2CTempConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 #AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 8, 0, 0)
-AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x48,MUXADDR=0x77,MUXBUS=1")
+#AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x48,MUXADDR=0x77,MUXBUS=1")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp2:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=1,TIMEOUT=1,DEVADDR=0x49,MUXADDR=0x70,MUXBUS=0")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp3:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=2,TIMEOUT=1,DEVADDR=0x4A,MUXADDR=0x70,MUXBUS=0")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp4:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=3,TIMEOUT=1,DEVADDR=0x4B,MUXADDR=0x70,MUXBUS=0")
@@ -115,8 +119,8 @@ dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:
 
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
-AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x77,MUXBUS=0")
+#AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x77,MUXBUS=0")
 #asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
 #asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 
@@ -130,10 +134,17 @@ dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1
 # AKI2CIOExpConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 #AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 16, 0, 0)
-AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
+#AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
 #asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
 #asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
+
+# AKI2CLTC2991Configure(const char *portName, const char *ipPort,
+#            int numDevices, int priority, int stackSize);
+AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2C_LTC2991.template",        "P=$(PREFIX),R=I2C1:VMon:1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x4F,MUXADDR=0x70,MUXBUS=0")
+asynSetTraceIOMask($(I2C_LTC2991_PORT),0,255)
+asynSetTraceMask($(I2C_LTC2991_PORT),0,255)
 
 
 ###
