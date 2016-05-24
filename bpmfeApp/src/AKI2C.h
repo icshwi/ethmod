@@ -11,7 +11,7 @@
 #include "AKBase.h"
 
 #define AK_I2C_RESP_HDR_SZ			2
-#define AK_I2C_STATUS_MSG_SZ		32
+#define AK_I2C_STATUS_MSG_SZ		512
 #define AK_I2C_STATUS_OK			0x06
 #define AK_I2C_STATUS_FAIL			0x15
 
@@ -44,8 +44,8 @@ protected:
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout = 2.0);
 
-    void updateMuxBus(int muxAddr, int muxBus);
-    int getMuxBus(int muxAddr);
+//    void updateMuxBus(int muxAddr, int muxBus);
+//    int getMuxBus(int muxAddr);
     asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
 
     /* Our parameter list */
@@ -64,9 +64,9 @@ private:
     asynStatus unpack(unsigned char type, unsigned char *data,
     		unsigned short *len, asynStatus status);
 
-    I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
+//    I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
 //    unsigned char mStatus;
-    char mStatusMsg[AK_I2C_STATUS_MSG_SZ];
+//    char mStatusMsg[AK_I2C_STATUS_MSG_SZ];
 };
 
 #define NUM_AKI2C_PARAMS ((int)(&LAST_AKI2C_PARAM - &FIRST_AKI2C_PARAM + 1))

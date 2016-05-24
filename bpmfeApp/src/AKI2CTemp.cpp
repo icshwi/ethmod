@@ -116,7 +116,7 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     	return(status);
     }
 
-    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
+    printf("AKI2CTemp::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
     if (function == AKI2CTempResolution) {
@@ -124,6 +124,7 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     } else if (function == AKI2CTempRead) {
     	status = getTemperature(addr);
     } else if (function < FIRST_AKI2CTEMP_PARAM) {
+        printf("AKI2CTemp::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2CTEMP_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2CTEMP_PARAM);
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
     }

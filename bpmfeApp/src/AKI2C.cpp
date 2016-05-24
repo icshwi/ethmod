@@ -261,6 +261,8 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 	    status = asynError;
 	}
 
+	timeout = 0.3;
+
 	if (status == asynSuccess) {
 		status = pack(type, devAddr, addrWidth, data, *len, off);
 	}
@@ -287,39 +289,51 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 	return status;
 }
 
-void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
-	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfo[i].addr == muxAddr) {
-			mMuxInfo[i].bus = muxBus;
-		}
-	}
-}
+// XXX: Can not do MUX bus changes like this since different chips inherit this
+// class and they work with their own copies of the mux info struct!
+// Find a better way or just set the mux bus every time when accessing the chip..
 
-int AKI2C::getMuxBus(int muxAddr) {
-	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfo[i].addr == muxAddr) {
-			return mMuxInfo[i].bus;
-		}
-	}
-	return -1;
-}
+
+//void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
+//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+//		if (mMuxInfo[i].addr == muxAddr) {
+//			mMuxInfo[i].bus = muxBus;
+//		}
+//	}
+//}
+//
+//int AKI2C::getMuxBus(int muxAddr) {
+//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+//		if (mMuxInfo[i].addr == muxAddr) {
+//			return mMuxInfo[i].bus;
+//		}
+//	}
+//	return -1;
+//}
 
 asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
     unsigned char data;
     unsigned short len;
 	asynStatus status = asynSuccess;
 
-	if (getMuxBus(muxAddr) == muxBus) {
-		return asynSuccess;
-	}
+//	printf("%s: MUX %02X want bus %d\n", __func__, muxAddr, muxBus);
 
+//	if (getMuxBus(muxAddr) == muxBus) {
+//		return asynSuccess;
+//	}
+
+	printf("%s: SETTING MUX %02X bus %d\n", __func__, muxAddr, muxBus);
 	data = muxBus;
 	len = 1;
 	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0);
 	if (status) {
 		return status;
 	}
-	updateMuxBus(muxAddr, muxBus);
+//	updateMuxBus(muxAddr, muxBus);
+
+//	printf("%s: MUX %02X have bus %d\n", __func__, muxAddr, muxBus);
+
+//	sleep(1);
 
 	return status;
 }
@@ -336,12 +350,13 @@ asynStatus AKI2C::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     	return(status);
     }
 
-    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
+    printf("AKI2C::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
     if (0) {
 
     } else if (function < FIRST_AKI2C_PARAM) {
+        printf("AKI2C::%s: function %d, addr %d, value %d calling AKBase::writeInt32\n", functionName, function, addr, value);
         /* If this parameter belongs to a base class call its method */
     	status = AKBase::writeInt32(pasynUser, value);
     }
@@ -390,10 +405,10 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 //    int status = asynSuccess;
     const char *functionName = "AKI2C";
 
-	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
-		mMuxInfo[i].addr = 0x70 + i;
-		mMuxInfo[i].bus = 0;
-	}
+//	for (int i = 0; i< AK_I2C_MUX_MAX; i++) {
+//		mMuxInfo[i].addr = 0x70 + i;
+//		mMuxInfo[i].bus = 0;
+//	}
 
     createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
     createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);

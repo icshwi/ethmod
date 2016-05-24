@@ -93,10 +93,8 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 # AKI2CTempConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
 #AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 8, 0, 0)
-#AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 1, 0, 0)
-#dbLoadRecords("$(BPMFE)/db/AK.template",          "P=$(PREFIX),R=I2C1:,      PORT=$(I2C_TEMP_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
-##dbLoadRecords("$(BPMFE)/db/AKI2C.template",           "P=$(PREFIX),R=I2C1:,      PORT=$(I2C_TEMP_PORT),ADDR=0,TIMEOUT=1,IP_PORT=$(I2C_IP_PORT)")
-#dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x48,MUXADDR=0x70,MUXBUS=0")
+AKI2CTempConfigure($(I2C_TEMP_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x48,MUXADDR=0x77,MUXBUS=1")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp2:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=1,TIMEOUT=1,DEVADDR=0x49,MUXADDR=0x70,MUXBUS=0")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp3:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=2,TIMEOUT=1,DEVADDR=0x4A,MUXADDR=0x70,MUXBUS=0")
 #dbLoadRecords("$(BPMFE)/db/AKI2CTemp.template",       "P=$(PREFIX),R=I2C1:Temp4:,PORT=$(I2C_TEMP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=3,TIMEOUT=1,DEVADDR=0x4B,MUXADDR=0x70,MUXBUS=0")
@@ -117,8 +115,8 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 
 # AKI2CIdNumConfigure(const char *portName, const char *ipPort,
 #            int numDevices, int priority, int stackSize);
-#AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
-#dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x70,MUXBUS=0")
+AKI2CIdNumConfigure($(I2C_IDNUM_PORT), $(I2C_IP_PORT), 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2CIdNum.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_IDNUM_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x50,MUXADDR=0x77,MUXBUS=0")
 #asynSetTraceIOMask($(I2C_IDNUM_PORT),0,255)
 #asynSetTraceMask($(I2C_IDNUM_PORT),0,255)
 
@@ -134,8 +132,8 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 16, 0, 0)
 AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, 0, 0)
 dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,DEVADDR=0x20,MUXADDR=0x70,MUXBUS=0")
-asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
-asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
+#asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
+#asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
 
 
 ###
