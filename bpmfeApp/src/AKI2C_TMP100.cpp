@@ -71,7 +71,7 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
-    unsigned int raw;
+    short raw;
     double temp;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
