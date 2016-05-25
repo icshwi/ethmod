@@ -14,26 +14,25 @@ epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "10000000")
 epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(BPMFE)/db")
 
 # Prefix for all records
-epicsEnvSet("PREFIX", "BPMFE:")
-#epicsEnvSet("PORT",             "BPMFE")
+epicsEnvSet("PREFIX",               "BPMFE:")
 
-epicsEnvSet("RS232_PORT",        "AK_RS232")
-epicsEnvSet("RS232_IP_PORT",     "AK_RS232_COMM")
+epicsEnvSet("RS232_PORT",           "AK_RS232")
+epicsEnvSet("RS232_IP_PORT",        "AK_RS232_COMM")
 
-epicsEnvSet("LCD_PORT",          "AK_LCD")
-epicsEnvSet("LCD_IP_PORT",       "AK_LCD_COMM")
+epicsEnvSet("LCD_PORT",             "AK_LCD")
+epicsEnvSet("LCD_IP_PORT",          "AK_LCD_COMM")
 
-#epicsEnvSet("I2C_PORT",          "AK_I2C")
-epicsEnvSet("I2C_TMP100_PORT",     "AK_I2C_TMP100")
-epicsEnvSet("I2C_AT24LC64_PORT",   "AK_I2C_AT24LC64")
+#epicsEnvSet("I2C_PORT",            "AK_I2C")
+epicsEnvSet("I2C_TMP100_PORT",      "AK_I2C_TMP100")
+epicsEnvSet("I2C_AT24LC64_PORT",    "AK_I2C_AT24LC64")
 epicsEnvSet("I2C_DS28CM00_PORT",    "AK_I2C_DS28CM00")
-epicsEnvSet("I2C_RTC_PORT",      "AK_I2C_RTC")
-epicsEnvSet("I2C_TCA9555_PORT",    "AK_I2C_TCA9555")
-epicsEnvSet("I2C_LTC2991_PORT",  "AK_I2C_LTC2991")
-epicsEnvSet("I2C_IP_PORT",       "AK_I2C_COMM")
+epicsEnvSet("I2C_PCF85063TP_PORT",  "AK_I2C_PCF85063TP")
+epicsEnvSet("I2C_TCA9555_PORT",     "AK_I2C_TCA9555")
+epicsEnvSet("I2C_LTC2991_PORT",     "AK_I2C_LTC2991")
+epicsEnvSet("I2C_IP_PORT",          "AK_I2C_COMM")
 
-epicsEnvSet("TTLIO_PORT",        "AK_TTLIO")
-epicsEnvSet("TTLIO_IP_PORT",     "AK_TTLIO_COMM")
+epicsEnvSet("TTLIO_PORT",           "AK_TTLIO")
+epicsEnvSet("TTLIO_IP_PORT",        "AK_TTLIO_COMM")
 
 # Supported IP port types (see bpmfe.h)
 #AK_IP_PORT_INVALID       0
@@ -113,10 +112,10 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #        int devCount, const char *devAddrs,
 #        int muxAddr, int muxBus,
 #        int priority, int stackSize);
-AKI2CAT24LC64Configure($(I2C_AT24LC64_PORT), $(I2C_IP_PORT), 1, "0x51", 0x70, 0, 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2C_AT24LC64.template",     "P=$(PREFIX),R=I2C1:Eeprom1:,PORT=$(I2C_AT24LC64_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,NELM=65536")
-asynSetTraceIOMask($(I2C_AT24LC64_PORT),0,255)
-asynSetTraceMask($(I2C_AT24LC64_PORT),0,255)
+#AKI2CAT24LC64Configure($(I2C_AT24LC64_PORT), $(I2C_IP_PORT), 1, "0x51", 0x70, 0, 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2C_AT24LC64.template",     "P=$(PREFIX),R=I2C1:Eeprom1:,PORT=$(I2C_AT24LC64_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,NELM=65536")
+#asynSetTraceIOMask($(I2C_AT24LC64_PORT),0,255)
+#asynSetTraceMask($(I2C_AT24LC64_PORT),0,255)
 
 # AKI2CDS28CM00Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,
@@ -127,14 +126,14 @@ asynSetTraceMask($(I2C_AT24LC64_PORT),0,255)
 #asynSetTraceIOMask($(I2C_DS28CM00_PORT),0,255)
 #asynSetTraceMask($(I2C_DS28CM00_PORT),0,255)
 
-# AKI2CRTCConfigure(const char *portName, const char *ipPort,
+# AKI2CPCF85063TPConfigure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,
 #        int muxAddr, int muxBus,
 #        int priority, int stackSize);
-#AKI2CRTCConfigure($(I2C_RTC_PORT), $(I2C_IP_PORT), 1, "0x51", 0x70, 0, 1, 0, 0)
-#dbLoadRecords("$(BPMFE)/db/AKI2CRTC.template",        "P=$(PREFIX),R=I2C1:RTC1:,PORT=$(I2C_RTC_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
-#asynSetTraceIOMask($(I2C_RTC_PORT),0,255)
-#asynSetTraceMask($(I2C_RTC_PORT),0,255)
+#AKI2CPCF85063TPConfigure($(I2C_PCF85063TP_PORT), $(I2C_IP_PORT), 1, "0x51", 0x70, 0, 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2C_PCF85063TP.template",        "P=$(PREFIX),R=I2C1:PCF85063TP1:,PORT=$(I2C_PCF85063TP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
+#asynSetTraceIOMask($(I2C_PCF85063TP_PORT),0,255)
+#asynSetTraceMask($(I2C_PCF85063TP_PORT),0,255)
 
 # AKI2CTCA9555Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,

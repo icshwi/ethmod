@@ -1,4 +1,4 @@
-# This template is for LTC2991 I2C sensor on an AK-NORD
+# This template is for Linear LTC2991 I2C sensor on an AK-NORD
 # XT-Pico-SXL I2C bus, behind I2C mux
 
 include "AKBase.template"
