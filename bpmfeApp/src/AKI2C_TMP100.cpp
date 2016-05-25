@@ -179,20 +179,19 @@ AKI2C_TMP100::AKI2C_TMP100(const char *portName, const char *ipPort,
     createParam(AKI2C_TMP100_ReadString,   asynParamInt32,   &AKI2C_TMP100_Read);
     createParam(AKI2C_TMP100_ValueString,  asynParamFloat64, &AKI2C_TMP100_Value);
 
-    status = 0;
     for (int i = 0; i < devCount; i++) {
-    	status |= setDoubleParam(i, AKI2C_TMP100_Value, 0.0);
+    	setDoubleParam(i, AKI2C_TMP100_Value, 0.0);
+    }
+
+    /* set some defaults */
+    for (int i = 0; i < devCount; i++) {
+		status |= write(i, AKI2C_TMP100_CONFIG_REG, AKI2C_TMP100_RESOLUTION_12BIT);
     }
 
     if (status) {
     	printf("%s: failed to set parameter defaults!\n", functionName);
         printf("%s: init FAIL!\n", functionName);
     	return;
-    }
-
-    /* set some defaults */
-    for (int i = 0; i < devCount; i++) {
-		status = write(i, AKI2C_TMP100_CONFIG_REG, AKI2C_TMP100_RESOLUTION_12BIT);
     }
 
     printf("%s: init complete OK!\n", functionName);

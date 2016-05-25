@@ -281,47 +281,46 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     createParam(AKI2C_LTC2991_VccValueString,      asynParamFloat64, &AKI2C_LTC2991_Vcc_Value);
     createParam(AKI2C_LTC2991_TIntValueString,     asynParamFloat64, &AKI2C_LTC2991_TInt_Value);
 
-    status = 0;
     for (int i = 0; i < devCount; i++) {
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V1_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V1_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V1_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V2_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V2_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V2_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V3_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V3_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V3_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V4_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V5_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V6_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V7_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Offset, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_V8_Factor, 1.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_Vcc_Value, 0.0);
-    	status |= setDoubleParam(i, AKI2C_LTC2991_TInt_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V1_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V1_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V1_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V2_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V2_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V2_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V3_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V3_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V3_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V4_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V4_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V4_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V5_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V5_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V5_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V6_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V6_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V6_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V7_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V7_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V7_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V8_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V8_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_V8_Factor, 1.0);
+    	setDoubleParam(i, AKI2C_LTC2991_Vcc_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_TInt_Value, 0.0);
+    }
+
+    /* set some defaults */
+    for (int i = 0; i < devCount; i++) {
+		status |= write(i, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL);
+		status |= write(i, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL);
+		status |= write(i, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL);
     }
 
     if (status) {
     	printf("%s: failed to set parameter defaults!\n", functionName);
         printf("%s: init FAIL!\n", functionName);
     	return;
-    }
-
-    /* set some defaults */
-    for (int i = 0; i < devCount; i++) {
-		status = write(i, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL);
-		status = write(i, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL);
-		status = write(i, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL);
     }
 
     printf("%s: init complete OK!\n", functionName);
