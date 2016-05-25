@@ -1,9 +1,11 @@
 /*
- * AKI2CEeprom.cpp
+ * AKI2C_AT24LC64.cpp
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar
  */
+
+#include "AKI2C_AT24LC64.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -25,18 +27,16 @@
 #include <iocsh.h>
 
 #include <asynPortDriver.h>
-#include "AKI2CEeprom.h"
 
-static const char *driverName = "AKI2CEeprom";
+static const char *driverName = "AKI2C_AT24LC64";
 
 
 static void exitHandler(void *drvPvt) {
-	AKI2CEeprom *pPvt = (AKI2CEeprom *)drvPvt;
+	AKI2C_AT24LC64 *pPvt = (AKI2C_AT24LC64 *)drvPvt;
 	delete pPvt;
 }
 
-/* XXX: Untested! */
-asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short len, unsigned int off) {
+asynStatus AKI2C_AT24LC64::write(int addr, unsigned char *data, unsigned short len, unsigned int off) {
 	asynStatus status = asynSuccess;
     const char *functionName = "setData";
     int devAddr, muxAddr, muxBus;
@@ -56,8 +56,7 @@ asynStatus AKI2CEeprom::setData(int addr, unsigned char *data, unsigned short le
     return status;
 }
 
-/* XXX: Untested! */
-asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *len, unsigned int off) {
+asynStatus AKI2C_AT24LC64::read(int addr, unsigned char *data, unsigned short *len, unsigned int off) {
 	asynStatus status = asynSuccess;
     const char *functionName = "getData";
     int devAddr, muxAddr, muxBus;
@@ -77,45 +76,7 @@ asynStatus AKI2CEeprom::getData(int addr, unsigned char *data, unsigned short *l
     return status;
 }
 
-asynStatus AKI2CEeprom::writeInt32(asynUser *pasynUser, epicsInt32 value) {
-
-    int function = pasynUser->reason;
-    int addr = 0;
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeInt32";
-
-    status = getAddress(pasynUser, &addr);
-    if (status != asynSuccess) {
-    	return(status);
-    }
-
-    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
-    status = setIntegerParam(addr, function, value);
-
-    if (0) {
-
-    } else if (function < FIRST_AKI2CEEPROM_PARAM) {
-        /* If this parameter belongs to a base class call its method */
-    	status = AKI2C::writeInt32(pasynUser, value);
-    }
-
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
-
-    if (status) {
-    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
-              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
-              driverName, functionName, status, function, addr, value);
-    } else {
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-              "%s:%s: function=%d, addr=%d, value=%d\n",
-              driverName, functionName, function, addr, value);
-    }
-
-    return status;
-}
-
-asynStatus AKI2CEeprom::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
+asynStatus AKI2C_AT24LC64::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
                                     size_t nElements, size_t *nIn) {
     int function = pasynUser->reason;
     int addr = 0;
@@ -130,10 +91,10 @@ asynStatus AKI2CEeprom::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
 
     printf("%s: function %d, addr %d, nElements %ld\n", functionName, function, addr, nElements);
 
-    if (function == AKI2CEepromData) {
-        getIntegerParam(addr, AKI2CEepromLength, &length);
-        getIntegerParam(addr, AKI2CEepromOffset, &offset);
-		status = getData(addr, (unsigned char *)value, (unsigned short *)&length, offset);
+    if (function == AKI2C_AT24LC64_Data) {
+        getIntegerParam(addr, AKI2C_AT24LC64_Length, &length);
+        getIntegerParam(addr, AKI2C_AT24LC64_Offset, &offset);
+		status = read(addr, (unsigned char *)value, (unsigned short *)&length, offset);
 		*nIn = length;
 	    printf("%s: returning length %d, from offset %d\n", functionName, length, offset);
     } else {
@@ -153,7 +114,7 @@ asynStatus AKI2CEeprom::readInt8Array(asynUser *pasynUser, epicsInt8 *value,
 	return status;
 }
 
-asynStatus AKI2CEeprom::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
+asynStatus AKI2C_AT24LC64::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
                                     size_t nElements) {
     int function = pasynUser->reason;
     int addr = 0;
@@ -168,10 +129,10 @@ asynStatus AKI2CEeprom::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
 
     printf("%s: function %d, addr %d, nElements %ld\n", functionName, function, addr, nElements);
 
-    if (function == AKI2CEepromData) {
-        getIntegerParam(addr, AKI2CEepromLength, &length);
-        getIntegerParam(addr, AKI2CEepromOffset, &offset);
-		status = setData(addr, (unsigned char*)value, (unsigned short)length, offset);
+    if (function == AKI2C_AT24LC64_Data) {
+        getIntegerParam(addr, AKI2C_AT24LC64_Length, &length);
+        getIntegerParam(addr, AKI2C_AT24LC64_Offset, &offset);
+		status = write(addr, (unsigned char*)value, (unsigned short)length, offset);
     } else {
 		status = AKI2C::writeInt8Array(pasynUser, value, nElements);
     }
@@ -192,27 +153,27 @@ asynStatus AKI2CEeprom::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
 	return status;
 }
 
-void AKI2CEeprom::report(FILE *fp, int details) {
+void AKI2C_AT24LC64::report(FILE *fp, int details) {
 
-    fprintf(fp, "AKI2CEeprom %s\n", this->portName);
+    fprintf(fp, "AKI2C_AT24LC64 %s\n", this->portName);
     if (details > 0) {
     }
     /* Invoke the base class method */
     AKI2C::report(fp, details);
 }
 
-/** Constructor for the AKI2CEeprom class.
+/** Constructor for the AKI2C_AT24LC64 class.
   * Calls constructor for the AKI2C base class.
   * All the arguments are simply passed to the AKI2C base class.
   */
-AKI2CEeprom::AKI2CEeprom(const char *portName, const char *ipPort,
+AKI2C_AT24LC64::AKI2C_AT24LC64(const char *portName, const char *ipPort,
         int devCount, const char *devAddrs,
 		int muxAddr, int muxBus,
 		int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
 		   devCount, devAddrs, muxAddr, muxBus,
-		   NUM_AKI2CEEPROM_PARAMS,
+		   NUM_AKI2C_AT24LC64_PARAMS,
 		   asynInt8ArrayMask,
 		   asynInt8ArrayMask,
 		   ASYN_CANBLOCK | ASYN_MULTIDEVICE, /* asynFlags: ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=0*/
@@ -220,19 +181,19 @@ AKI2CEeprom::AKI2CEeprom(const char *portName, const char *ipPort,
 		   priority, stackSize)
 {
     int status = asynSuccess;
-    const char *functionName = "AKI2CEeprom";
+    const char *functionName = "AKI2C_AT24LC64";
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
 
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CEepromDataString,             asynParamInt8Array, &AKI2CEepromData);
-    createParam(AKI2CEepromReadString,             asynParamInt32,     &AKI2CEepromRead);
-    createParam(AKI2CEepromWriteString,            asynParamInt32,     &AKI2CEepromWrite);
-    createParam(AKI2CEepromSizeString,             asynParamInt32,     &AKI2CEepromSize);
-    createParam(AKI2CEepromOffsetString,           asynParamInt32,     &AKI2CEepromOffset);
-    createParam(AKI2CEepromLengthString,           asynParamInt32,     &AKI2CEepromLength);
+    createParam(AKI2C_AT24LC64_DataString,      asynParamInt8Array, &AKI2C_AT24LC64_Data);
+    createParam(AKI2C_AT24LC64_ReadString,      asynParamInt32,     &AKI2C_AT24LC64_Read);
+    createParam(AKI2C_AT24LC64_WriteString,     asynParamInt32,     &AKI2C_AT24LC64_Write);
+    createParam(AKI2C_AT24LC64_SizeString,      asynParamInt32,     &AKI2C_AT24LC64_Size);
+    createParam(AKI2C_AT24LC64_OffsetString,    asynParamInt32,     &AKI2C_AT24LC64_Offset);
+    createParam(AKI2C_AT24LC64_LengthString,    asynParamInt32,     &AKI2C_AT24LC64_Length);
 
     if (status) {
     	printf("%s: failed to set parameter defaults!\n", functionName);
@@ -243,8 +204,8 @@ AKI2CEeprom::AKI2CEeprom(const char *portName, const char *ipPort,
     printf("%s: init complete OK!\n", functionName);
 }
 
-AKI2CEeprom::~AKI2CEeprom() {
-    const char *functionName = "~AKI2CEeprom";
+AKI2C_AT24LC64::~AKI2C_AT24LC64() {
+    const char *functionName = "~AKI2C_AT24LC64";
 
     printf("%s: shutting down ...\n", functionName);
 
@@ -255,11 +216,11 @@ AKI2CEeprom::~AKI2CEeprom() {
 
 extern "C" {
 
-int AKI2CEepromConfigure(const char *portName, const char *ipPort,
+int AKI2CAT24LC64Configure(const char *portName, const char *ipPort,
         int devCount, const char *devAddrs,
 		int muxAddr, int muxBus,
 		int priority, int stackSize) {
-    new AKI2CEeprom(portName, ipPort, devCount, devAddrs,
+    new AKI2C_AT24LC64(portName, ipPort, devCount, devAddrs,
     		muxAddr, muxBus, priority, stackSize);
     return(asynSuccess);
 }
@@ -282,17 +243,17 @@ static const iocshArg * const initArgs[] = {&initArg0,
 											&initArg5,
 											&initArg6,
 											&initArg7};
-static const iocshFuncDef initFuncDef = {"AKI2CEepromConfigure", 8, initArgs};
+static const iocshFuncDef initFuncDef = {"AKI2CAT24LC64Configure", 8, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
-	AKI2CEepromConfigure(args[0].sval, args[1].sval,
+	AKI2CAT24LC64Configure(args[0].sval, args[1].sval,
 			args[2].ival, args[3].sval,
 			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
 }
 
-void AKI2CEepromRegister(void) {
+void AKI2CAT24LC64Register(void) {
     iocshRegister(&initFuncDef, initCallFunc);
 }
 
-epicsExportRegistrar(AKI2CEepromRegister);
+epicsExportRegistrar(AKI2CAT24LC64Register);
 
 } /* extern "C" */

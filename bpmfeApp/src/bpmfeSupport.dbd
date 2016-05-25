@@ -1,5 +1,5 @@
 registrar(AKI2CTMP100Register)
-registrar(AKI2CEepromRegister)
+registrar(AKI2CAT24LC64Register)
 registrar(AKI2CDS28CM00Register)
 registrar(AKI2CRTCRegister)
 registrar(AKI2CTCA9555Register)

@@ -1,4 +1,4 @@
-# This template is for Microchip 24LC64 I2C EEPROM on an AK-NORD
+# This template is for Atmel/Microchip 24LC64 I2C EEPROM on an AK-NORD
 # XT-Pico-SXL I2C bus, behind I2C mux
 
 include "AKBase.template"
@@ -7,7 +7,7 @@ include "AKI2C.template"
 record(bo, "$(P)$(R)Read")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_READ")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_READ")
    field(SCAN, "Passive")
    field(VAL,  "1")
    field(FLNK, "$(P)$(R)Data_RBV PP")
@@ -16,7 +16,7 @@ record(bo, "$(P)$(R)Read")
 record(bo, "$(P)$(R)Write")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_WRITE")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_WRITE")
    field(SCAN, "Passive")
    field(VAL,  "1")
    field(FLNK, "$(P)$(R)Data PP")
@@ -25,7 +25,7 @@ record(bo, "$(P)$(R)Write")
 record(waveform, "$(P)$(R)Data")
 {
     field(DTYP, "asynInt8ArrayOut")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_DATA")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_DATA")
     field(FTVL, "UCHAR")
     field(NELM, "$(NELM)")
     field(SCAN, "Passive")
@@ -34,7 +34,7 @@ record(waveform, "$(P)$(R)Data")
 record(waveform, "$(P)$(R)Data_RBV")
 {
     field(DTYP, "asynInt8ArrayIn")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_DATA")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_DATA")
     field(FTVL, "UCHAR")
     field(NELM, "$(NELM)")
     field(SCAN, "Passive")
@@ -43,7 +43,7 @@ record(waveform, "$(P)$(R)Data_RBV")
 record(longout, "$(P)$(R)Size")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_SIZE")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_SIZE")
    field(SCAN, "Passive")
    field(VAL,  "$(NELM)")
    field(PINI, "YES")
@@ -52,7 +52,7 @@ record(longout, "$(P)$(R)Size")
 record(longin, "$(P)$(R)Size_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_SIZE")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_SIZE")
    field(SCAN, "I/O Intr")
    field(VAL,  "$(NELM)")
 }
@@ -60,7 +60,7 @@ record(longin, "$(P)$(R)Size_RBV")
 record(longout, "$(P)$(R)Offset")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_OFFSET")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_OFFSET")
    field(SCAN, "Passive")
    field(VAL,  "0")
    field(PINI, "YES")
@@ -69,7 +69,7 @@ record(longout, "$(P)$(R)Offset")
 record(longin, "$(P)$(R)Offset_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_OFFSET")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_OFFSET")
    field(SCAN, "I/O Intr")
    field(VAL,  "0")
 }
@@ -77,7 +77,7 @@ record(longin, "$(P)$(R)Offset_RBV")
 record(longout, "$(P)$(R)Length")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_LENGTH")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_LENGTH")
    field(SCAN, "Passive")
    field(VAL,  "10")
    field(PINI, "YES")
@@ -86,7 +86,7 @@ record(longout, "$(P)$(R)Length")
 record(longin, "$(P)$(R)Length_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CEEPROM_LENGTH")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AT24LC64_LENGTH")
    field(SCAN, "I/O Intr")
    field(VAL,  "10")
 }

@@ -13,7 +13,7 @@ include $(TOP)/configure/CONFIG
 DB += AKBase.template
 DB += AKI2C.template
 DB += AKI2C_TMP100.template
-DB += AKI2CEeprom.template
+DB += AKI2C_AT24LC64.template
 DB += AKI2C_DS28CM00.template
 DB += AKI2CRTC.template
 DB += AKI2C_TCA9555.template
