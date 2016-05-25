@@ -294,22 +294,22 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 	return status;
 }
 
-void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
-	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfo[i].addr == muxAddr) {
-			mMuxInfo[i].bus = muxBus;
-		}
-	}
-}
-
-int AKI2C::getMuxBus(int muxAddr) {
-	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		if (mMuxInfo[i].addr == muxAddr) {
-			return mMuxInfo[i].bus;
-		}
-	}
-	return -1;
-}
+//void AKI2C::updateMuxBus(int muxAddr, int muxBus) {
+//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+//		if (mMuxInfo[i].addr == muxAddr) {
+//			mMuxInfo[i].bus = muxBus;
+//		}
+//	}
+//}
+//
+//int AKI2C::getMuxBus(int muxAddr) {
+//	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+//		if (mMuxInfo[i].addr == muxAddr) {
+//			return mMuxInfo[i].bus;
+//		}
+//	}
+//	return -1;
+//}
 
 asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
     unsigned char data;
@@ -318,9 +318,22 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 
 	printf("%s: MUX %02X want bus %d\n", __func__, muxAddr, muxBus);
 
-	if (getMuxBus(muxAddr) == muxBus) {
+	/* No MUX bus to setup */
+	if (muxAddr == 0) {
 		return asynSuccess;
 	}
+
+	/* Do we need to setup MUX bus? */
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if ((mMuxInfo[i].addr == muxAddr) && (mMuxInfo[i].bus == muxBus)) {
+//			return mMuxInfo[i].bus;
+			/* MUX bus already setup */
+			return asynSuccess;
+		}
+	}
+//	if (getMuxBus(muxAddr) == muxBus) {
+//		return asynSuccess;
+//	}
 
 	printf("%s: SETTING MUX %02X bus %d\n", __func__, muxAddr, muxBus);
 	data = muxBus;
@@ -329,7 +342,12 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 	if (status) {
 		return status;
 	}
-	updateMuxBus(muxAddr, muxBus);
+//	updateMuxBus(muxAddr, muxBus);
+	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+		if (mMuxInfo[i].addr == muxAddr) {
+			mMuxInfo[i].bus = muxBus;
+		}
+	}
 
 	printf("%s: MUX %02X have bus %d\n", __func__, muxAddr, muxBus);
 
@@ -403,9 +421,6 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
 		   interfaceMask,
 		   interruptMask,
 		   asynFlags, autoConnect, priority, stackSize)
-//,
-//		   mMuxAddr(muxAddr),
-//		   mMuxBus(muxBus)
 {
 //    int status = asynSuccess;
     const char *functionName = "AKI2C";
@@ -414,21 +429,31 @@ AKI2C::AKI2C(const char *portName, const char *ipPort,
     char *addr = NULL;
     bool muxStored = false;
 
-    /* Store the MUX address if needed. */
-	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
-		/* If MUX address is already listed there is nothing to do.. */
-		if (mMuxInfo[i].addr == muxAddr) {
-			muxStored = true;
-			break;
+    /* Sanitize MUX info */
+    if (muxAddr < 0) {
+    	muxAddr = 0;
+    }
+    if (muxBus < 0) {
+    	muxBus = 0;
+    }
+
+    /* Store the MUX address if one is specified (non zero value). */
+    if (muxAddr != 0) {
+		for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
+			/* If MUX address is already listed there is nothing to do.. */
+			if (mMuxInfo[i].addr == muxAddr) {
+				muxStored = true;
+				break;
+			}
+			/* Store MUX address in first empty slot.. */
+			if (mMuxInfo[i].addr == 0) {
+				mMuxInfo[i].addr = muxAddr;
+				muxStored = true;
+				break;
+			}
 		}
-		/* Store MUX address in first empty slot.. */
-		if (mMuxInfo[i].addr == 0) {
-			mMuxInfo[i].addr = muxAddr;
-			muxStored = true;
-			break;
-		}
-	}
-	assert(muxStored == true);
+		assert(muxStored == true);
+    }
 
     createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
     createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);

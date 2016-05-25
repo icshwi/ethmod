@@ -46,8 +46,8 @@ protected:
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout = 0.3);
 
-    void updateMuxBus(int muxAddr, int muxBus);
-    int getMuxBus(int muxAddr);
+//    void updateMuxBus(int muxAddr, int muxBus);
+//    int getMuxBus(int muxAddr);
     asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
 
     /* Our parameter list */
