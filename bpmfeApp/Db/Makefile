@@ -14,7 +14,7 @@ include $(TOP)/configure/CONFIG
 #DB += bpmfe_ttlio.template
 DB += AKBase.template
 DB += AKI2C.template
-DB += AKI2CTemp.template
+DB += AKI2C_TMP100.template
 DB += AKI2CEeprom.template
 DB += AKI2CIdNum.template
 DB += AKI2CRTC.template

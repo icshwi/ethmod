@@ -7,7 +7,7 @@ include "AKI2C.template"
 record(bo, "$(P)$(R)Read")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_READ")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_READ")
    field(SCAN, "Passive")
     field(VAL, "1")
 }
@@ -15,7 +15,7 @@ record(bo, "$(P)$(R)Read")
 record(ai, "$(P)$(R)Value_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2CTEMP_VALUE")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_VALUE")
    field(PREC, "1")
    field(SCAN, "I/O Intr")
 }

@@ -1,12 +1,12 @@
 /*
- * AKI2CTemp.h
+ * AKI2C_TMP100.h
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar
  */
 
-#ifndef _I2CTEMP_H_
-#define _I2CTEMP_H_
+#ifndef _I2C_TMP100_H_
+#define _I2C_TMP100_H_
 
 #include "AKI2C.h"
 
@@ -18,17 +18,22 @@
 #define AKI2C_TMP100_RESOLUTION_11BIT			(2 << 6)
 #define AKI2C_TMP100_RESOLUTION_12BIT			(3 << 6)
 
-#define AKI2CTempValueString                    "AKI2CTEMP_VALUE"
-#define AKI2CTempReadString                     "AKI2CTEMP_READ"
+#define AKI2C_TMP100_ValueString                "AKI2C_TMP100_VALUE"
+#define AKI2C_TMP100_ReadString                 "AKI2C_TMP100_READ"
 
-/** Driver for AK-NORD XT-PICO-SXL I2C temperature chip access over TCP/IP socket */
-class AKI2CTemp: public AKI2C {
+/*
+ * Chip       : TI TMP100
+ * Function   : temperature sensor
+ * Bus        : I2C
+ * Access     : TCP/IP socket on AK-NORD XT-PICO-SX
+ */
+class AKI2C_TMP100: public AKI2C {
 public:
-	AKI2CTemp(const char *portName, const char *ipPort,
+	AKI2C_TMP100(const char *portName, const char *ipPort,
 	        int devCount, const char *devAddrs,
 			int muxAddr, int muxBus,
 			int priority, int stackSize);
-	virtual ~AKI2CTemp();
+	virtual ~AKI2C_TMP100();
 
     /* These are the methods that we override from AKI2C */
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
@@ -37,16 +42,16 @@ public:
 
 protected:
     /* Our parameter list */
-    int AKI2CTempRead;
-#define FIRST_AKI2CTEMP_PARAM AKI2CTempRead
-    int AKI2CTempValue;
-#define LAST_AKI2CTEMP_PARAM AKI2CTempValue
+    int AKI2C_TMP100_Read;
+#define FIRST_AKI2C_TMP100_PARAM AKI2C_TMP100_Read
+    int AKI2C_TMP100_Value;
+#define LAST_AKI2C_TMP100_PARAM AKI2C_TMP100_Value
 
 private:
     asynStatus write(int addr, unsigned char reg, unsigned char val);
     asynStatus read(int addr, unsigned char reg);
 };
 
-#define NUM_AKI2CTEMP_PARAMS ((int)(&LAST_AKI2CTEMP_PARAM - &FIRST_AKI2CTEMP_PARAM + 1))
+#define NUM_AKI2C_TMP100_PARAMS ((int)(&LAST_AKI2C_TMP100_PARAM - &FIRST_AKI2C_TMP100_PARAM + 1))
 
-#endif /* _I2CTEMP_H_ */
+#endif /* _I2C_TMP100_H_ */

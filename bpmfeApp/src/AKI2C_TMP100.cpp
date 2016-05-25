@@ -1,5 +1,5 @@
 /*
- * AKI2CTemp.cpp
+ * AKI2C_TMP100.cpp
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar
@@ -26,13 +26,13 @@
 #include <iocsh.h>
 
 #include <asynPortDriver.h>
-#include "AKI2CTemp.h"
+#include <AKI2C_TMP100.h>
 
-static const char *driverName = "AKI2CTemp";
+static const char *driverName = "AKI2C_TMP100";
 
 
 static void exitHandler(void *drvPvt) {
-	AKI2CTemp *pPvt = (AKI2CTemp *)drvPvt;
+	AKI2C_TMP100 *pPvt = (AKI2C_TMP100 *)drvPvt;
 	delete pPvt;
 }
 //
@@ -66,7 +66,7 @@ static void exitHandler(void *drvPvt) {
 //    return status;
 //}
 
-asynStatus AKI2CTemp::write(int addr, unsigned char reg, unsigned char val) {
+asynStatus AKI2C_TMP100::write(int addr, unsigned char reg, unsigned char val) {
     asynStatus status = asynSuccess;
     const char *functionName = "write";
     unsigned char data[2] = {0};
@@ -132,7 +132,7 @@ asynStatus AKI2CTemp::write(int addr, unsigned char reg, unsigned char val) {
 //    return status;
 //}
 
-asynStatus AKI2CTemp::read(int addr, unsigned char reg) {
+asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     asynStatus status = asynSuccess;
     const char *functionName = "read";
     unsigned char data[2] = {0};
@@ -164,12 +164,12 @@ asynStatus AKI2CTemp::read(int addr, unsigned char reg) {
 
     printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
 
-    setDoubleParam(addr, AKI2CTempValue, temp);
+    setDoubleParam(addr, AKI2C_TMP100_Value, temp);
 
 	return status;
 }
 
-asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
+asynStatus AKI2C_TMP100::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     int function = pasynUser->reason;
     int addr = 0;
@@ -181,13 +181,13 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     	return(status);
     }
 
-    printf("AKI2CTemp::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
+    printf("AKI2C_TMP100::%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
     status = setIntegerParam(addr, function, value);
 
-    if (function == AKI2CTempRead) {
+    if (function == AKI2C_TMP100_Read) {
     	status = read(addr, AKI2C_TMP100_TEMPERATURE_REG);
-    } else if (function < FIRST_AKI2CTEMP_PARAM) {
-        printf("AKI2CTemp::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2CTEMP_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2CTEMP_PARAM);
+    } else if (function < FIRST_AKI2C_TMP100_PARAM) {
+        printf("AKI2C_TMP100::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2C_TMP100_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2C_TMP100_PARAM);
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
     }
@@ -208,27 +208,27 @@ asynStatus AKI2CTemp::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     return status;
 }
 
-void AKI2CTemp::report(FILE *fp, int details) {
+void AKI2C_TMP100::report(FILE *fp, int details) {
 
-    fprintf(fp, "AKI2CTemp %s\n", this->portName);
+    fprintf(fp, "AKI2C_TMP100 %s\n", this->portName);
     if (details > 0) {
     }
     /* Invoke the base class method */
     AKI2C::report(fp, details);
 }
 
-/** Constructor for the AKI2CTemp class.
+/** Constructor for the AKI2C_TMP100 class.
   * Calls constructor for the AKI2C base class.
   * All the arguments are simply passed to the AKI2C base class.
   */
-AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
+AKI2C_TMP100::AKI2C_TMP100(const char *portName, const char *ipPort,
         int devCount, const char *devAddrs,
 		int muxAddr, int muxBus,
 		int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
 		   devCount, devAddrs, muxAddr, muxBus,
-		   NUM_AKI2CTEMP_PARAMS,
+		   NUM_AKI2C_TMP100_PARAMS,
 		   0, /* no new interface masks beyond those in AKBase */
 		   0, /* no new interrupt masks beyond those in AKBase */
 		   ASYN_CANBLOCK | ASYN_MULTIDEVICE, /* asynFlags: ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=0*/
@@ -236,19 +236,19 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
 		   priority, stackSize)
 {
     int status = asynSuccess;
-    const char *functionName = "AKI2CTemp";
+    const char *functionName = "AKI2C_TMP100";
 
     printf("%s: Handling %d devices\n", functionName, maxAddr);
 
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CTempReadString,             asynParamInt32,   &AKI2CTempRead);
-    createParam(AKI2CTempValueString,            asynParamFloat64, &AKI2CTempValue);
+    createParam(AKI2C_TMP100_ReadString,   asynParamInt32,   &AKI2C_TMP100_Read);
+    createParam(AKI2C_TMP100_ValueString,  asynParamFloat64, &AKI2C_TMP100_Value);
 
     status = 0;
     for (int i = 0; i < devCount; i++) {
-    	status |= setDoubleParam(i, AKI2CTempValue, 0.0);
+    	status |= setDoubleParam(i, AKI2C_TMP100_Value, 0.0);
     }
 
     if (status) {
@@ -265,8 +265,8 @@ AKI2CTemp::AKI2CTemp(const char *portName, const char *ipPort,
     printf("%s: init complete OK!\n", functionName);
 }
 
-AKI2CTemp::~AKI2CTemp() {
-    const char *functionName = "~AKI2CTemp";
+AKI2C_TMP100::~AKI2C_TMP100() {
+    const char *functionName = "~AKI2C_TMP100";
 
     printf("%s: shutting down ...\n", functionName);
 
@@ -277,11 +277,11 @@ AKI2CTemp::~AKI2CTemp() {
 
 extern "C" {
 
-int AKI2CTempConfigure(const char *portName, const char *ipPort,
+int AKI2CTMP100Configure(const char *portName, const char *ipPort,
         int devCount, const char *devAddrs,
 		int muxAddr, int muxBus,
 		int priority, int stackSize) {
-    new AKI2CTemp(portName, ipPort, devCount, devAddrs,
+    new AKI2C_TMP100(portName, ipPort, devCount, devAddrs,
     		muxAddr, muxBus, priority, stackSize);
     return(asynSuccess);
 }
@@ -304,18 +304,18 @@ static const iocshArg * const initArgs[] = {&initArg0,
 											&initArg5,
 											&initArg6,
 											&initArg7};
-static const iocshFuncDef initFuncDef = {"AKI2CTempConfigure", 8, initArgs};
+static const iocshFuncDef initFuncDef = {"AKI2CTMP100Configure", 8, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
-	AKI2CTempConfigure(args[0].sval, args[1].sval,
+	AKI2CTMP100Configure(args[0].sval, args[1].sval,
 			args[2].ival, args[3].sval,
 			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
 }
 
-void AKI2CTempRegister(void) {
+void AKI2CTMP100Register(void) {
     iocshRegister(&initFuncDef, initCallFunc);
 }
 
-epicsExportRegistrar(AKI2CTempRegister);
+epicsExportRegistrar(AKI2CTMP100Register);
 
 } /* extern "C" */
 
