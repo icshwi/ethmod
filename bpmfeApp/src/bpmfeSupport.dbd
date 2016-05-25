@@ -1,6 +1,6 @@
 registrar(AKI2CTMP100Register)
 registrar(AKI2CEepromRegister)
-registrar(AKI2CIdNumRegister)
+registrar(AKI2CDS28CM00Register)
 registrar(AKI2CRTCRegister)
 registrar(AKI2CIOExpRegister)
 registrar(AKI2CLTC2991Register)
