@@ -8,8 +8,6 @@
 #ifndef _AKI2C_LTC2991_H_
 #define _AKI2C_LTC2991_H_
 
-
-
 #include "AKI2C.h"
 
 #define AKI2C_LTC2991_STATUS_LOW_REG			0x00
@@ -40,7 +38,8 @@
 #define AKI2C_LTC2991_TINT_MSB_REG				0x1C
 #define AKI2C_LTC2991_TINT_LSB_REG				0x1D
 
-/* Enable all Vx channels, Internal temperature and Vcc sensoring */
+/* Enable all Vx channels for voltage monitoring,
+ * enable Internal temperature and Vcc monitoring */
 #define AKI2C_LTC2991_CH_ENABLE_VAL				0xF8
 /* Use filtering for Vx channels */
 #define AKI2C_LTC2991_CONTROL1_VAL				0x88
@@ -48,37 +47,41 @@
 /* Use filtering for Internal Temperature */
 #define AKI2C_LTC2991_CONTROL3_VAL				0x08
 
-#define AKI2CLTC2991ReadString                "AKI2C_LTC2991_READ"
-#define AKI2CLTC2991TriggerString             "AKI2C_LTC2991_TRIGGER"
+#define AKI2C_LTC2991_ReadString                "AKI2C_LTC2991_READ"
+#define AKI2C_LTC2991_TriggerString             "AKI2C_LTC2991_TRIGGER"
+#define AKI2C_LTC2991_V1ValueString             "AKI2C_LTC2991_V1_VALUE"
+#define AKI2C_LTC2991_V1OffsetString            "AKI2C_LTC2991_V1_OFFSET"
+#define AKI2C_LTC2991_V1FactorString            "AKI2C_LTC2991_V1_FACTOR"
+#define AKI2C_LTC2991_V2ValueString             "AKI2C_LTC2991_V2_VALUE"
+#define AKI2C_LTC2991_V2OffsetString            "AKI2C_LTC2991_V2_OFFSET"
+#define AKI2C_LTC2991_V2FactorString            "AKI2C_LTC2991_V2_FACTOR"
+#define AKI2C_LTC2991_V3ValueString             "AKI2C_LTC2991_V3_VALUE"
+#define AKI2C_LTC2991_V3OffsetString            "AKI2C_LTC2991_V3_OFFSET"
+#define AKI2C_LTC2991_V3FactorString            "AKI2C_LTC2991_V3_FACTOR"
+#define AKI2C_LTC2991_V4ValueString             "AKI2C_LTC2991_V4_VALUE"
+#define AKI2C_LTC2991_V4OffsetString            "AKI2C_LTC2991_V4_OFFSET"
+#define AKI2C_LTC2991_V4FactorString            "AKI2C_LTC2991_V4_FACTOR"
+#define AKI2C_LTC2991_V5ValueString             "AKI2C_LTC2991_V5_VALUE"
+#define AKI2C_LTC2991_V5OffsetString            "AKI2C_LTC2991_V5_OFFSET"
+#define AKI2C_LTC2991_V5FactorString            "AKI2C_LTC2991_V5_FACTOR"
+#define AKI2C_LTC2991_V6ValueString             "AKI2C_LTC2991_V6_VALUE"
+#define AKI2C_LTC2991_V6OffsetString            "AKI2C_LTC2991_V6_OFFSET"
+#define AKI2C_LTC2991_V6FactorString            "AKI2C_LTC2991_V6_FACTOR"
+#define AKI2C_LTC2991_V7ValueString             "AKI2C_LTC2991_V7_VALUE"
+#define AKI2C_LTC2991_V7OffsetString            "AKI2C_LTC2991_V7_OFFSET"
+#define AKI2C_LTC2991_V7FactorString            "AKI2C_LTC2991_V7_FACTOR"
+#define AKI2C_LTC2991_V8ValueString             "AKI2C_LTC2991_V8_VALUE"
+#define AKI2C_LTC2991_V8OffsetString            "AKI2C_LTC2991_V8_OFFSET"
+#define AKI2C_LTC2991_V8FactorString            "AKI2C_LTC2991_V8_FACTOR"
+#define AKI2C_LTC2991_VccValueString            "AKI2C_LTC2991_VCC_VALUE"
+#define AKI2C_LTC2991_TIntValueString           "AKI2C_LTC2991_TINT_VALUE"
 
-#define AKI2CLTC2991V1ValueString             "AKI2C_LTC2991_V1_VALUE"
-#define AKI2CLTC2991V1OffsetString            "AKI2C_LTC2991_V1_OFFSET"
-#define AKI2CLTC2991V1FactorString            "AKI2C_LTC2991_V1_FACTOR"
-#define AKI2CLTC2991V2ValueString             "AKI2C_LTC2991_V2_VALUE"
-#define AKI2CLTC2991V2OffsetString            "AKI2C_LTC2991_V2_OFFSET"
-#define AKI2CLTC2991V2FactorString            "AKI2C_LTC2991_V2_FACTOR"
-#define AKI2CLTC2991V3ValueString             "AKI2C_LTC2991_V3_VALUE"
-#define AKI2CLTC2991V3OffsetString            "AKI2C_LTC2991_V3_OFFSET"
-#define AKI2CLTC2991V3FactorString            "AKI2C_LTC2991_V3_FACTOR"
-#define AKI2CLTC2991V4ValueString             "AKI2C_LTC2991_V4_VALUE"
-#define AKI2CLTC2991V4OffsetString            "AKI2C_LTC2991_V4_OFFSET"
-#define AKI2CLTC2991V4FactorString            "AKI2C_LTC2991_V4_FACTOR"
-#define AKI2CLTC2991V5ValueString             "AKI2C_LTC2991_V5_VALUE"
-#define AKI2CLTC2991V5OffsetString            "AKI2C_LTC2991_V5_OFFSET"
-#define AKI2CLTC2991V5FactorString            "AKI2C_LTC2991_V5_FACTOR"
-#define AKI2CLTC2991V6ValueString             "AKI2C_LTC2991_V6_VALUE"
-#define AKI2CLTC2991V6OffsetString            "AKI2C_LTC2991_V6_OFFSET"
-#define AKI2CLTC2991V6FactorString            "AKI2C_LTC2991_V6_FACTOR"
-#define AKI2CLTC2991V7ValueString             "AKI2C_LTC2991_V7_VALUE"
-#define AKI2CLTC2991V7OffsetString            "AKI2C_LTC2991_V7_OFFSET"
-#define AKI2CLTC2991V7FactorString            "AKI2C_LTC2991_V7_FACTOR"
-#define AKI2CLTC2991V8ValueString             "AKI2C_LTC2991_V8_VALUE"
-#define AKI2CLTC2991V8OffsetString            "AKI2C_LTC2991_V8_OFFSET"
-#define AKI2CLTC2991V8FactorString            "AKI2C_LTC2991_V8_FACTOR"
-#define AKI2CLTC2991VccValueString            "AKI2C_LTC2991_VCC_VALUE"
-#define AKI2CLTC2991TIntValueString           "AKI2C_LTC2991_TINT_VALUE"
-
-/** Driver for AK-NORD XT-PICO-SXL I2C LTC2991 sensor chip access over TCP/IP socket */
+/*
+ * Chip       : Linear LTC2991
+ * Function   : voltage / temperature sensor
+ * Bus        : I2C
+ * Access     : TCP/IP socket on AK-NORD XT-PICO-SX
+ */
 class AKI2C_LTC2991: public AKI2C {
 public:
 	AKI2C_LTC2991(const char *portName, const char *ipPort,

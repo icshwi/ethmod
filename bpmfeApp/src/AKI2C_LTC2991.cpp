@@ -67,8 +67,6 @@ asynStatus AKI2C_LTC2991::write(int addr, unsigned char reg, unsigned char val) 
 
 void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
 		int offsetParam, int factorParam, unsigned int raw) {
-//    asynStatus status = asynSuccess;
-    //const char *functionName = "convertToVoltage";
     double volts = 0.0;
     double offset = 0.0;
     double factor = 1.0;
@@ -91,8 +89,6 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
 
 void AKI2C_LTC2991::convertToTemperature(int addr, int valueParam,
 		unsigned int raw) {
-//    asynStatus status = asynSuccess;
-    //const char *functionName = "convertToVoltage";
     double temp = 0.0;
 
     if (raw & 0x8000) {
@@ -175,10 +171,6 @@ asynStatus AKI2C_LTC2991::read(int addr, unsigned char reg) {
     		| (unsigned int)data[AKI2C_LTC2991_TINT_LSB_REG];
     convertToTemperature(addr, AKI2C_LTC2991_TInt_Value, raw);
 
-    /* Done in calling method.. */
-//    /* Do callbacks so higher layers see any changes */
-//    callParamCallbacks(addr, addr);
-
 	return status;
 }
 
@@ -260,34 +252,34 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2CLTC2991ReadString,          asynParamInt32,   &AKI2C_LTC2991_Read);
-    createParam(AKI2CLTC2991TriggerString,       asynParamInt32,   &AKI2C_LTC2991_Trigger);
-    createParam(AKI2CLTC2991V1ValueString,       asynParamFloat64, &AKI2C_LTC2991_V1_Value);
-    createParam(AKI2CLTC2991V1OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V1_Offset);
-    createParam(AKI2CLTC2991V1FactorString,      asynParamFloat64, &AKI2C_LTC2991_V1_Factor);
-    createParam(AKI2CLTC2991V2ValueString,       asynParamFloat64, &AKI2C_LTC2991_V2_Value);
-    createParam(AKI2CLTC2991V2OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V2_Offset);
-    createParam(AKI2CLTC2991V2FactorString,      asynParamFloat64, &AKI2C_LTC2991_V2_Factor);
-    createParam(AKI2CLTC2991V3ValueString,       asynParamFloat64, &AKI2C_LTC2991_V3_Value);
-    createParam(AKI2CLTC2991V3OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V3_Offset);
-    createParam(AKI2CLTC2991V3FactorString,      asynParamFloat64, &AKI2C_LTC2991_V3_Factor);
-    createParam(AKI2CLTC2991V4ValueString,       asynParamFloat64, &AKI2C_LTC2991_V4_Value);
-    createParam(AKI2CLTC2991V4OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V4_Offset);
-    createParam(AKI2CLTC2991V4FactorString,      asynParamFloat64, &AKI2C_LTC2991_V4_Factor);
-    createParam(AKI2CLTC2991V5ValueString,       asynParamFloat64, &AKI2C_LTC2991_V5_Value);
-    createParam(AKI2CLTC2991V5OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V5_Offset);
-    createParam(AKI2CLTC2991V5FactorString,      asynParamFloat64, &AKI2C_LTC2991_V5_Factor);
-    createParam(AKI2CLTC2991V6ValueString,       asynParamFloat64, &AKI2C_LTC2991_V6_Value);
-    createParam(AKI2CLTC2991V6OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V6_Offset);
-    createParam(AKI2CLTC2991V6FactorString,      asynParamFloat64, &AKI2C_LTC2991_V6_Factor);
-    createParam(AKI2CLTC2991V7ValueString,       asynParamFloat64, &AKI2C_LTC2991_V7_Value);
-    createParam(AKI2CLTC2991V7OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V7_Offset);
-    createParam(AKI2CLTC2991V7FactorString,      asynParamFloat64, &AKI2C_LTC2991_V7_Factor);
-    createParam(AKI2CLTC2991V8ValueString,       asynParamFloat64, &AKI2C_LTC2991_V8_Value);
-    createParam(AKI2CLTC2991V8OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V8_Offset);
-    createParam(AKI2CLTC2991V8FactorString,      asynParamFloat64, &AKI2C_LTC2991_V8_Factor);
-    createParam(AKI2CLTC2991VccValueString,      asynParamFloat64, &AKI2C_LTC2991_Vcc_Value);
-    createParam(AKI2CLTC2991TIntValueString,     asynParamFloat64, &AKI2C_LTC2991_TInt_Value);
+    createParam(AKI2C_LTC2991_ReadString,          asynParamInt32,   &AKI2C_LTC2991_Read);
+    createParam(AKI2C_LTC2991_TriggerString,       asynParamInt32,   &AKI2C_LTC2991_Trigger);
+    createParam(AKI2C_LTC2991_V1ValueString,       asynParamFloat64, &AKI2C_LTC2991_V1_Value);
+    createParam(AKI2C_LTC2991_V1OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V1_Offset);
+    createParam(AKI2C_LTC2991_V1FactorString,      asynParamFloat64, &AKI2C_LTC2991_V1_Factor);
+    createParam(AKI2C_LTC2991_V2ValueString,       asynParamFloat64, &AKI2C_LTC2991_V2_Value);
+    createParam(AKI2C_LTC2991_V2OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V2_Offset);
+    createParam(AKI2C_LTC2991_V2FactorString,      asynParamFloat64, &AKI2C_LTC2991_V2_Factor);
+    createParam(AKI2C_LTC2991_V3ValueString,       asynParamFloat64, &AKI2C_LTC2991_V3_Value);
+    createParam(AKI2C_LTC2991_V3OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V3_Offset);
+    createParam(AKI2C_LTC2991_V3FactorString,      asynParamFloat64, &AKI2C_LTC2991_V3_Factor);
+    createParam(AKI2C_LTC2991_V4ValueString,       asynParamFloat64, &AKI2C_LTC2991_V4_Value);
+    createParam(AKI2C_LTC2991_V4OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V4_Offset);
+    createParam(AKI2C_LTC2991_V4FactorString,      asynParamFloat64, &AKI2C_LTC2991_V4_Factor);
+    createParam(AKI2C_LTC2991_V5ValueString,       asynParamFloat64, &AKI2C_LTC2991_V5_Value);
+    createParam(AKI2C_LTC2991_V5OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V5_Offset);
+    createParam(AKI2C_LTC2991_V5FactorString,      asynParamFloat64, &AKI2C_LTC2991_V5_Factor);
+    createParam(AKI2C_LTC2991_V6ValueString,       asynParamFloat64, &AKI2C_LTC2991_V6_Value);
+    createParam(AKI2C_LTC2991_V6OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V6_Offset);
+    createParam(AKI2C_LTC2991_V6FactorString,      asynParamFloat64, &AKI2C_LTC2991_V6_Factor);
+    createParam(AKI2C_LTC2991_V7ValueString,       asynParamFloat64, &AKI2C_LTC2991_V7_Value);
+    createParam(AKI2C_LTC2991_V7OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V7_Offset);
+    createParam(AKI2C_LTC2991_V7FactorString,      asynParamFloat64, &AKI2C_LTC2991_V7_Factor);
+    createParam(AKI2C_LTC2991_V8ValueString,       asynParamFloat64, &AKI2C_LTC2991_V8_Value);
+    createParam(AKI2C_LTC2991_V8OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V8_Offset);
+    createParam(AKI2C_LTC2991_V8FactorString,      asynParamFloat64, &AKI2C_LTC2991_V8_Factor);
+    createParam(AKI2C_LTC2991_VccValueString,      asynParamFloat64, &AKI2C_LTC2991_Vcc_Value);
+    createParam(AKI2C_LTC2991_TIntValueString,     asynParamFloat64, &AKI2C_LTC2991_TInt_Value);
 
     status = 0;
     for (int i = 0; i < devCount; i++) {
