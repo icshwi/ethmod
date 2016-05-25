@@ -28,7 +28,7 @@ epicsEnvSet("I2C_TMP100_PORT",     "AK_I2C_TMP100")
 epicsEnvSet("I2C_EEPROM_PORT",   "AK_I2C_EEPROM")
 epicsEnvSet("I2C_DS28CM00_PORT",    "AK_I2C_DS28CM00")
 epicsEnvSet("I2C_RTC_PORT",      "AK_I2C_RTC")
-epicsEnvSet("I2C_IOEXP_PORT",    "AK_I2C_IOEXP")
+epicsEnvSet("I2C_TCA9555_PORT",    "AK_I2C_TCA9555")
 epicsEnvSet("I2C_LTC2991_PORT",  "AK_I2C_LTC2991")
 epicsEnvSet("I2C_IP_PORT",       "AK_I2C_COMM")
 
@@ -123,10 +123,10 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.100.100:1002")
 #        int devCount, const char *devAddrs,
 #        int muxAddr, int muxBus,
 #        int priority, int stackSize);
-AKI2CDS28CM00Configure($(I2C_DS28CM00_PORT), $(I2C_IP_PORT), 1, "0x50", 0x70, 0, 1, 0, 0)
-dbLoadRecords("$(BPMFE)/db/AKI2C_DS28CM00.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_DS28CM00_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
-asynSetTraceIOMask($(I2C_DS28CM00_PORT),0,255)
-asynSetTraceMask($(I2C_DS28CM00_PORT),0,255)
+#AKI2CDS28CM00Configure($(I2C_DS28CM00_PORT), $(I2C_IP_PORT), 1, "0x50", 0x70, 0, 1, 0, 0)
+#dbLoadRecords("$(BPMFE)/db/AKI2C_DS28CM00.template",      "P=$(PREFIX),R=I2C1:IdNum1:,PORT=$(I2C_DS28CM00_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
+#asynSetTraceIOMask($(I2C_DS28CM00_PORT),0,255)
+#asynSetTraceMask($(I2C_DS28CM00_PORT),0,255)
 
 # AKI2CRTCConfigure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,
@@ -137,14 +137,14 @@ asynSetTraceMask($(I2C_DS28CM00_PORT),0,255)
 #asynSetTraceIOMask($(I2C_RTC_PORT),0,255)
 #asynSetTraceMask($(I2C_RTC_PORT),0,255)
 
-# AKI2CIOExpConfigure(const char *portName, const char *ipPort,
+# AKI2CTCA9555Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,
 #        int muxAddr, int muxBus,
 #        int priority, int stackSize);
-#AKI2CIOExpConfigure($(I2C_IOEXP_PORT), $(I2C_IP_PORT), 1, "0x20", 0x70, 0, 1, 0, 0)
-#dbLoadRecords("$(BPMFE)/db/AKI2CIOExp.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_IOEXP_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
-#asynSetTraceIOMask($(I2C_IOEXP_PORT),0,255)
-#asynSetTraceMask($(I2C_IOEXP_PORT),0,255)
+AKI2CTCA9555Configure($(I2C_TCA9555_PORT), $(I2C_IP_PORT), 1, "0x20", 0x70, 0, 1, 0, 0)
+dbLoadRecords("$(BPMFE)/db/AKI2C_TCA9555.template",        "P=$(PREFIX),R=I2C1:IOExp1:,PORT=$(I2C_TCA9555_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
+asynSetTraceIOMask($(I2C_TCA9555_PORT),0,255)
+asynSetTraceMask($(I2C_TCA9555_PORT),0,255)
 
 # AKI2CLTC2991Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devAddrs,

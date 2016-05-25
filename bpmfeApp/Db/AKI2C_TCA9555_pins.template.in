@@ -1,0 +1,18 @@
+record(bo, "$(P)$(R)Pin$(N)")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_PIN$(N)")
+   field(SCAN, "Passive")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+}
+
+record(bi, "$(P)$(R)Pin$(N)_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_PIN$(N)")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+}
+

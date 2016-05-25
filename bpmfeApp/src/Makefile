@@ -22,7 +22,7 @@ bpmfe_SRCS += AKI2C_TMP100.cpp
 bpmfe_SRCS += AKI2CEeprom.cpp
 bpmfe_SRCS += AKI2C_DS28CM00.cpp
 bpmfe_SRCS += AKI2CRTC.cpp
-bpmfe_SRCS += AKI2CIOExp.cpp
+bpmfe_SRCS += AKI2C_TCA9555.cpp
 bpmfe_SRCS += AKI2C_LTC2991.cpp
 
 PROD_LIBS += asyn
