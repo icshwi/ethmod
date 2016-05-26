@@ -33,10 +33,10 @@
 #define AKI2C_LTC2991_V7_LSB_REG				0x17
 #define AKI2C_LTC2991_V8_MSB_REG				0x18
 #define AKI2C_LTC2991_V8_LSB_REG				0x19
-#define AKI2C_LTC2991_VCC_MSB_REG				0x1A
-#define AKI2C_LTC2991_VCC_LSB_REG				0x1B
-#define AKI2C_LTC2991_TINT_MSB_REG				0x1C
-#define AKI2C_LTC2991_TINT_LSB_REG				0x1D
+#define AKI2C_LTC2991_TINT_MSB_REG				0x1A
+#define AKI2C_LTC2991_TINT_LSB_REG				0x1B
+#define AKI2C_LTC2991_VCC_MSB_REG				0x1C
+#define AKI2C_LTC2991_VCC_LSB_REG				0x1D
 
 /* Enable all Vx channels for voltage monitoring,
  * enable Internal temperature and Vcc monitoring */

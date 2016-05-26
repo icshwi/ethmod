@@ -70,6 +70,7 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
     double volts = 0.0;
     double offset = 0.0;
     double factor = 1.0;
+    int val = 0;
 
     if (offsetParam != -1) {
     	getDoubleParam(addr, offsetParam, &offset);
@@ -80,9 +81,17 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
 
     if (raw & 0x8000) {
     	/* Data is valid */
-    	raw &= 0x7FFF;
+    	if (raw & 0x4000) {
+    		/* if bit 14 (SIGN) == 1 we have negative value */
+    		val = (raw & 0x3FFF) | ~((1 << 14) - 1);
+    	} else {
+    		val = (raw & 0x3FFF);
+    	}
     	/* LSB = 305.18 uV ; 2.5V / 2^13 */
-    	volts = factor * ((double)raw * 305.18 / 1000000.0) + offset;
+    	volts = factor * ((double)val * 305.18 / 1000000.0) + offset;
+    	if (valueParam == AKI2C_LTC2991_Vcc_Value) {
+    		volts += 2.5;
+    	}
     	setDoubleParam(addr, valueParam, volts);
     }
 }
@@ -90,12 +99,19 @@ void AKI2C_LTC2991::convertToVoltage(int addr, int valueParam,
 void AKI2C_LTC2991::convertToTemperature(int addr, int valueParam,
 		unsigned int raw) {
     double temp = 0.0;
+    int val = 0;
 
     if (raw & 0x8000) {
     	/* Data is valid */
-    	raw &= 0x7FFF;
+    	if (raw & 0x1000) {
+    		/* if bit 12 == 1 we have negative value */
+    		val = (raw & 0x1FFF) | ~((1 << 13) - 1);
+    	} else {
+    		val = (raw & 0x1FFF);
+    	}
+
     	/* LSB = 0.0625 degrees */
-    	temp = (double)raw * 0.0625;
+    	temp = (double)val * 0.0625;
     	setDoubleParam(addr, valueParam, temp);
     }
 }
@@ -118,8 +134,8 @@ asynStatus AKI2C_LTC2991::read(int addr, unsigned char reg) {
 		return status;
 	}
 
-	/* Read all 29 registers at once */
-    len = 29;
+	/* Read all 30 registers at once */
+    len = 30;
     status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
