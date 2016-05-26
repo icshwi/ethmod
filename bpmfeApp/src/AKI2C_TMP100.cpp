@@ -71,7 +71,8 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     unsigned char data[2] = {0};
     int devAddr, muxAddr, muxBus;
     unsigned short len;
-    short raw;
+    unsigned short raw;
+    int val;
     double temp;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
@@ -92,8 +93,15 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     }
 
     /* Convert to degrees */
-    raw = (mResp[2] << 8 | mResp[3]) >> 4;
-    temp = (double)raw / 16.0;
+    raw = ((unsigned short)mResp[2] << 8 | mResp[3]) >> 4;
+    if (raw & 0x800) {
+		/* if bit 11 == 1 we have negative value */
+		val = (raw & 0xFFF) | ~((1 << 12) - 1);
+	} else {
+		val = (raw & 0xFFF);
+    }
+	/* LSB = 0.0625 degrees */
+	temp = (double)val * 0.0625;
 
     printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
 
