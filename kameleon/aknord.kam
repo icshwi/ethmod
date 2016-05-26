@@ -1,9 +1,11 @@
-# author: Ricardo Fernandes
-# email: ricardo.fernandes@esss.se
+# author: Hinko Kocevar
+# email: hinko.kocevar@esss.se
 # copyright: (C) 2015-2016 European Spallation Source (ESS)
-# version: 1.0.5
-# date: 2016/FEB/17
-# description: File that describes the commands/statuses that the tool Kameleon receives/sends from/to clients through the TCP/IP protocol.
+# version: 1.0.0
+# date: 2016/MAY/17
+# description: File that describes the commands/statuses that the tool Kameleon
+#              receives/sends from/to clients through the TCP/IP protocol when
+#              working with AK-NORD XT-Pico-SXL board.
 
 
 
@@ -36,6 +38,7 @@
 #    status     : (optional) integer or list that specifies the index(es) of the status(es) (stored in the "STATUSES" list) to send to the client after the command is selected. The first status (stored in "STATUSES" list) is at index 1. If set to 0 or not specified, then no status is sent.
 #    wait       : (optional) integer that specifies the time to wait (in milliseconds) before sending the status to the client. If set to 0 or not specified, then the status is immediately sent (i.e. right after the command is received).
 
+# XT-Pico-SXL takes binary commands over TCP/IP socket.
 COMMANDS = [
             ["TempRead",        "0200080348010052000203".decode("HEX"), 1, 1000],
             ["TempWrite",       "02000a03480101570002000003".decode("HEX"), 2],
@@ -70,6 +73,7 @@ COMMANDS = [
 #    suffix     : (optional) string that contains the suffix to insert at the end of the value to send to the client. If not specified, then nothing is inserted.
 #    timeout    : (optional) integer that specifies the time-out (in milliseconds) after which the status is sent to the client (i.e. time-based). If set to 0 or not specified, then the status is only sent after receiving a command from the client (i.e. event-based).
 
+# XT-Pico-SXL sends binary responses over TCP/IP socket.
 STATUSES = [
             ["TempRead",     FIXED, FIXED, "06521133".decode("HEX")],
             ["TempWrite",    FIXED, FIXED, "0657".decode("HEX")],
@@ -78,20 +82,3 @@ STATUSES = [
             ["IOExpReadInp", FIXED, FIXED, "06521122".decode("HEX")],
             ["IOExpReadOut", FIXED, FIXED, "06520044".decode("HEX")],
            ]
-
-
-
-# User-custom Python code
-
-my_value = 0
-
-def my_function_1():
-	global my_value
-	my_value = my_value + 1
-	return math.sin(0.25 * my_value) * 200 + random.randrange(1, 40)  # calculate a sinusoid + some noise and return the result to the client
-
-
-def my_function_2():
-	data = COMMAND_RECEIVED  # variable COMMAND_RECEIVED contains the data received from the client (this variable is managed by Kameleon)
-	return data.upper()  # transform the data received in upper case and return the result to the client
-
