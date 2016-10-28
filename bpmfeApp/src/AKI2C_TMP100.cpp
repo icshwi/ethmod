@@ -78,7 +78,7 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
     getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
     getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
+    printf("%s: devAddr %X, muxAddr %X, muxBus %X\n", functionName, devAddr, muxAddr, muxBus);
 
     status = setMuxBus(addr, muxAddr, muxBus);
 	if (status) {
@@ -93,7 +93,8 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
     }
 
     /* Convert to degrees */
-    raw = ((unsigned short)mResp[2] << 8 | mResp[3]) >> 4;
+    //printf("%s: mResp[2] %X, mResp[3] %X\n", functionName, mResp[2], mResp[3]);
+    raw = ((unsigned short)(mResp[2] & 0xFF) << 8 | (mResp[3] & 0xFF)) >> 4;
     if (raw & 0x800) {
 		/* if bit 11 == 1 we have negative value */
 		val = (raw & 0xFFF) | ~((1 << 12) - 1);
@@ -103,7 +104,7 @@ asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
 	/* LSB = 0.0625 degrees */
 	temp = (double)val * 0.0625;
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
+    printf("%s: devAddr %X, muxAddr %X, muxBus %X temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
 
     setDoubleParam(addr, AKI2C_TMP100_Value, temp);
 
