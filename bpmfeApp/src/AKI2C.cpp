@@ -335,10 +335,10 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int muxAddr, int muxBus) {
 //		return asynSuccess;
 //	}
 
-	printf("%s: SETTING MUX %02X bus %d\n", __func__, muxAddr, muxBus);
-	data = muxBus;
+	data = (1 << muxBus);
 	len = 1;
-	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 1, &data, &len, 0);
+	printf("%s: SETTING MUX %02X bus %d data %02X\n", __func__, muxAddr, muxBus, data);
+	status = xfer(asynAddr, AK_REQ_TYPE_WRITE, muxAddr, 0, &data, &len, 0);
 	if (status) {
 		return status;
 	}
