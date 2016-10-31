@@ -134,6 +134,64 @@ asynStatus AKI2C_TCA9555::readLevelAll(int addr) {
     return status;
 }
 
+asynStatus AKI2C_TCA9555::writeDirection(int addr, unsigned char param, unsigned short val) {
+    asynStatus status = asynSuccess;
+    const char *functionName = "writeOutput";
+    unsigned short regVal;
+    int pin;
+
+    pin = param - AKI2C_TCA9555_DirPin0;
+
+//    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
+    	/* This pin is input, so do nothing */
+//        printf("%s: pin %d is input - will not change level!\n", functionName, pin);
+//    	status = asynError;
+//    } else {
+//    	/* This pin is output, so write output registers */
+    	regVal = changeBit(mPinDirection, pin, val);
+    	status = write(addr, AKI2C_TCA9555_DIRECTION0_REG, regVal);
+        if (status) {
+        	return status;
+        }
+        printf("%s: pin %d, value %d\n", functionName, pin, val);
+        /* Update the local copy of the value */
+        mPinDirection = regVal;
+        /* Update asyn parameters */
+        setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
+//    }
+
+    return status;
+}
+
+asynStatus AKI2C_TCA9555::readDirectionAll(int addr) {
+    asynStatus status = asynSuccess;
+    const char *functionName = "readLevelAll";
+    unsigned short regVal;
+    int pin;
+    int dir;
+
+	status = read(addr, AKI2C_TCA9555_DIRECTION0_REG, &regVal);
+    if (status) {
+    	return status;
+    }
+
+	for (pin = AKI2C_TCA9555_DirPin0; pin <= AKI2C_TCA9555_DirPin15; pin++) {
+//	    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
+	    	/* This pin is input, update individual pin params */
+	        dir = (regVal >> pin) & 1;
+	    	setIntegerParam(addr, pin, dir);
+			printf("%s: pin %d, value %d\n", functionName, pin, dir);
+//	    }
+	}
+
+    /* Update the local copy of the value */
+    mPinDirection = regVal;
+    /* Update asyn parameters */
+    setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
+
+    return status;
+}
+
 asynStatus AKI2C_TCA9555::read(int addr, unsigned char reg, unsigned short *val) {
 	asynStatus status = asynSuccess;
     const char *functionName = "read";
@@ -182,6 +240,8 @@ asynStatus AKI2C_TCA9555::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     	status = readLevelAll(addr);
     } else if ((function >= AKI2C_TCA9555_Pin0) && (function <= AKI2C_TCA9555_Pin15)) {
     	status = writeLevel(addr, function, value);
+    } else if ((function >= AKI2C_TCA9555_DirPin0) && (function <= AKI2C_TCA9555_DirPin15)) {
+    	status = writeDirection(addr, function, value);
     } else if (function < FIRST_AKI2C_TCA9555_PARAM) {
         /* If this parameter belongs to a base class call its method */
     	status = AKI2C::writeInt32(pasynUser, value);
@@ -259,6 +319,23 @@ AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
     createParam(AKI2C_TCA9555_Pin13String,            asynParamInt32,   &AKI2C_TCA9555_Pin13);
     createParam(AKI2C_TCA9555_Pin14String,            asynParamInt32,   &AKI2C_TCA9555_Pin14);
     createParam(AKI2C_TCA9555_Pin15String,            asynParamInt32,   &AKI2C_TCA9555_Pin15);
+    /* These need to be in sequence! */
+    createParam(AKI2C_TCA9555_DirPin0String,          asynParamInt32,   &AKI2C_TCA9555_DirPin0);
+    createParam(AKI2C_TCA9555_DirPin1String,          asynParamInt32,   &AKI2C_TCA9555_DirPin1);
+    createParam(AKI2C_TCA9555_DirPin2String,          asynParamInt32,   &AKI2C_TCA9555_DirPin2);
+    createParam(AKI2C_TCA9555_DirPin3String,          asynParamInt32,   &AKI2C_TCA9555_DirPin3);
+    createParam(AKI2C_TCA9555_DirPin4String,          asynParamInt32,   &AKI2C_TCA9555_DirPin4);
+    createParam(AKI2C_TCA9555_DirPin5String,          asynParamInt32,   &AKI2C_TCA9555_DirPin5);
+    createParam(AKI2C_TCA9555_DirPin6String,          asynParamInt32,   &AKI2C_TCA9555_DirPin6);
+    createParam(AKI2C_TCA9555_DirPin7String,          asynParamInt32,   &AKI2C_TCA9555_DirPin7);
+    createParam(AKI2C_TCA9555_DirPin8String,          asynParamInt32,   &AKI2C_TCA9555_DirPin8);
+    createParam(AKI2C_TCA9555_DirPin9String,          asynParamInt32,   &AKI2C_TCA9555_DirPin9);
+    createParam(AKI2C_TCA9555_DirPin10String,         asynParamInt32,   &AKI2C_TCA9555_DirPin10);
+    createParam(AKI2C_TCA9555_DirPin11String,         asynParamInt32,   &AKI2C_TCA9555_DirPin11);
+    createParam(AKI2C_TCA9555_DirPin12String,         asynParamInt32,   &AKI2C_TCA9555_DirPin12);
+    createParam(AKI2C_TCA9555_DirPin13String,         asynParamInt32,   &AKI2C_TCA9555_DirPin13);
+    createParam(AKI2C_TCA9555_DirPin14String,         asynParamInt32,   &AKI2C_TCA9555_DirPin14);
+    createParam(AKI2C_TCA9555_DirPin15String,         asynParamInt32,   &AKI2C_TCA9555_DirPin15);
 
     /* set some defaults */
     for (int i = 0; i < devCount; i++) {
@@ -267,6 +344,8 @@ AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
 		status |= write(i, AKI2C_TCA9555_OUTPUT0_REG, AKI2C_TCA9555_OUTPUT_VAL);
 		setIntegerParam(i, AKI2C_TCA9555_Polarity, AKI2C_TCA9555_POLARITY_VAL);
 		setIntegerParam(i, AKI2C_TCA9555_Direction, AKI2C_TCA9555_DIRECTION_VAL);
+		/* read actual direction from the ports */
+		status |= readDirectionAll(i);
 		/* read actual level from the ports */
 		status |= readLevelAll(i);
     	/* update port params */

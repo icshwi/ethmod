@@ -1,0 +1,39 @@
+record(bo, "$(P)$(R)LevelPin$(N)")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_LEVEL_PIN$(N)")
+   field(SCAN, "Passive")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+#   field(VAL,  "$(LEVEL)")
+#   field(PINI, "YES")
+}
+
+record(bi, "$(P)$(R)LevelPin$(N)_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_LEVEL_PIN$(N)")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Low")
+   field(ONAM, "High")
+}
+
+record(bo, "$(P)$(R)DirPin$(N)")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_DIR_PIN$(N)")
+   field(SCAN, "Passive")
+   field(ZNAM, "Output")
+   field(ONAM, "Input")
+#   field(VAL,  "$(DIR)")
+#   field(PINI, "YES")
+}
+
+record(bi, "$(P)$(R)DirPin$(N)_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_DIR_PIN$(N)")
+   field(SCAN, "I/O Intr")
+   field(ZNAM, "Output")
+   field(ONAM, "Input")
+}

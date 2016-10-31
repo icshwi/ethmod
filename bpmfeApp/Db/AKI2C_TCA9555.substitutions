@@ -1,0 +1,26 @@
+file AKI2C_TCA9555_dev.template
+{
+   pattern { P    ,R    ,PORT,    ADDR)    ,TIMEOUT     }
+           { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}
+
+file AKI2C_TCA9555_pins.template
+{
+   pattern { P    ,R    ,N   ,PORT,    ADDR)    ,TIMEOUT     }
+           { $(P) ,$(R) ,0   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,1   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,2   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,3   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,4   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,5   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,6   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,7   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,8   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,9   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,10  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,11  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,12  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,13  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,14  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,15  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}
