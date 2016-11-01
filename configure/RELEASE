@@ -25,8 +25,8 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
 
 SUPPORT=${MY_EPICS_SUPPORT}
-ASYN=$(SUPPORT)/m-epics-asyn
-AUTOSAVE=$(SUPPORT)/m-epics-autosave
+ASYN=$(SUPPORT)/asyn4-30
+AUTOSAVE=$(SUPPORT)/autosave-R5-7-1
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=${MY_EPICS_BASE}
