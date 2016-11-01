@@ -18,12 +18,12 @@ $(PROD_NAME)_DBD += bpmfeSupport.dbd
 # specify all source files to be compiled and added to the library
 bpmfe_SRCS += AKBase.cpp
 bpmfe_SRCS += AKI2C.cpp
-bpmfe_SRCS += AKI2C_TMP100.cpp
-bpmfe_SRCS += AKI2C_AT24LC64.cpp
-bpmfe_SRCS += AKI2C_DS28CM00.cpp
-bpmfe_SRCS += AKI2C_PCF85063TP.cpp
+#bpmfe_SRCS += AKI2C_TMP100.cpp
+#bpmfe_SRCS += AKI2C_AT24LC64.cpp
+#bpmfe_SRCS += AKI2C_DS28CM00.cpp
+#bpmfe_SRCS += AKI2C_PCF85063TP.cpp
 bpmfe_SRCS += AKI2C_TCA9555.cpp
-bpmfe_SRCS += AKI2C_LTC2991.cpp
+#bpmfe_SRCS += AKI2C_LTC2991.cpp
 
 PROD_LIBS += asyn
 

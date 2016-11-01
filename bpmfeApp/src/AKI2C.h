@@ -29,14 +29,12 @@ typedef struct _I2CMuxInfo {
 class AKI2C: public AKBase {
 public:
 	AKI2C(const char *portName, const char *ipPort,
-	        int devCount, const char *devAddrs,
-			int muxAddr, int muxBus,
+	        int devCount, const char *devInfos,
 			int numParams, int interfaceMask, int interruptMask,
 	        int asynFlags, int autoConnect, int priority, int stackSize);
 	virtual ~AKI2C();
 
     /* These are the methods that we override from AKBase */
-//    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     void report(FILE *fp, int details);
     /* These are new methods */
 
@@ -45,10 +43,7 @@ protected:
     asynStatus xfer(int asynAddr, unsigned char type, unsigned char devAddr,
     		unsigned char addrWidth, unsigned char *data, unsigned short *len,
     		unsigned int off, double timeout = 0.3);
-
-//    void updateMuxBus(int muxAddr, int muxBus);
-//    int getMuxBus(int muxAddr);
-    asynStatus setMuxBus(int asynAddr, int muxAddr, int muxBus);
+    asynStatus setMuxBus(int asynAddr, int devAddr);
 
     /* Our parameter list */
     int AKI2CDevAddr;
@@ -65,15 +60,13 @@ private:
     		unsigned int off);
     asynStatus unpack(unsigned char type, unsigned char *data,
     		unsigned short *len, asynStatus status);
+    asynStatus doXfer(int asynAddr, unsigned char type, unsigned char devAddr,
+    		unsigned char addrWidth, unsigned char *data, unsigned short *len,
+    		unsigned int off, double timeout = 0.3);
 
     static I2CMuxInfo mMuxInfo[AK_I2C_MUX_MAX];
-//    unsigned char mStatus;
-//    char mStatusMsg[AK_I2C_STATUS_MSG_SZ];
-//    unsigned char mMuxAddr;
-//    unsigned char mMuxBus;
 };
 
 #define NUM_AKI2C_PARAMS ((int)(&LAST_AKI2C_PARAM - &FIRST_AKI2C_PARAM + 1))
-//#define NUM_AKI2C_PARAMS 0
 
 #endif /* _AKI2C_H_ */

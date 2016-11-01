@@ -22,33 +22,26 @@
 
 #define AKI2C_TCA9555_MAX_PINS					16
 
-/* Use non-inverted polarity */
-#define AKI2C_TCA9555_POLARITY_VAL				0x0000
-/* Ports 0 & 1 are input */
-#define AKI2C_TCA9555_DIRECTION_VAL				0xFFFF
-/* Port 0 & 1 levels are low */
-#define AKI2C_TCA9555_OUTPUT_VAL				0x0000
-
 #define AKI2C_TCA9555_ReadString                "AKI2C_TCA9555_READ"
 #define AKI2C_TCA9555_LevelString               "AKI2C_TCA9555_LEVEL"
 #define AKI2C_TCA9555_PolarityString            "AKI2C_TCA9555_POLARITY"
 #define AKI2C_TCA9555_DirectionString           "AKI2C_TCA9555_DIRECTION"
-#define AKI2C_TCA9555_Pin0String                "AKI2C_TCA9555_LEVEL_PIN0"
-#define AKI2C_TCA9555_Pin1String                "AKI2C_TCA9555_LEVEL_PIN1"
-#define AKI2C_TCA9555_Pin2String                "AKI2C_TCA9555_LEVEL_PIN2"
-#define AKI2C_TCA9555_Pin3String                "AKI2C_TCA9555_LEVEL_PIN3"
-#define AKI2C_TCA9555_Pin4String                "AKI2C_TCA9555_LEVEL_PIN4"
-#define AKI2C_TCA9555_Pin5String                "AKI2C_TCA9555_LEVEL_PIN5"
-#define AKI2C_TCA9555_Pin6String                "AKI2C_TCA9555_LEVEL_PIN6"
-#define AKI2C_TCA9555_Pin7String                "AKI2C_TCA9555_LEVEL_PIN7"
-#define AKI2C_TCA9555_Pin8String                "AKI2C_TCA9555_LEVEL_PIN8"
-#define AKI2C_TCA9555_Pin9String                "AKI2C_TCA9555_LEVEL_PIN9"
-#define AKI2C_TCA9555_Pin10String               "AKI2C_TCA9555_LEVEL_PIN10"
-#define AKI2C_TCA9555_Pin11String               "AKI2C_TCA9555_LEVEL_PIN11"
-#define AKI2C_TCA9555_Pin12String               "AKI2C_TCA9555_LEVEL_PIN12"
-#define AKI2C_TCA9555_Pin13String               "AKI2C_TCA9555_LEVEL_PIN13"
-#define AKI2C_TCA9555_Pin14String               "AKI2C_TCA9555_LEVEL_PIN14"
-#define AKI2C_TCA9555_Pin15String               "AKI2C_TCA9555_LEVEL_PIN15"
+#define AKI2C_TCA9555_LevelPin0String           "AKI2C_TCA9555_LEVEL_PIN0"
+#define AKI2C_TCA9555_LevelPin1String           "AKI2C_TCA9555_LEVEL_PIN1"
+#define AKI2C_TCA9555_LevelPin2String           "AKI2C_TCA9555_LEVEL_PIN2"
+#define AKI2C_TCA9555_LevelPin3String           "AKI2C_TCA9555_LEVEL_PIN3"
+#define AKI2C_TCA9555_LevelPin4String           "AKI2C_TCA9555_LEVEL_PIN4"
+#define AKI2C_TCA9555_LevelPin5String           "AKI2C_TCA9555_LEVEL_PIN5"
+#define AKI2C_TCA9555_LevelPin6String           "AKI2C_TCA9555_LEVEL_PIN6"
+#define AKI2C_TCA9555_LevelPin7String           "AKI2C_TCA9555_LEVEL_PIN7"
+#define AKI2C_TCA9555_LevelPin8String           "AKI2C_TCA9555_LEVEL_PIN8"
+#define AKI2C_TCA9555_LevelPin9String           "AKI2C_TCA9555_LEVEL_PIN9"
+#define AKI2C_TCA9555_LevelPin10String          "AKI2C_TCA9555_LEVEL_PIN10"
+#define AKI2C_TCA9555_LevelPin11String          "AKI2C_TCA9555_LEVEL_PIN11"
+#define AKI2C_TCA9555_LevelPin12String          "AKI2C_TCA9555_LEVEL_PIN12"
+#define AKI2C_TCA9555_LevelPin13String          "AKI2C_TCA9555_LEVEL_PIN13"
+#define AKI2C_TCA9555_LevelPin14String          "AKI2C_TCA9555_LEVEL_PIN14"
+#define AKI2C_TCA9555_LevelPin15String          "AKI2C_TCA9555_LEVEL_PIN15"
 #define AKI2C_TCA9555_DirPin0String             "AKI2C_TCA9555_DIR_PIN0"
 #define AKI2C_TCA9555_DirPin1String             "AKI2C_TCA9555_DIR_PIN1"
 #define AKI2C_TCA9555_DirPin2String             "AKI2C_TCA9555_DIR_PIN2"
@@ -76,8 +69,7 @@
 class AKI2C_TCA9555: public AKI2C {
 public:
 	AKI2C_TCA9555(const char *portName, const char *ipPort,
-	        int devCount, const char *devAddrs,
-			int muxAddr, int muxBus,
+	        int devCount, const char *devInfos,
 			int priority, int stackSize);
 	virtual ~AKI2C_TCA9555();
 
@@ -93,22 +85,22 @@ protected:
     int AKI2C_TCA9555_Level;
     int AKI2C_TCA9555_Polarity;
     int AKI2C_TCA9555_Direction;
-    int AKI2C_TCA9555_Pin0;
-    int AKI2C_TCA9555_Pin1;
-    int AKI2C_TCA9555_Pin2;
-    int AKI2C_TCA9555_Pin3;
-    int AKI2C_TCA9555_Pin4;
-    int AKI2C_TCA9555_Pin5;
-    int AKI2C_TCA9555_Pin6;
-    int AKI2C_TCA9555_Pin7;
-    int AKI2C_TCA9555_Pin8;
-    int AKI2C_TCA9555_Pin9;
-    int AKI2C_TCA9555_Pin10;
-    int AKI2C_TCA9555_Pin11;
-    int AKI2C_TCA9555_Pin12;
-    int AKI2C_TCA9555_Pin13;
-    int AKI2C_TCA9555_Pin14;
-    int AKI2C_TCA9555_Pin15;
+    int AKI2C_TCA9555_LevelPin0;
+    int AKI2C_TCA9555_LevelPin1;
+    int AKI2C_TCA9555_LevelPin2;
+    int AKI2C_TCA9555_LevelPin3;
+    int AKI2C_TCA9555_LevelPin4;
+    int AKI2C_TCA9555_LevelPin5;
+    int AKI2C_TCA9555_LevelPin6;
+    int AKI2C_TCA9555_LevelPin7;
+    int AKI2C_TCA9555_LevelPin8;
+    int AKI2C_TCA9555_LevelPin9;
+    int AKI2C_TCA9555_LevelPin10;
+    int AKI2C_TCA9555_LevelPin11;
+    int AKI2C_TCA9555_LevelPin12;
+    int AKI2C_TCA9555_LevelPin13;
+    int AKI2C_TCA9555_LevelPin14;
+    int AKI2C_TCA9555_LevelPin15;
     int AKI2C_TCA9555_DirPin0;
     int AKI2C_TCA9555_DirPin1;
     int AKI2C_TCA9555_DirPin2;
@@ -132,13 +124,9 @@ private:
     asynStatus read(int addr, unsigned char reg, unsigned short *val);
     asynStatus write(int addr, unsigned char reg, unsigned short val);
     asynStatus writeLevel(int addr, unsigned char param, unsigned short val);
-    asynStatus readLevel(int addr, unsigned char param);
     asynStatus readLevelAll(int addr);
     asynStatus writeDirection(int addr, unsigned char param, unsigned short val);
     asynStatus readDirectionAll(int addr);
-
-    unsigned short mPinLevel;
-    unsigned short mPinDirection;
 };
 
 #define NUM_AKI2C_TCA9555_PARAMS ((int)(&LAST_AKI2C_TCA9555_PARAM - &FIRST_AKI2C_TCA9555_PARAM + 1))

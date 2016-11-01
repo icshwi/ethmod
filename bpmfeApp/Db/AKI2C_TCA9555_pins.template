@@ -5,8 +5,6 @@ record(bo, "$(P)$(R)LevelPin$(N)")
    field(SCAN, "Passive")
    field(ZNAM, "Low")
    field(ONAM, "High")
-#   field(VAL,  "$(LEVEL)")
-#   field(PINI, "YES")
 }
 
 record(bi, "$(P)$(R)LevelPin$(N)_RBV")
@@ -25,8 +23,6 @@ record(bo, "$(P)$(R)DirPin$(N)")
    field(SCAN, "Passive")
    field(ZNAM, "Output")
    field(ONAM, "Input")
-#   field(VAL,  "$(DIR)")
-#   field(PINI, "YES")
 }
 
 record(bi, "$(P)$(R)DirPin$(N)_RBV")

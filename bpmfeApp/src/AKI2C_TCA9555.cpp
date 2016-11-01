@@ -47,27 +47,17 @@ int AKI2C_TCA9555::changeBit(int val, int bit, int level) {
 
 asynStatus AKI2C_TCA9555::write(int addr, unsigned char reg, unsigned short val) {
 	asynStatus status = asynSuccess;
-    const char *functionName = "write";
     unsigned char data[2] = {0};
-    int devAddr, muxAddr, muxBus;
+    int devAddr;
     unsigned short len;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(addr, muxAddr, muxBus);
-	if (status) {
-		return status;
-	}
-
-	printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %d ports raw %08X\n",
-			functionName, devAddr, muxAddr, muxBus, reg, val);
-
+	/* write both port 0 & 1 in one transfer - hence len == 2 */
+	len = 2;
 	data[0] = val & 0xff;
 	data[1] = (val >> 8) & 0xff;
-	len = 2;
+    printf("%s::%s(): reg %d, WRITE value 0x%04X\n", driverName, __func__, reg, val);
     status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
@@ -76,140 +66,15 @@ asynStatus AKI2C_TCA9555::write(int addr, unsigned char reg, unsigned short val)
     return status;
 }
 
-asynStatus AKI2C_TCA9555::writeLevel(int addr, unsigned char param, unsigned short val) {
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeOutput";
-    unsigned short regVal;
-    int pin;
-
-    pin = param - AKI2C_TCA9555_Pin0;
-
-    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
-    	/* This pin is input, so do nothing */
-        printf("%s: pin %d is input - will not change level!\n", functionName, pin);
-    	status = asynError;
-    } else {
-    	/* This pin is output, so write output registers */
-    	regVal = changeBit(mPinLevel, pin, val);
-    	status = write(addr, AKI2C_TCA9555_OUTPUT0_REG, regVal);
-        if (status) {
-        	return status;
-        }
-        printf("%s: pin %d, value %d\n", functionName, pin, val);
-        /* Update the local copy of the value */
-        mPinLevel = regVal;
-        /* Update asyn parameters */
-        setIntegerParam(addr, AKI2C_TCA9555_Level, regVal);
-    }
-
-    return status;
-}
-
-asynStatus AKI2C_TCA9555::readLevelAll(int addr) {
-    asynStatus status = asynSuccess;
-    const char *functionName = "readLevelAll";
-    unsigned short regVal;
-    int pin;
-    int level;
-
-	status = read(addr, AKI2C_TCA9555_INPUT0_REG, &regVal);
-    if (status) {
-    	return status;
-    }
-
-	for (pin = AKI2C_TCA9555_Pin0; pin <= AKI2C_TCA9555_Pin15; pin++) {
-	    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
-	    	/* This pin is input, update individual pin params */
-	        level = (regVal >> pin) & 1;
-	    	setIntegerParam(addr, pin, level);
-			printf("%s: pin %d, value %d\n", functionName, pin, level);
-	    }
-	}
-
-    /* Update the local copy of the value */
-    mPinLevel = regVal;
-    /* Update asyn parameters */
-    setIntegerParam(addr, AKI2C_TCA9555_Level, regVal);
-
-    return status;
-}
-
-asynStatus AKI2C_TCA9555::writeDirection(int addr, unsigned char param, unsigned short val) {
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeOutput";
-    unsigned short regVal;
-    int pin;
-
-    pin = param - AKI2C_TCA9555_DirPin0;
-
-//    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
-    	/* This pin is input, so do nothing */
-//        printf("%s: pin %d is input - will not change level!\n", functionName, pin);
-//    	status = asynError;
-//    } else {
-//    	/* This pin is output, so write output registers */
-    	regVal = changeBit(mPinDirection, pin, val);
-    	status = write(addr, AKI2C_TCA9555_DIRECTION0_REG, regVal);
-        if (status) {
-        	return status;
-        }
-        printf("%s: pin %d, value %d\n", functionName, pin, val);
-        /* Update the local copy of the value */
-        mPinDirection = regVal;
-        /* Update asyn parameters */
-        setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
-//    }
-
-    return status;
-}
-
-asynStatus AKI2C_TCA9555::readDirectionAll(int addr) {
-    asynStatus status = asynSuccess;
-    const char *functionName = "readLevelAll";
-    unsigned short regVal;
-    int pin;
-    int dir;
-
-	status = read(addr, AKI2C_TCA9555_DIRECTION0_REG, &regVal);
-    if (status) {
-    	return status;
-    }
-
-	for (pin = AKI2C_TCA9555_DirPin0; pin <= AKI2C_TCA9555_DirPin15; pin++) {
-//	    if (AKI2C_TCA9555_DIRECTION_VAL & (1 << pin)) {
-	    	/* This pin is input, update individual pin params */
-	        dir = (regVal >> pin) & 1;
-	    	setIntegerParam(addr, pin, dir);
-			printf("%s: pin %d, value %d\n", functionName, pin, dir);
-//	    }
-	}
-
-    /* Update the local copy of the value */
-    mPinDirection = regVal;
-    /* Update asyn parameters */
-    setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
-
-    return status;
-}
-
 asynStatus AKI2C_TCA9555::read(int addr, unsigned char reg, unsigned short *val) {
 	asynStatus status = asynSuccess;
-    const char *functionName = "read";
     unsigned char data[2] = {0};
-    int devAddr, muxAddr, muxBus;
+    int devAddr;
     unsigned short len;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(addr, muxAddr, muxBus);
-	if (status) {
-		return status;
-	}
-
-	/* read both port 0 and port 1 in one transfer - hence len == 2 */
+	/* read both port 0 & 1 in one transfer - hence len == 2 */
     len = 2;
     status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
@@ -217,6 +82,107 @@ asynStatus AKI2C_TCA9555::read(int addr, unsigned char reg, unsigned short *val)
     }
 
     *val = (mResp[3] << 8) | mResp[2];
+    printf("%s::%s(): reg %d, READ value 0x%04X\n", driverName, __func__, reg, *val);
+
+    return status;
+}
+
+asynStatus AKI2C_TCA9555::writeLevel(int addr, unsigned char param, unsigned short val) {
+    asynStatus status = asynSuccess;
+    unsigned short regVal;
+    int pin;
+
+	status = read(addr, AKI2C_TCA9555_OUTPUT0_REG, &regVal);
+    if (status) {
+    	return status;
+    }
+
+    pin = param - AKI2C_TCA9555_LevelPin0;
+
+	/* Write to output have no effect to the pin level if pin direction is set
+	 * to input - see TCA9555 datasheet. */
+	regVal = changeBit(regVal, pin, val);
+	status = write(addr, AKI2C_TCA9555_OUTPUT0_REG, regVal);
+	if (status) {
+		return status;
+	}
+
+	printf("%s::%s(): param %d, pin %d, level %d\n", driverName, __func__, param, pin, val);
+	setIntegerParam(addr, AKI2C_TCA9555_Level, regVal);
+
+    return status;
+}
+
+asynStatus AKI2C_TCA9555::readLevelAll(int addr) {
+    asynStatus status = asynSuccess;
+    unsigned short regVal;
+    int param;
+    int pin;
+    int val;
+
+	status = read(addr, AKI2C_TCA9555_INPUT0_REG, &regVal);
+    if (status) {
+    	return status;
+    }
+
+	for (param = AKI2C_TCA9555_LevelPin0; param <= AKI2C_TCA9555_LevelPin15; param++) {
+		/* Input register holds value of the pin level regardless of the
+		 * direction - see TCA9555 datasheet. */
+		pin = param - AKI2C_TCA9555_LevelPin0;
+		val = (regVal >> pin) & 1;
+		setIntegerParam(addr, param, val);
+		printf("%s::%s(): param %d, pin %d, level %d\n", driverName, __func__, param, pin, val);
+	}
+
+    setIntegerParam(addr, AKI2C_TCA9555_Level, regVal);
+
+    return status;
+}
+
+asynStatus AKI2C_TCA9555::writeDirection(int addr, unsigned char param, unsigned short val) {
+    asynStatus status = asynSuccess;
+    unsigned short regVal;
+    int pin;
+
+	status = read(addr, AKI2C_TCA9555_DIRECTION0_REG, &regVal);
+    if (status) {
+    	return status;
+    }
+
+    pin = param - AKI2C_TCA9555_DirPin0;
+
+	regVal = changeBit(regVal, pin, val);
+	status = write(addr, AKI2C_TCA9555_DIRECTION0_REG, regVal);
+	if (status) {
+		return status;
+	}
+
+	printf("%s::%s(): param %d, pin %d, direction %d\n", driverName, __func__, param, pin, val);
+	setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
+
+    return status;
+}
+
+asynStatus AKI2C_TCA9555::readDirectionAll(int addr) {
+    asynStatus status = asynSuccess;
+    unsigned short regVal;
+    int param;
+    int pin;
+    int val;
+
+	status = read(addr, AKI2C_TCA9555_DIRECTION0_REG, &regVal);
+    if (status) {
+    	return status;
+    }
+
+	for (param = AKI2C_TCA9555_DirPin0; param <= AKI2C_TCA9555_DirPin15; param++) {
+		pin = param - AKI2C_TCA9555_DirPin0;
+		val = (regVal >> pin) & 1;
+		setIntegerParam(addr, param, val);
+		printf("%s::%s(): param %d, pin %d, direction %d\n", driverName, __func__, param, pin, val);
+	}
+
+    setIntegerParam(addr, AKI2C_TCA9555_Direction, regVal);
 
     return status;
 }
@@ -238,7 +204,10 @@ asynStatus AKI2C_TCA9555::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     if (function == AKI2C_TCA9555_Read) {
     	status = readLevelAll(addr);
-    } else if ((function >= AKI2C_TCA9555_Pin0) && (function <= AKI2C_TCA9555_Pin15)) {
+    	if (status == asynSuccess) {
+    		status = readDirectionAll(addr);
+    	}
+    } else if ((function >= AKI2C_TCA9555_LevelPin0) && (function <= AKI2C_TCA9555_LevelPin15)) {
     	status = writeLevel(addr, function, value);
     } else if ((function >= AKI2C_TCA9555_DirPin0) && (function <= AKI2C_TCA9555_DirPin15)) {
     	status = writeDirection(addr, function, value);
@@ -277,12 +246,11 @@ void AKI2C_TCA9555::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
+        int devCount, const char *devInfos,
 		int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
-		   devCount, devAddrs, muxAddr, muxBus,
+		   devCount, devInfos,
 		   NUM_AKI2C_TCA9555_PARAMS,
 		   0, /* no new interface masks beyond those in AKBase */
 		   0, /* no new interrupt masks beyond those in AKBase */
@@ -303,22 +271,22 @@ AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
     createParam(AKI2C_TCA9555_PolarityString,         asynParamInt32,   &AKI2C_TCA9555_Polarity);
     createParam(AKI2C_TCA9555_DirectionString,        asynParamInt32,   &AKI2C_TCA9555_Direction);
     /* These need to be in sequence! */
-    createParam(AKI2C_TCA9555_Pin0String,             asynParamInt32,   &AKI2C_TCA9555_Pin0);
-    createParam(AKI2C_TCA9555_Pin1String,             asynParamInt32,   &AKI2C_TCA9555_Pin1);
-    createParam(AKI2C_TCA9555_Pin2String,             asynParamInt32,   &AKI2C_TCA9555_Pin2);
-    createParam(AKI2C_TCA9555_Pin3String,             asynParamInt32,   &AKI2C_TCA9555_Pin3);
-    createParam(AKI2C_TCA9555_Pin4String,             asynParamInt32,   &AKI2C_TCA9555_Pin4);
-    createParam(AKI2C_TCA9555_Pin5String,             asynParamInt32,   &AKI2C_TCA9555_Pin5);
-    createParam(AKI2C_TCA9555_Pin6String,             asynParamInt32,   &AKI2C_TCA9555_Pin6);
-    createParam(AKI2C_TCA9555_Pin7String,             asynParamInt32,   &AKI2C_TCA9555_Pin7);
-    createParam(AKI2C_TCA9555_Pin8String,             asynParamInt32,   &AKI2C_TCA9555_Pin8);
-    createParam(AKI2C_TCA9555_Pin9String,             asynParamInt32,   &AKI2C_TCA9555_Pin9);
-    createParam(AKI2C_TCA9555_Pin10String,            asynParamInt32,   &AKI2C_TCA9555_Pin10);
-    createParam(AKI2C_TCA9555_Pin11String,            asynParamInt32,   &AKI2C_TCA9555_Pin11);
-    createParam(AKI2C_TCA9555_Pin12String,            asynParamInt32,   &AKI2C_TCA9555_Pin12);
-    createParam(AKI2C_TCA9555_Pin13String,            asynParamInt32,   &AKI2C_TCA9555_Pin13);
-    createParam(AKI2C_TCA9555_Pin14String,            asynParamInt32,   &AKI2C_TCA9555_Pin14);
-    createParam(AKI2C_TCA9555_Pin15String,            asynParamInt32,   &AKI2C_TCA9555_Pin15);
+    createParam(AKI2C_TCA9555_LevelPin0String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin0);
+    createParam(AKI2C_TCA9555_LevelPin1String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin1);
+    createParam(AKI2C_TCA9555_LevelPin2String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin2);
+    createParam(AKI2C_TCA9555_LevelPin3String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin3);
+    createParam(AKI2C_TCA9555_LevelPin4String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin4);
+    createParam(AKI2C_TCA9555_LevelPin5String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin5);
+    createParam(AKI2C_TCA9555_LevelPin6String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin6);
+    createParam(AKI2C_TCA9555_LevelPin7String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin7);
+    createParam(AKI2C_TCA9555_LevelPin8String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin8);
+    createParam(AKI2C_TCA9555_LevelPin9String,        asynParamInt32,   &AKI2C_TCA9555_LevelPin9);
+    createParam(AKI2C_TCA9555_LevelPin10String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin10);
+    createParam(AKI2C_TCA9555_LevelPin11String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin11);
+    createParam(AKI2C_TCA9555_LevelPin12String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin12);
+    createParam(AKI2C_TCA9555_LevelPin13String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin13);
+    createParam(AKI2C_TCA9555_LevelPin14String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin14);
+    createParam(AKI2C_TCA9555_LevelPin15String,       asynParamInt32,   &AKI2C_TCA9555_LevelPin15);
     /* These need to be in sequence! */
     createParam(AKI2C_TCA9555_DirPin0String,          asynParamInt32,   &AKI2C_TCA9555_DirPin0);
     createParam(AKI2C_TCA9555_DirPin1String,          asynParamInt32,   &AKI2C_TCA9555_DirPin1);
@@ -339,11 +307,12 @@ AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
 
     /* set some defaults */
     for (int i = 0; i < devCount; i++) {
-		status |= write(i, AKI2C_TCA9555_POLARITY0_REG, AKI2C_TCA9555_POLARITY_VAL);
-		status |= write(i, AKI2C_TCA9555_DIRECTION0_REG, AKI2C_TCA9555_DIRECTION_VAL);
-		status |= write(i, AKI2C_TCA9555_OUTPUT0_REG, AKI2C_TCA9555_OUTPUT_VAL);
-		setIntegerParam(i, AKI2C_TCA9555_Polarity, AKI2C_TCA9555_POLARITY_VAL);
-		setIntegerParam(i, AKI2C_TCA9555_Direction, AKI2C_TCA9555_DIRECTION_VAL);
+    	/* Normal polarity */
+		status |= write(i, AKI2C_TCA9555_POLARITY0_REG, 0x0000);
+		/* All pins are inputs */
+		status |= write(i, AKI2C_TCA9555_DIRECTION0_REG, 0xFFFF);
+		setIntegerParam(i, AKI2C_TCA9555_Polarity, 0x0000);
+		setIntegerParam(i, AKI2C_TCA9555_Direction, 0xFFFF);
 		/* read actual direction from the ports */
 		status |= readDirectionAll(i);
 		/* read actual level from the ports */
@@ -374,11 +343,9 @@ AKI2C_TCA9555::~AKI2C_TCA9555() {
 extern "C" {
 
 int AKI2CTCA9555Configure(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
+        int devCount, const char *devInfos,
 		int priority, int stackSize) {
-    new AKI2C_TCA9555(portName, ipPort, devCount, devAddrs,
-    		muxAddr, muxBus, priority, stackSize);
+    new AKI2C_TCA9555(portName, ipPort, devCount, devInfos, priority, stackSize);
     return(asynSuccess);
 }
 
@@ -387,24 +354,19 @@ int AKI2CTCA9555Configure(const char *portName, const char *ipPort,
 static const iocshArg initArg0 = { "portName",        iocshArgString};
 static const iocshArg initArg1 = { "ipPort",          iocshArgString};
 static const iocshArg initArg2 = { "devCount",        iocshArgInt};
-static const iocshArg initArg3 = { "devAddrs",        iocshArgString};
-static const iocshArg initArg4 = { "muxAddr",         iocshArgInt};
-static const iocshArg initArg5 = { "muxBus",          iocshArgInt};
-static const iocshArg initArg6 = { "priority",        iocshArgInt};
-static const iocshArg initArg7 = { "stackSize",       iocshArgInt};
+static const iocshArg initArg3 = { "devInfos",        iocshArgString};
+static const iocshArg initArg4 = { "priority",        iocshArgInt};
+static const iocshArg initArg5 = { "stackSize",       iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
                                             &initArg1,
                                             &initArg2,
 											&initArg3,
 											&initArg4,
-											&initArg5,
-											&initArg6,
-											&initArg7};
-static const iocshFuncDef initFuncDef = {"AKI2CTCA9555Configure", 8, initArgs};
+											&initArg5};
+static const iocshFuncDef initFuncDef = {"AKI2CTCA9555Configure", 6, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
 	AKI2CTCA9555Configure(args[0].sval, args[1].sval,
-			args[2].ival, args[3].sval,
-			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
+			args[2].ival, args[3].sval, args[4].ival, args[5].ival);
 }
 
 void AKI2CTCA9555Register(void) {
@@ -414,8 +376,3 @@ void AKI2CTCA9555Register(void) {
 epicsExportRegistrar(AKI2CTCA9555Register);
 
 } /* extern "C" */
-
-
-
-
-
