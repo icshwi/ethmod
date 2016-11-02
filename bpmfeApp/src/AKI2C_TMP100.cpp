@@ -75,7 +75,6 @@ asynStatus AKI2C_TMP100::writeResolution(int addr, unsigned short val) {
 
 	printf("%s::%s(): param %d, resolution 0x%02X (%d)\n",
 			driverName, __func__, AKI2C_TMP100_Resolution, val, val);
-	setIntegerParam(addr, AKI2C_TMP100_Resolution, val);
 
     return status;
 }
@@ -298,5 +297,3 @@ void AKI2CTMP100Register(void) {
 epicsExportRegistrar(AKI2CTMP100Register);
 
 } /* extern "C" */
-
-
