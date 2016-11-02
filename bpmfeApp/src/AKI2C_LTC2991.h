@@ -13,7 +13,6 @@
 #define AKI2C_LTC2991_STATUS_LOW_REG			0x00
 #define AKI2C_LTC2991_STATUS_HIGH_REG			0x01
 #define AKI2C_LTC2991_CH_ENABLE_REG				0x01
-//#define AKI2C_LTC2991_TRIGGER_REG				0x01
 #define AKI2C_LTC2991_CONTROL1_REG				0x06
 #define AKI2C_LTC2991_CONTROL2_REG				0x07
 #define AKI2C_LTC2991_CONTROL3_REG				0x08
@@ -74,7 +73,11 @@
 #define AKI2C_LTC2991_V8OffsetString            "AKI2C_LTC2991_V8_OFFSET"
 #define AKI2C_LTC2991_V8FactorString            "AKI2C_LTC2991_V8_FACTOR"
 #define AKI2C_LTC2991_VccValueString            "AKI2C_LTC2991_VCC_VALUE"
+#define AKI2C_LTC2991_VccOffsetString           "AKI2C_LTC2991_VCC_OFFSET"
+#define AKI2C_LTC2991_VccFactorString           "AKI2C_LTC2991_VCC_FACTOR"
 #define AKI2C_LTC2991_TIntValueString           "AKI2C_LTC2991_TINT_VALUE"
+#define AKI2C_LTC2991_TIntOffsetString          "AKI2C_LTC2991_TINT_OFFSET"
+#define AKI2C_LTC2991_TIntFactorString          "AKI2C_LTC2991_TINT_FACTOR"
 
 /*
  * Chip       : Linear LTC2991
@@ -85,9 +88,7 @@
 class AKI2C_LTC2991: public AKI2C {
 public:
 	AKI2C_LTC2991(const char *portName, const char *ipPort,
-	        int devCount, const char *devAddrs,
-			int muxAddr, int muxBus,
-			int priority, int stackSize);
+	        int devCount, const char *devInfos, int priority, int stackSize);
 	virtual ~AKI2C_LTC2991();
 
     /* These are the methods that we override from AKI2C */
@@ -125,15 +126,21 @@ protected:
     int AKI2C_LTC2991_V8_Factor;
     int AKI2C_LTC2991_V8_Offset;
     int AKI2C_LTC2991_Vcc_Value;
+    int AKI2C_LTC2991_Vcc_Offset;
+    int AKI2C_LTC2991_Vcc_Factor;
     int AKI2C_LTC2991_TInt_Value;
-#define LAST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_TInt_Value
+    int AKI2C_LTC2991_TInt_Offset;
+    int AKI2C_LTC2991_TInt_Factor;
+#define LAST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_TInt_Factor
 
 private:
     void convertToVoltage(int addr, int valueParam,
     		int offsetParam, int factorParam, unsigned int raw);
     void convertToTemperature(int addr, int valueParam, unsigned int raw);
-    asynStatus write(int addr, unsigned char reg, unsigned char val);
-    asynStatus read(int addr, unsigned char reg);
+    asynStatus write(int addr, unsigned char reg, unsigned char val, unsigned short len);
+    asynStatus read(int addr, unsigned char reg, unsigned char *val, unsigned short len);
+    asynStatus readAll(int addr);
+    asynStatus writeTrigger(int addr, unsigned short val);
 };
 
 #define NUM_AKI2C_LTC2991_PARAMS ((int)(&LAST_AKI2C_LTC2991_PARAM - &FIRST_AKI2C_LTC2991_PARAM + 1))

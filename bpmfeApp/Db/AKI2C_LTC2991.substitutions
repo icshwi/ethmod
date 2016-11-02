@@ -1,0 +1,20 @@
+file AKI2C_LTC2991_dev.template
+{
+   pattern { P    ,R    ,PORT    ,ADDR     ,TIMEOUT     }
+           { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}
+
+file AKI2C_LTC2991_port.template
+{
+   pattern { P    ,R    ,N    ,PORT    ,ADDR     ,TIMEOUT     }
+           { $(P) ,$(R) ,V1   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V2   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V3   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V4   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V5   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V6   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V7   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,V8   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,VCC  ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+           { $(P) ,$(R) ,TINT ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}

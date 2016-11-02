@@ -17,7 +17,7 @@ DB += AKI2C_AT24LC64.template
 DB += AKI2C_DS28CM00.db
 DB += AKI2C_PCF85063TP.template
 DB += AKI2C_TCA9555.db
-DB += AKI2C_LTC2991.template
+DB += AKI2C_LTC2991.db
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add

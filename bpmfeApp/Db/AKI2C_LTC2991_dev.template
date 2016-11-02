@@ -1,0 +1,21 @@
+# This template is for Linear LTC2991 I2C sensor on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+include "AKBase.template"
+include "AKI2C.template"
+
+record(bo, "$(P)$(R)Read")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_READ")
+   field(SCAN, "Passive")
+   field(VAL, "1")
+}
+
+record(bo, "$(P)$(R)Trigger")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_TRIGGER")
+   field(SCAN, "Passive")
+   field(VAL, "1")
+}

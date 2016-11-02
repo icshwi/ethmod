@@ -1,0 +1,39 @@
+record(ai, "$(P)$(R)Value$(N)_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_$(N)_VALUE")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)Offset$(N)")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_$(N)_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)Offset$(N)_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_$(N)_OFFSET")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)Factor$(N)")
+{
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_$(N)_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "Passive")
+}
+
+record(ai, "$(P)$(R)Factor$(N)_RBV")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_LTC2991_$(N)_FACTOR")
+   field(PREC, "2")
+   field(SCAN, "I/O Intr")
+}

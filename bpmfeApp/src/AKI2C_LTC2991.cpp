@@ -36,31 +36,32 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
-asynStatus AKI2C_LTC2991::write(int addr, unsigned char reg, unsigned char val) {
+asynStatus AKI2C_LTC2991::write(int addr, unsigned char reg, unsigned char val, unsigned short len) {
     asynStatus status = asynSuccess;
-    const char *functionName = "write";
     unsigned char data[1] = {0};
-    int devAddr, muxAddr, muxBus;
-    unsigned short len;
+    int devAddr;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
-
-    status = setMuxBus(addr, muxAddr, muxBus);
-	if (status) {
-		return status;
-	}
 
     data[0] = val;
-	len = 1;
     status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %02X = %02X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
+    return status;
+}
+
+asynStatus AKI2C_LTC2991::writeTrigger(int addr, unsigned short val) {
+    asynStatus status = asynSuccess;
+
+	status = write(addr, AKI2C_LTC2991_CH_ENABLE_REG, val, 1);
+	if (status) {
+		return status;
+	}
+
+	printf("%s::%s(): param %d, trigger 0x%02X (%d)\n",
+			driverName, __func__, AKI2C_LTC2991_Trigger, val, val);
 
     return status;
 }
@@ -116,32 +117,32 @@ void AKI2C_LTC2991::convertToTemperature(int addr, int valueParam,
     }
 }
 
-asynStatus AKI2C_LTC2991::read(int addr, unsigned char reg) {
+asynStatus AKI2C_LTC2991::read(int addr, unsigned char reg, unsigned char *val, unsigned short len) {
     asynStatus status = asynSuccess;
-    const char *functionName = "read";
-    unsigned char data[32] = {0};
-    int devAddr, muxAddr, muxBus;
-    unsigned short len;
-    unsigned int raw;
+    int devAddr;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(addr, muxAddr, muxBus);
-	if (status) {
-		return status;
-	}
-
-	/* Read all 30 registers at once */
-    len = 30;
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
+    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, val, &len, reg);
     if (status) {
     	return status;
     }
 
-    /* Check for BUSY bit - if 0 then not BUSY, conversion is not in process */
+	return status;
+}
+
+asynStatus AKI2C_LTC2991::readAll(int addr) {
+    asynStatus status = asynSuccess;
+    unsigned char data[32] = {0};
+    unsigned int raw;
+
+	/* Read all 30 registers at once */
+	status = read(addr, AKI2C_LTC2991_STATUS_LOW_REG, data, 30);
+    if (status) {
+    	return status;
+    }
+
+    /* Check for BUSY bit - if 0 conversion is not in progress. */
     if (data[AKI2C_LTC2991_STATUS_HIGH_REG] & 0x04) {
     	return asynError;
     }
@@ -207,10 +208,10 @@ asynStatus AKI2C_LTC2991::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
 
     if (function == AKI2C_LTC2991_Read) {
-    	status = read(addr, AKI2C_LTC2991_STATUS_LOW_REG);
+    	status = readAll(addr);
     } else if (function == AKI2C_LTC2991_Trigger) {
     	/* The acquisition is triggered by writing to this register */
-    	status = write(addr, AKI2C_LTC2991_CH_ENABLE_REG, AKI2C_LTC2991_CH_ENABLE_VAL);
+    	status = writeTrigger(addr, AKI2C_LTC2991_CH_ENABLE_VAL);
     } else if (function < FIRST_AKI2C_LTC2991_PARAM) {
         printf("AKI2C_LTC2991::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2C_LTC2991_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2C_LTC2991_PARAM);
         /* If this parameter belongs to a base class call its method */
@@ -247,12 +248,10 @@ void AKI2C_LTC2991::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
-		int priority, int stackSize)
+        int devCount, const char *devInfos, int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
-		   devCount, devAddrs, muxAddr, muxBus,
+		   devCount, devInfos,
 		   NUM_AKI2C_LTC2991_PARAMS,
 		   0, /* no new interface masks beyond those in AKBase */
 		   0, /* no new interrupt masks beyond those in AKBase */
@@ -295,7 +294,11 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     createParam(AKI2C_LTC2991_V8OffsetString,      asynParamFloat64, &AKI2C_LTC2991_V8_Offset);
     createParam(AKI2C_LTC2991_V8FactorString,      asynParamFloat64, &AKI2C_LTC2991_V8_Factor);
     createParam(AKI2C_LTC2991_VccValueString,      asynParamFloat64, &AKI2C_LTC2991_Vcc_Value);
+    createParam(AKI2C_LTC2991_VccOffsetString,     asynParamFloat64, &AKI2C_LTC2991_Vcc_Offset);
+    createParam(AKI2C_LTC2991_VccFactorString,     asynParamFloat64, &AKI2C_LTC2991_Vcc_Factor);
     createParam(AKI2C_LTC2991_TIntValueString,     asynParamFloat64, &AKI2C_LTC2991_TInt_Value);
+    createParam(AKI2C_LTC2991_TIntOffsetString,    asynParamFloat64, &AKI2C_LTC2991_TInt_Offset);
+    createParam(AKI2C_LTC2991_TIntFactorString,    asynParamFloat64, &AKI2C_LTC2991_TInt_Factor);
 
     for (int i = 0; i < devCount; i++) {
     	setDoubleParam(i, AKI2C_LTC2991_V1_Value, 0.0);
@@ -323,14 +326,21 @@ AKI2C_LTC2991::AKI2C_LTC2991(const char *portName, const char *ipPort,
     	setDoubleParam(i, AKI2C_LTC2991_V8_Offset, 0.0);
     	setDoubleParam(i, AKI2C_LTC2991_V8_Factor, 1.0);
     	setDoubleParam(i, AKI2C_LTC2991_Vcc_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_Vcc_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_Vcc_Factor, 1.0);
     	setDoubleParam(i, AKI2C_LTC2991_TInt_Value, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_TInt_Offset, 0.0);
+    	setDoubleParam(i, AKI2C_LTC2991_TInt_Factor, 1.0);
+
+    	/* Do callbacks so higher layers see any changes */
+    	callParamCallbacks(i, i);
     }
 
     /* set some defaults */
     for (int i = 0; i < devCount; i++) {
-		status |= write(i, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL);
-		status |= write(i, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL);
-		status |= write(i, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL);
+		status |= write(i, AKI2C_LTC2991_CONTROL1_REG, AKI2C_LTC2991_CONTROL1_VAL, 1);
+		status |= write(i, AKI2C_LTC2991_CONTROL2_REG, AKI2C_LTC2991_CONTROL2_VAL, 1);
+		status |= write(i, AKI2C_LTC2991_CONTROL3_REG, AKI2C_LTC2991_CONTROL3_VAL, 1);
     }
 
     if (status) {
@@ -355,11 +365,8 @@ AKI2C_LTC2991::~AKI2C_LTC2991() {
 extern "C" {
 
 int AKI2CLTC2991Configure(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
-		int priority, int stackSize) {
-    new AKI2C_LTC2991(portName, ipPort, devCount, devAddrs,
-    		muxAddr, muxBus, priority, stackSize);
+        int devCount, const char *devInfos, int priority, int stackSize) {
+    new AKI2C_LTC2991(portName, ipPort, devCount, devInfos, priority, stackSize);
     return(asynSuccess);
 }
 
@@ -368,24 +375,19 @@ int AKI2CLTC2991Configure(const char *portName, const char *ipPort,
 static const iocshArg initArg0 = { "portName",        iocshArgString};
 static const iocshArg initArg1 = { "ipPort",          iocshArgString};
 static const iocshArg initArg2 = { "devCount",        iocshArgInt};
-static const iocshArg initArg3 = { "devAddrs",        iocshArgString};
-static const iocshArg initArg4 = { "muxAddr",         iocshArgInt};
-static const iocshArg initArg5 = { "muxBus",          iocshArgInt};
-static const iocshArg initArg6 = { "priority",        iocshArgInt};
-static const iocshArg initArg7 = { "stackSize",       iocshArgInt};
+static const iocshArg initArg3 = { "devInfos",        iocshArgString};
+static const iocshArg initArg4 = { "priority",        iocshArgInt};
+static const iocshArg initArg5 = { "stackSize",       iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
                                             &initArg1,
                                             &initArg2,
 											&initArg3,
 											&initArg4,
-											&initArg5,
-											&initArg6,
-											&initArg7};
-static const iocshFuncDef initFuncDef = {"AKI2CLTC2991Configure", 8, initArgs};
+											&initArg5};
+static const iocshFuncDef initFuncDef = {"AKI2CLTC2991Configure", 6, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
 	AKI2CLTC2991Configure(args[0].sval, args[1].sval,
-			args[2].ival, args[3].sval,
-			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
+			args[2].ival, args[3].sval, args[4].ival, args[5].ival);
 }
 
 void AKI2CLTC2991Register(void) {
@@ -395,4 +397,3 @@ void AKI2CLTC2991Register(void) {
 epicsExportRegistrar(AKI2CLTC2991Register);
 
 } /* extern "C" */
-
