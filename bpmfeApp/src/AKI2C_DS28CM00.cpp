@@ -182,6 +182,9 @@ AKI2C_DS28CM00::AKI2C_DS28CM00(const char *portName, const char *ipPort,
 
     for (int i = 0; i < devCount; i++) {
     	setStringParam(i, AKI2C_DS28CM00_Value, "");
+
+        /* Do callbacks so higher layers see any changes */
+    	callParamCallbacks(i, i);
     }
 
     if (status) {

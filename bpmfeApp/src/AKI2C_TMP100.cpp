@@ -241,6 +241,9 @@ AKI2C_TMP100::AKI2C_TMP100(const char *portName, const char *ipPort,
 
     for (int i = 0; i < devCount; i++) {
     	setDoubleParam(i, AKI2C_TMP100_Value, 0.0);
+
+    	/* Do callbacks so higher layers see any changes */
+    	callParamCallbacks(i, i);
     }
 
     if (status) {
