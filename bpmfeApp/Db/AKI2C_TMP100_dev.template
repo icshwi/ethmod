@@ -1,0 +1,53 @@
+# This template is for TI TMP100 I2C temperature sensor on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+include "AKBase.template"
+include "AKI2C.template"
+
+record(bo, "$(P)$(R)Read")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_READ")
+    field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(ai, "$(P)$(R)Value_RBV")
+{
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_VALUE")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)Resolution")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_RESOLUTION")
+    field(SCAN, "Passive")
+    field(ZRVL, "0")
+    field(ZRST, "9-bit")
+    field(ONVL, "1")
+    field(ONST, "10-bit")
+    field(TWVL, "2")
+    field(TWST, "11-bit")
+    field(THVL, "3")
+    field(THST, "12-bit")
+    field(PINI, "YES")
+    field(VAL,  "3")
+}
+
+record(mbbi, "$(P)$(R)Resolution_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TMP100_RESOLUTION")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "9-bit")
+    field(ONVL, "1")
+    field(ONST, "10-bit")
+    field(TWVL, "2")
+    field(TWST, "11-bit")
+    field(THVL, "3")
+    field(THST, "12-bit")
+}

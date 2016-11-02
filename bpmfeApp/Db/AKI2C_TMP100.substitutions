@@ -1,0 +1,5 @@
+file AKI2C_TMP100_dev.template
+{
+   pattern { P    ,R    ,PORT    ,ADDR     ,TIMEOUT     }
+           { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}

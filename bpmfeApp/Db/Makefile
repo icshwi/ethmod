@@ -12,11 +12,10 @@ include $(TOP)/configure/CONFIG
 # databases, templates, substitutions like this
 DB += AKBase.template
 DB += AKI2C.template
-DB += AKI2C_TMP100.template
+DB += AKI2C_TMP100.db
 DB += AKI2C_AT24LC64.template
 DB += AKI2C_DS28CM00.template
 DB += AKI2C_PCF85063TP.template
-#DB += AKI2C_TCA9555.template
 DB += AKI2C_TCA9555.db
 DB += AKI2C_LTC2991.template
 

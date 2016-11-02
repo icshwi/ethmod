@@ -36,79 +36,130 @@ static void exitHandler(void *drvPvt) {
 	delete pPvt;
 }
 
-asynStatus AKI2C_TMP100::write(int addr, unsigned char reg, unsigned char val) {
+asynStatus AKI2C_TMP100::write(int addr, unsigned char reg, unsigned short val, unsigned short len) {
     asynStatus status = asynSuccess;
-    const char *functionName = "write";
     unsigned char data[2] = {0};
-    int devAddr, muxAddr, muxBus;
-    unsigned short len;
+    int devAddr;
 
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d\n", functionName, devAddr, muxAddr, muxBus);
 
-    status = setMuxBus(addr, muxAddr, muxBus);
-	if (status) {
-		return status;
-	}
-
-    data[0] = val;
-	len = 2;
+    /* Even if writing only one byte, we can use two byte buffer with proper
+     * length set! */
+    data[0] = val & 0xFF;
+    data[1] = (val >> 8) & 0xFF;
+    printf("%s::%s(): reg %d, WRITE value 0x%04X\n", driverName, __func__, reg, val);
     status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
 
-    printf("%s: devAddr %d, muxAddr %d, muxBus %d reg %02X = %02X\n", functionName, devAddr, muxAddr, muxBus, reg, val);
-
     return status;
 }
 
-asynStatus AKI2C_TMP100::read(int addr, unsigned char reg) {
+asynStatus AKI2C_TMP100::writeResolution(int addr, unsigned short val) {
     asynStatus status = asynSuccess;
-    const char *functionName = "read";
-    unsigned char data[2] = {0};
-    int devAddr, muxAddr, muxBus;
-    unsigned short len;
-    unsigned short raw;
-    int val;
-    double temp;
+    unsigned short regVal;
 
-    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(addr, AKI2CMuxBus, &muxBus);
-    printf("%s: devAddr %X, muxAddr %X, muxBus %X\n", functionName, devAddr, muxAddr, muxBus);
+	status = read(addr, AKI2C_TMP100_CONFIG_REG, &regVal, 1);
+    if (status) {
+    	return status;
+    }
 
-    status = setMuxBus(addr, muxAddr, muxBus);
+    /* Preserve the other config register bits! */
+    regVal = regVal & ~(0x03 << AKI2C_TMP100_RESOLUTION_SHIFT);
+	regVal |= val << AKI2C_TMP100_RESOLUTION_SHIFT;
+	status = write(addr, AKI2C_TMP100_CONFIG_REG, regVal, 1);
 	if (status) {
 		return status;
 	}
 
-	/* Read only 1 register - temperature */
-    len = 2;
+	printf("%s::%s(): param %d, resolution 0x%02X (%d)\n",
+			driverName, __func__, AKI2C_TMP100_Resolution, val, val);
+	setIntegerParam(addr, AKI2C_TMP100_Resolution, val);
+
+    return status;
+}
+
+asynStatus AKI2C_TMP100::read(int addr, unsigned char reg, unsigned short *val, unsigned short len) {
+    asynStatus status = asynSuccess;
+    unsigned char data[2] = {0};
+    int devAddr;
+
+    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+
+	/* Read register - config is 1 byte long, others 2 bytes */
     status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, data, &len, reg);
     if (status) {
     	return status;
     }
 
-    /* Convert to degrees */
-    //printf("%s: mResp[2] %X, mResp[3] %X\n", functionName, mResp[2], mResp[3]);
-    raw = ((unsigned short)(mResp[2] & 0xFF) << 8 | (mResp[3] & 0xFF)) >> 4;
-    if (raw & 0x800) {
-		/* if bit 11 == 1 we have negative value */
-		val = (raw & 0xFFF) | ~((1 << 12) - 1);
-	} else {
-		val = (raw & 0xFFF);
+    *val = mResp[2] & 0xFF;
+    if (len == 2) {
+    	*val = (mResp[2] & 0xFF) << 8 | (mResp[3] & 0xFF);
     }
-	/* LSB = 0.0625 degrees */
-	temp = (double)val * 0.0625;
+    printf("%s::%s(): reg %d, READ value 0x%04X\n", driverName, __func__, reg, *val);
 
-    printf("%s: devAddr %X, muxAddr %X, muxBus %X temperature %d, %f C\n", functionName, devAddr, muxAddr, muxBus, raw, temp);
+	return status;
+}
+
+asynStatus AKI2C_TMP100::readTemperature(int addr) {
+    asynStatus status = asynSuccess;
+    unsigned short regVal;
+    int val;
+    int res;
+    int msb;
+    double temp;
+    double fact;
+
+	status = read(addr, AKI2C_TMP100_TEMPERATURE_REG, &regVal, 2);
+    if (status) {
+    	return status;
+    }
+
+    /* Some LSB bits are unused, also set proper conversion factor dpending
+     * on the resolution. */
+    getIntegerParam(addr, AKI2C_TMP100_Resolution, &res);
+    switch (res) {
+    case AKI2C_TMP100_RESOLUTION_9BIT:
+        msb = 8;
+    	regVal >>= 7;
+    	fact = 0.5;
+    	break;
+    case AKI2C_TMP100_RESOLUTION_10BIT:
+        msb = 9;
+        regVal >>= 6;
+    	fact = 0.25;
+    	break;
+    case AKI2C_TMP100_RESOLUTION_11BIT:
+        msb = 10;
+        regVal >>= 5;
+    	fact = 0.125;
+    	break;
+    case AKI2C_TMP100_RESOLUTION_12BIT:
+        msb = 11;
+        regVal >>= 4;
+    	fact = 0.0625;
+    	break;
+    default:
+    	return asynError;
+    }
+
+	/* if msb == 1 we have negative value */
+    if (regVal & (1 << msb)) {
+		val = (regVal & ((1 << (msb + 1)) - 1)) | ~((1 << msb) - 1);
+	} else {
+		val = (regVal & ((1 << (msb + 1)) - 1));
+    }
+
+    /* Convert to degrees using proper resolution factor. */
+	temp = (double)val * fact;
+
+    printf("%s::%s(): param %d, temperature raw %d, converted %f C\n",
+    		driverName, __func__, AKI2C_TMP100_Value, val, temp);
 
     setDoubleParam(addr, AKI2C_TMP100_Value, temp);
 
-	return status;
+    return status;
 }
 
 asynStatus AKI2C_TMP100::writeInt32(asynUser *pasynUser, epicsInt32 value) {
@@ -127,7 +178,9 @@ asynStatus AKI2C_TMP100::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     status = setIntegerParam(addr, function, value);
 
     if (function == AKI2C_TMP100_Read) {
-    	status = read(addr, AKI2C_TMP100_TEMPERATURE_REG);
+    	status = readTemperature(addr);
+    } else if (function == AKI2C_TMP100_Resolution) {
+    	status = writeResolution(addr, value & 0x3);
     } else if (function < FIRST_AKI2C_TMP100_PARAM) {
         printf("AKI2C_TMP100::%s: function %d, addr %d, value %d calling AKI2C::writeInt32 (FIRST_AKI2C_TMP100_PARAM=%d)\n", functionName, function, addr, value, FIRST_AKI2C_TMP100_PARAM);
         /* If this parameter belongs to a base class call its method */
@@ -164,12 +217,10 @@ void AKI2C_TMP100::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2C_TMP100::AKI2C_TMP100(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
-		int priority, int stackSize)
+        int devCount, const char *devInfos, int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
-		   devCount, devAddrs, muxAddr, muxBus,
+		   devCount, devInfos,
 		   NUM_AKI2C_TMP100_PARAMS,
 		   0, /* no new interface masks beyond those in AKBase */
 		   0, /* no new interrupt masks beyond those in AKBase */
@@ -185,16 +236,12 @@ AKI2C_TMP100::AKI2C_TMP100(const char *portName, const char *ipPort,
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2C_TMP100_ReadString,   asynParamInt32,   &AKI2C_TMP100_Read);
-    createParam(AKI2C_TMP100_ValueString,  asynParamFloat64, &AKI2C_TMP100_Value);
+    createParam(AKI2C_TMP100_ReadString,        asynParamInt32,   &AKI2C_TMP100_Read);
+    createParam(AKI2C_TMP100_ValueString,       asynParamFloat64, &AKI2C_TMP100_Value);
+    createParam(AKI2C_TMP100_ResolutionString,  asynParamInt32,   &AKI2C_TMP100_Resolution);
 
     for (int i = 0; i < devCount; i++) {
     	setDoubleParam(i, AKI2C_TMP100_Value, 0.0);
-    }
-
-    /* set some defaults */
-    for (int i = 0; i < devCount; i++) {
-		status |= write(i, AKI2C_TMP100_CONFIG_REG, AKI2C_TMP100_RESOLUTION_12BIT);
     }
 
     if (status) {
@@ -219,11 +266,8 @@ AKI2C_TMP100::~AKI2C_TMP100() {
 extern "C" {
 
 int AKI2CTMP100Configure(const char *portName, const char *ipPort,
-        int devCount, const char *devAddrs,
-		int muxAddr, int muxBus,
-		int priority, int stackSize) {
-    new AKI2C_TMP100(portName, ipPort, devCount, devAddrs,
-    		muxAddr, muxBus, priority, stackSize);
+        int devCount, const char *devInfos, int priority, int stackSize) {
+    new AKI2C_TMP100(portName, ipPort, devCount, devInfos, priority, stackSize);
     return(asynSuccess);
 }
 
@@ -232,24 +276,19 @@ int AKI2CTMP100Configure(const char *portName, const char *ipPort,
 static const iocshArg initArg0 = { "portName",        iocshArgString};
 static const iocshArg initArg1 = { "ipPort",          iocshArgString};
 static const iocshArg initArg2 = { "devCount",        iocshArgInt};
-static const iocshArg initArg3 = { "devAddrs",        iocshArgString};
-static const iocshArg initArg4 = { "muxAddr",         iocshArgInt};
-static const iocshArg initArg5 = { "muxBus",          iocshArgInt};
-static const iocshArg initArg6 = { "priority",        iocshArgInt};
-static const iocshArg initArg7 = { "stackSize",       iocshArgInt};
+static const iocshArg initArg3 = { "devInfos",        iocshArgString};
+static const iocshArg initArg4 = { "priority",        iocshArgInt};
+static const iocshArg initArg5 = { "stackSize",       iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
                                             &initArg1,
                                             &initArg2,
 											&initArg3,
 											&initArg4,
-											&initArg5,
-											&initArg6,
-											&initArg7};
-static const iocshFuncDef initFuncDef = {"AKI2CTMP100Configure", 8, initArgs};
+											&initArg5};
+static const iocshFuncDef initFuncDef = {"AKI2CTMP100Configure", 6, initArgs};
 static void initCallFunc(const iocshArgBuf *args) {
 	AKI2CTMP100Configure(args[0].sval, args[1].sval,
-			args[2].ival, args[3].sval,
-			args[4].ival, args[5].ival, args[6].ival, args[7].ival);
+			args[2].ival, args[3].sval, args[4].ival, args[5].ival);
 }
 
 void AKI2CTMP100Register(void) {
