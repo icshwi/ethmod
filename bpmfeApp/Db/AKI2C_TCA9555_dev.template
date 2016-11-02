@@ -6,29 +6,29 @@ include "AKI2C.template"
 
 record(bo, "$(P)$(R)Read")
 {
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_READ")
-   field(SCAN, "Passive")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_READ")
+    field(SCAN, "Passive")
     field(VAL, "1")
 }
 
 record(longin, "$(P)$(R)Level_RBV")
 {
-   field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_LEVEL")
-   field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_LEVEL")
+    field(SCAN, "I/O Intr")
 }
 
 record(longin, "$(P)$(R)Polarity_RBV")
 {
-   field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_POLARITY")
-   field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_POLARITY")
+    field(SCAN, "I/O Intr")
 }
 
 record(longin, "$(P)$(R)Direction_RBV")
 {
-   field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_DIRECTION")
-   field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_TCA9555_DIRECTION")
+    field(SCAN, "I/O Intr")
 }

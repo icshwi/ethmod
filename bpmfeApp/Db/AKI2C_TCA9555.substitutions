@@ -1,12 +1,12 @@
 file AKI2C_TCA9555_dev.template
 {
-   pattern { P    ,R    ,PORT,    ADDR)    ,TIMEOUT     }
+   pattern { P    ,R    ,PORT    ,ADDR     ,TIMEOUT     }
            { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
 }
 
 file AKI2C_TCA9555_pins.template
 {
-   pattern { P    ,R    ,N   ,PORT,    ADDR)    ,TIMEOUT     }
+   pattern { P    ,R    ,N   ,PORT    ,ADDR     ,TIMEOUT     }
            { $(P) ,$(R) ,0   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
            { $(P) ,$(R) ,1   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
            { $(P) ,$(R) ,2   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }

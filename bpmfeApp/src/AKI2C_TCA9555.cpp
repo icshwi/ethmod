@@ -54,9 +54,9 @@ asynStatus AKI2C_TCA9555::write(int addr, unsigned char reg, unsigned short val)
     getIntegerParam(addr, AKI2CDevAddr, &devAddr);
 
 	/* write both port 0 & 1 in one transfer - hence len == 2 */
-	len = 2;
 	data[0] = val & 0xff;
 	data[1] = (val >> 8) & 0xff;
+	len = 2;
     printf("%s::%s(): reg %d, WRITE value 0x%04X\n", driverName, __func__, reg, val);
     status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, data, &len, reg);
     if (status) {
@@ -81,7 +81,7 @@ asynStatus AKI2C_TCA9555::read(int addr, unsigned char reg, unsigned short *val)
     	return status;
     }
 
-    *val = (mResp[3] << 8) | mResp[2];
+    *val = (mResp[3] & 0xFF) << 8 | (mResp[2] & 0xFF);
     printf("%s::%s(): reg %d, READ value 0x%04X\n", driverName, __func__, reg, *val);
 
     return status;
@@ -246,8 +246,7 @@ void AKI2C_TCA9555::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2C_TCA9555::AKI2C_TCA9555(const char *portName, const char *ipPort,
-        int devCount, const char *devInfos,
-		int priority, int stackSize)
+        int devCount, const char *devInfos, int priority, int stackSize)
    : AKI2C(portName,
 		   ipPort,
 		   devCount, devInfos,
@@ -343,8 +342,7 @@ AKI2C_TCA9555::~AKI2C_TCA9555() {
 extern "C" {
 
 int AKI2CTCA9555Configure(const char *portName, const char *ipPort,
-        int devCount, const char *devInfos,
-		int priority, int stackSize) {
+        int devCount, const char *devInfos, int priority, int stackSize) {
     new AKI2C_TCA9555(portName, ipPort, devCount, devInfos, priority, stackSize);
     return(asynSuccess);
 }
