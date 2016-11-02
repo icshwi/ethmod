@@ -17,6 +17,7 @@
 
 #define AKI2C_DS28CM00_ReadString                   "AKI2C_DS28CM00_READ"
 #define AKI2C_DS28CM00_ValueString                  "AKI2C_DS28CM00_VALUE"
+#define AKI2C_DS28CM00_SmbusString                  "AKI2C_DS28CM00_SMBUS"
 
 /*
  * Chip       : Maxim DS28CM00
@@ -27,9 +28,7 @@
 class AKI2C_DS28CM00: public AKI2C {
 public:
 	AKI2C_DS28CM00(const char *portName, const char *ipPort,
-	        int devCount, const char *devAddrs,
-			int muxAddr, int muxBus,
-			int priority, int stackSize);
+	        int devCount, const char *devInfos, int priority, int stackSize);
 	virtual ~AKI2C_DS28CM00();
 
     /* These are the methods that we override from AKI2C */
@@ -42,11 +41,14 @@ protected:
     int AKI2C_DS28CM00_Read;
 #define FIRST_AKI2C_DS28CM00_PARAM AKI2C_DS28CM00_Read
     int AKI2C_DS28CM00_Value;
-#define LAST_AKI2C_DS28CM00_PARAM AKI2C_DS28CM00_Value
+    int AKI2C_DS28CM00_Smbus;
+#define LAST_AKI2C_DS28CM00_PARAM AKI2C_DS28CM00_Smbus
 
 private:
-    asynStatus write(int addr, unsigned char reg, unsigned char val);
-    asynStatus read(int addr, unsigned char reg);
+    asynStatus write(int addr, unsigned char reg, unsigned char val, unsigned short len);
+    asynStatus read(int addr, unsigned char reg, unsigned char *val, unsigned short len);
+    asynStatus readId(int addr);
+    asynStatus writeConfig(int addr, unsigned short val);
 };
 
 #define NUM_AKI2C_DS28CM00_PARAMS ((int)(&LAST_AKI2C_DS28CM00_PARAM - &FIRST_AKI2C_DS28CM00_PARAM + 1))

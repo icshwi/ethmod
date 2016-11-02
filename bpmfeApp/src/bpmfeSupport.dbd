@@ -1,6 +1,6 @@
 registrar(AKI2CTMP100Register)
 #registrar(AKI2CAT24LC64Register)
-#registrar(AKI2CDS28CM00Register)
+registrar(AKI2CDS28CM00Register)
 #registrar(AKI2CPCF85063TPRegister)
 registrar(AKI2CTCA9555Register)
 #registrar(AKI2CLTC2991Register)
