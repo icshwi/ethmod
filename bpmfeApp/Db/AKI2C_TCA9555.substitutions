@@ -4,7 +4,7 @@ file AKI2C_TCA9555_dev.template
            { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
 }
 
-file AKI2C_TCA9555_pins.template
+file AKI2C_TCA9555_pin.template
 {
    pattern { P    ,R    ,N   ,PORT    ,ADDR     ,TIMEOUT     }
            { $(P) ,$(R) ,0   ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
