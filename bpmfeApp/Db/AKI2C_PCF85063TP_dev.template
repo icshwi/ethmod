@@ -27,11 +27,25 @@ record(longout, "$(P)$(R)Seconds")
    field(SCAN, "Passive")
 }
 
+record(longin, "$(P)$(R)Seconds_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_SECONDS")
+   field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)Minutes")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_MINUTES")
    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)$(R)Minutes_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_MINUTES")
+   field(SCAN, "I/O Intr")
 }
 
 record(longout, "$(P)$(R)Hours")
@@ -41,11 +55,25 @@ record(longout, "$(P)$(R)Hours")
    field(SCAN, "Passive")
 }
 
+record(longin, "$(P)$(R)Hours_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_HOURS")
+   field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)Weekdays")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_WEEKDAYS")
    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)$(R)Weekdays_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_WEEKDAYS")
+   field(SCAN, "I/O Intr")
 }
 
 record(longout, "$(P)$(R)Days")
@@ -55,6 +83,13 @@ record(longout, "$(P)$(R)Days")
    field(SCAN, "Passive")
 }
 
+record(longin, "$(P)$(R)Days_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_DAYS")
+   field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)Months")
 {
    field(DTYP, "asynInt32")
@@ -62,11 +97,25 @@ record(longout, "$(P)$(R)Months")
    field(SCAN, "Passive")
 }
 
+record(longin, "$(P)$(R)Months_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_MONTHS")
+   field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)Years")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_YEARS")
    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)$(R)Years_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_PCF85063TP_YEARS")
+   field(SCAN, "I/O Intr")
 }
 
 record(waveform, "$(P)$(R)Date_RBV")

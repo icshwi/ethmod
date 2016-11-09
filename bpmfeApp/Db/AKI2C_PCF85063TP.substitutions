@@ -1,0 +1,5 @@
+file AKI2C_PCF85063TP_dev.template
+{
+   pattern { P    ,R    ,PORT    ,ADDR     ,TIMEOUT     }
+           { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}

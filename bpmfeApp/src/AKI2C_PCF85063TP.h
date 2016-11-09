@@ -10,6 +10,18 @@
 
 #include "AKI2C.h"
 
+#define AKI2C_PCF85063TP_CONTROL1_REG					0x00
+#define AKI2C_PCF85063TP_CONTROL2_REG					0x01
+#define AKI2C_PCF85063TP_OFFSET_REG						0x02
+#define AKI2C_PCF85063TP_RAMBYTE_REG					0x03
+#define AKI2C_PCF85063TP_SECONDS_REG					0x04
+#define AKI2C_PCF85063TP_MINUTES_REG					0x05
+#define AKI2C_PCF85063TP_HOURS_REG						0x06
+#define AKI2C_PCF85063TP_DAYS_REG						0x07
+#define AKI2C_PCF85063TP_WEEKDAYS_REG					0x08
+#define AKI2C_PCF85063TP_MONTHS_REG						0x09
+#define AKI2C_PCF85063TP_YEARS_REG						0x0A
+
 #define AKI2C_PCF85063TP_ReadString                     "AKI2C_PCF85063TP_READ"
 #define AKI2C_PCF85063TP_WriteString                    "AKI2C_PCF85063TP_WRITE"
 #define AKI2C_PCF85063TP_SecondsString                  "AKI2C_PCF85063TP_SECONDS"
@@ -31,9 +43,7 @@
 class AKI2C_PCF85063TP: public AKI2C {
 public:
 	AKI2C_PCF85063TP(const char *portName, const char *ipPort,
-	        int devCount, const char *devAddrs,
-			int muxAddr, int muxBus,
-			int priority, int stackSize);
+	        int devCount, const char *devInfos, int priority, int stackSize);
 	virtual ~AKI2C_PCF85063TP();
 
     /* These are the methods that we override from AKI2C */
@@ -58,6 +68,10 @@ protected:
 #define LAST_AKI2C_PCF85063TP_PARAM AKI2C_PCF85063TP_Time
 
 private:
+    unsigned char bcdToDec(unsigned char val);
+    unsigned char decToBcd(unsigned char val);
+    asynStatus write(int addr, unsigned char reg, unsigned char *val, unsigned short *len);
+    asynStatus read(int addr, unsigned char reg, unsigned char *val, unsigned short *len);
     asynStatus setDateTime(int addr);
     asynStatus getDateTime(int addr);
 };
