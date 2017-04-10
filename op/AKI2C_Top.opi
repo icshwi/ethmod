@@ -3641,7 +3641,7 @@ $(pv_value)</tooltip>
     <height>31</height>
     <macros>
       <include_parent_macros>true</include_parent_macros>
-      <N>cc</N>
+      <N>CC</N>
     </macros>
     <name>Linking Container_26</name>
     <opi_file>VMonRailVcc.opi</opi_file>
@@ -3682,7 +3682,7 @@ $(pv_value)</tooltip>
     <height>31</height>
     <macros>
       <include_parent_macros>true</include_parent_macros>
-      <N>cc</N>
+      <N>TINT</N>
     </macros>
     <name>Linking Container_27</name>
     <opi_file>VMonRailTInt.opi</opi_file>

@@ -103,10 +103,10 @@ dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp1:,P
 
 # AKI2CLTC2991Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devInfos, int priority, int stackSize);
-#AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, "0x4F", 0, 0, 1, 0, 0)
+AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, "0x48", 0, 0, 1, 0, 0)
 #AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, "0x48", 0x73, 0, 1, 0, 0)
 #AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, "0x48, 0x73, 0", 1, 0, 0)
-#dbLoadRecords("$(ETHMOD)/db/AKI2C_LTC2991.db",        "P=$(PREFIX),R=I2C1:VMon1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(ETHMOD)/db/AKI2C_LTC2991.db",        "P=$(PREFIX),R=I2C1:VMon1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
 #asynSetTraceIOMask($(I2C_LTC2991_PORT),0,255)
 #asynSetTraceMask($(I2C_LTC2991_PORT),0,255)
 
