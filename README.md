@@ -1,12 +1,11 @@
 # README #
 
-This repository holds EPICS support for BPM analogue front end based on
+This repository holds EPICS support for ESS Ethernet module, based on
 AK-NORD XT-Pico-SXL board.
 
 TODO:
 
-* test with planned amount of I2C chips now that BPM FE
-electronics are produced
+* test with planned amount of I2C chips
 
 Sample OPI:
 
