@@ -34,7 +34,6 @@ public:
 	virtual ~AKI2C_AT24LC64();
 
     /* These are the methods that we override from AKI2C */
-//    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus readInt8Array(asynUser *pasynUser, epicsInt8 *value,
                                         size_t nElements, size_t *nIn);
     virtual asynStatus writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
