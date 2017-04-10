@@ -1,5 +1,5 @@
 /*
-erdx54v  * AKBase.h
+ * AKBase.h
  *
  *  Created on: May 16, 2016
  *      Author: hinkokocevar

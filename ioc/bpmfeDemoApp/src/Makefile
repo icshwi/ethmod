@@ -10,7 +10,7 @@ ifeq (vxWorks,$(findstring vxWorks, $(T_A)))
 CODE_CXXFLAGS=
 endif
 
-PROD_NAME = bpmfeDemoApp
+PROD_NAME = ethmodDemoApp
 PROD_IOC = $(PROD_NAME)
 
 # <name>.dbd will be created from <name>Include.dbd
@@ -18,7 +18,7 @@ DBD += $(PROD_NAME).dbd
 $(PROD_NAME)_DBD += base.dbd
 $(PROD_NAME)_DBD += asyn.dbd
 $(PROD_NAME)_DBD += asSupport.dbd
-$(PROD_NAME)_DBD += bpmfe.dbd
+$(PROD_NAME)_DBD += ethmod.dbd
 $(PROD_NAME)_DBD += drvAsynIPPort.dbd
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
@@ -29,7 +29,7 @@ PROD_LIBS += asyn
 # XXX: Include if needed
 #PROD_LIBS += calc busy sscan
 PROD_LIBS += autosave
-PROD_LIBS += bpmfe
+PROD_LIBS += ethmod
 
 PROD_LIBS += $(EPICS_BASE_IOC_LIBS)
 

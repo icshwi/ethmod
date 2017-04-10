@@ -29,7 +29,7 @@ SUPPORT=${MY_EPICS_SUPPORT}
 #ASYN=$(SUPPORT)/asyn-git
 ASYN=$(SUPPORT)/Hinxxasyn-git
 AUTOSAVE=$(SUPPORT)/autosave-R5-7-1
-BPMFE=$(SUPPORT)/m-epics-bpmfe
+ETHMOD=$(SUPPORT)/m-epics-ethmod
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=${MY_EPICS_BASE}
