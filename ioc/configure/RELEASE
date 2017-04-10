@@ -25,7 +25,9 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
 
 SUPPORT=${MY_EPICS_SUPPORT}
-ASYN=$(SUPPORT)/asyn4-30
+#ASYN=$(SUPPORT)/asyn4-30
+#ASYN=$(SUPPORT)/asyn-git
+ASYN=$(SUPPORT)/Hinxxasyn-git
 AUTOSAVE=$(SUPPORT)/autosave-R5-7-1
 BPMFE=$(SUPPORT)/m-epics-bpmfe
 
