@@ -30,6 +30,10 @@ SUPPORT=${MY_EPICS_SUPPORT}
 ASYN=$(SUPPORT)/Hinxxasyn-git
 AUTOSAVE=$(SUPPORT)/autosave-R5-7-1
 
+ETHMOD = $(TOP)
+
+BUILD_IOCS = YES
+
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=${MY_EPICS_BASE}
 
