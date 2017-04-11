@@ -16,11 +16,11 @@ epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ETHMOD)/db")
 # Prefix for all records
 epicsEnvSet("PREFIX",               "ETHMOD:")
 epicsEnvSet("I2C_TMP100_PORT",      "AK_I2C_TMP100")
-epicsEnvSet("I2C_AT24LC64_PORT",    "AK_I2C_AT24LC64")
 epicsEnvSet("I2C_DS28CM00_PORT",    "AK_I2C_DS28CM00")
 epicsEnvSet("I2C_PCF85063TP_PORT",  "AK_I2C_PCF85063TP")
 epicsEnvSet("I2C_TCA9555_PORT",     "AK_I2C_TCA9555")
 epicsEnvSet("I2C_LTC2991_PORT",     "AK_I2C_LTC2991")
+epicsEnvSet("I2C_M24M02_PORT",      "AK_I2C_M24M02")
 epicsEnvSet("I2C_IP_PORT",          "AK_I2C_COMM")
 
 # Supported IP port types (see AKBase.h)
@@ -67,12 +67,12 @@ dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp7:,P
 #asynSetTraceIOMask($(I2C_TMP100_PORT),0,255)
 #asynSetTraceMask($(I2C_TMP100_PORT),0,255)
 
-# AKI2CAT24LC64Configure(const char *portName, const char *ipPort,
+# AKI2CM24M02Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devInfos, int priority, int stackSize);
-#AKI2CAT24LC64Configure($(I2C_AT24LC64_PORT), $(I2C_IP_PORT), 1, "0x51", 0x70, 0, 1, 0, 0)
-#dbLoadRecords("$(ETHMOD)/db/AKI2C_AT24LC64.template",     "P=$(PREFIX),R=I2C1:Eeprom1:,PORT=$(I2C_AT24LC64_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,NELM=65536")
-#asynSetTraceIOMask($(I2C_AT24LC64_PORT),0,255)
-#asynSetTraceMask($(I2C_AT24LC64_PORT),0,255)
+AKI2CM24M02Configure($(I2C_M24M02_PORT), $(I2C_IP_PORT), 1, "0x50", 1, 0, 0)
+dbLoadRecords("$(ETHMOD)/db/AKI2C_M24M02.db",       "P=$(PREFIX),R=I2C1:Eeprom1:,PORT=$(I2C_M24M02_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1,NELM=65536")
+#asynSetTraceIOMask($(I2C_M24M02_PORT),0,255)
+#asynSetTraceMask($(I2C_M24M02_PORT),0,255)
 
 # AKI2CTCA9555Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devInfos, int priority, int stackSize);
