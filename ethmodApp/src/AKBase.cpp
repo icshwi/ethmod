@@ -68,111 +68,74 @@ void AKBase::hexdump(void *mem, unsigned int len) {
 	}
 }
 
-asynStatus AKBase::writeInt32(asynUser *pasynUser, epicsInt32 value) {
-
-    int function = pasynUser->reason;
-    int addr = 0;
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeInt32";
-
-    status = getAddress(pasynUser, &addr);
-    if (status != asynSuccess) {
-    	return(status);
-    }
-
-    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
-    status = setIntegerParam(addr, function, value);
-
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
-
-    if (status) {
-    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
-              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
-              driverName, functionName, status, function, addr, value);
-    } else {
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-              "%s:%s: function=%d, addr=%d, value=%d\n",
-              driverName, functionName, function, addr, value);
-    }
-
-    return status;
-}
-
 asynStatus AKBase::ipPortWriteRead(double timeout) {
-    int eomReason;
-    asynStatus status;
-    const char *functionName="ipPortWriteRead";
+	int eomReason;
+	asynStatus status;
+	const char *functionName="ipPortWriteRead";
 
-    printf("%s: request (%ld bytes):\n", functionName, mReqSz);
-	hexdump(mReq, mReqSz);
+	D(printf("request (%ld bytes):\n", mReqSz));
+	D0(hexdump(mReq, mReqSz));
 
-    status = pasynOctetSyncIO->writeRead(mAsynUserCommand,
-    		mReq, mReqSz, mResp, mRespSz,
-			timeout, &mReqActSz, &mRespActSz, &eomReason);
+	status = pasynOctetSyncIO->writeRead(mAsynUserCommand,
+		mReq, mReqSz, mResp, mRespSz,
+		timeout, &mReqActSz, &mRespActSz, &eomReason);
 
-    printf("%s: response (%ld bytes):\n", functionName, mRespActSz);
-	hexdump(mResp, mRespActSz);
+	D(printf("response (%ld bytes):\n", mRespActSz));
+	D0(hexdump(mResp, mRespActSz));
 
-    if (status) {
-    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d\n",
-                driverName, functionName, status);
-    }
+	if (status) {
+		asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s:%s, status=%d\n", driverName, functionName, status);
+	}
 
-    return status;
+	return status;
 }
 
 asynStatus AKBase::ipPortWrite(double timeout) {
-    asynStatus status;
-    const char *functionName="ipPortWrite";
+	asynStatus status;
+	const char *functionName="ipPortWrite";
 
-    printf("%s: request (%ld bytes):\n", functionName, mReqSz);
-	hexdump(mReq, mReqSz);
+	D(printf("request (%ld bytes):\n", mReqSz));
+	D0(hexdump(mReq, mReqSz));
 
-    status = pasynOctetSyncIO->write(mAsynUserCommand,
-    		mReq, mReqSz,
-			timeout, &mReqActSz);
+	status = pasynOctetSyncIO->write(mAsynUserCommand,
+		mReq, mReqSz, timeout, &mReqActSz);
 
-    printf("%s: request actual size %ld bytes\n", functionName, mReqActSz);
-    if (status) {
-    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d\n",
-                driverName, functionName, status);
-    }
+	D(printf("request actual size %ld bytes\n", mReqActSz));
+	if (status) {
+		asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s:%s, status=%d\n", driverName, functionName, status);
+	}
 
-    return status;
+	return status;
 }
 
 asynStatus AKBase::ipPortRead(double timeout) {
-    int eomReason;
-    asynStatus status;
-    const char *functionName = "ipPortRead";
+	int eomReason;
+	asynStatus status;
+	const char *functionName = "ipPortRead";
 
-    status = pasynOctetSyncIO->read(mAsynUserCommand,
-    		mResp, mRespSz,
-			timeout, &mRespActSz, &eomReason);
+	status = pasynOctetSyncIO->read(mAsynUserCommand,
+		mResp, mRespSz, timeout, &mRespActSz, &eomReason);
 
+	D(printf("response (%ld bytes):\n", mRespActSz));
+	D0(hexdump(mResp, mRespActSz));
 
-    printf("%s: response (%ld bytes):\n", functionName, mRespActSz);
-	hexdump(mResp, mRespActSz);
+	if (status) {
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s:%s, status=%d\n", driverName, functionName, status);
+	}
 
-    if (status) {
-    	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s, status=%d\n",
-                driverName, functionName, status);
-    }
-
-    return status;
+	return status;
 }
 
 void AKBase::report(FILE *fp, int details) {
 
-    fprintf(fp, "AKBase %s\n", this->portName);
-    if (details > 0) {
-    }
-    /* Invoke the base class method */
-    asynPortDriver::report(fp, details);
+	fprintf(fp, "AKBase %s\n", this->portName);
+	if (details > 0) {
+	}
+	/* Invoke the base class method */
+	asynPortDriver::report(fp, details);
 }
 
 /** Constructor for the AKBase class.
@@ -184,43 +147,37 @@ void AKBase::report(FILE *fp, int details) {
   */
 AKBase::AKBase(const char *portName, const char *ipPort, int ipPortType,
 		int maxAddr, int numParams, int interfaceMask, int interruptMask,
-        int asynFlags, int autoConnect, int priority, int stackSize)
-   : asynPortDriver(portName,
-		   maxAddr,
-		   numParams + NUM_AKBASE_PARAMS,
-		   interfaceMask | asynInt32Mask | asynFloat64Mask | asynOctetMask | asynDrvUserMask,
-		   interruptMask | asynInt32Mask | asynFloat64Mask | asynOctetMask,
-		   asynFlags, autoConnect, priority, stackSize)
+		int asynFlags, int autoConnect, int priority, int stackSize)
+	: asynPortDriver(portName,
+		maxAddr,
+		numParams + NUM_AKBASE_PARAMS,
+		interfaceMask | asynInt32Mask | asynFloat64Mask | asynOctetMask | asynDrvUserMask,
+		interruptMask | asynInt32Mask | asynFloat64Mask | asynOctetMask,
+		asynFlags, autoConnect, priority, stackSize)
 {
-    int status = asynSuccess;
-    const char *functionName = "AKBase";
+	int status = asynSuccess;
 
-    mIpPort = strdup(ipPort);
-    mIpPortType = ipPortType;
-    printf("%s: IP port %s, type %d\n", functionName, mIpPort, mIpPortType);
+	mIpPort = strdup(ipPort);
+	mIpPortType = ipPortType;
+	D(printf("IP port %s, type %d\n", mIpPort, mIpPortType));
 
-    createParam(AKStatusMessageString,       asynParamOctet, &AKStatusMessage);
+	createParam(AKStatusMessageString,	asynParamOctet,	&AKStatusMessage);
+	setStringParam(AKStatusMessage, "");
 
-    setStringParam(AKStatusMessage,          "");
+	/* Connect to desired IP port */
+	status = pasynOctetSyncIO->connect(mIpPort, 0, &mAsynUserCommand, NULL);
+	if (status) {
+		E(printf("pasynOctetSyncIO->connect failure\n"));
+		E(printf("init FAIL!\n"));
+		disconnect(pasynUserSelf);
+		return;
+	}
 
-    /* Connect to desired IP port */
-    status = pasynOctetSyncIO->connect(mIpPort, 0, &mAsynUserCommand, NULL);
-    if (status) {
-        printf("%s:%s: pasynOctetSyncIO->connect failure\n", driverName, functionName);
-        printf("%s: init FAIL!\n", functionName);
-        return;
-    }
-
-    printf("%s: init complete OK!\n", functionName);
+	I(printf("init OK!\n"));
 }
 
 AKBase::~AKBase() {
-    const char *functionName = "~AKBase";
-
-    printf("%s: shutting down ...\n", functionName);
+	I(printf("shut down ..\n"));
 
 	pasynOctetSyncIO->disconnect(mAsynUserCommand);
-
-    printf("%s: shutdown complete!\n", functionName);
 }
-

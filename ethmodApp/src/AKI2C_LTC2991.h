@@ -46,101 +46,101 @@
 /* Use filtering for Internal Temperature */
 #define AKI2C_LTC2991_CONTROL3_VAL				0x08
 
-#define AKI2C_LTC2991_ReadString                "AKI2C_LTC2991_READ"
-#define AKI2C_LTC2991_TriggerString             "AKI2C_LTC2991_TRIGGER"
-#define AKI2C_LTC2991_V1ValueString             "AKI2C_LTC2991_V1_VALUE"
-#define AKI2C_LTC2991_V1OffsetString            "AKI2C_LTC2991_V1_OFFSET"
-#define AKI2C_LTC2991_V1FactorString            "AKI2C_LTC2991_V1_FACTOR"
-#define AKI2C_LTC2991_V2ValueString             "AKI2C_LTC2991_V2_VALUE"
-#define AKI2C_LTC2991_V2OffsetString            "AKI2C_LTC2991_V2_OFFSET"
-#define AKI2C_LTC2991_V2FactorString            "AKI2C_LTC2991_V2_FACTOR"
-#define AKI2C_LTC2991_V3ValueString             "AKI2C_LTC2991_V3_VALUE"
-#define AKI2C_LTC2991_V3OffsetString            "AKI2C_LTC2991_V3_OFFSET"
-#define AKI2C_LTC2991_V3FactorString            "AKI2C_LTC2991_V3_FACTOR"
-#define AKI2C_LTC2991_V4ValueString             "AKI2C_LTC2991_V4_VALUE"
-#define AKI2C_LTC2991_V4OffsetString            "AKI2C_LTC2991_V4_OFFSET"
-#define AKI2C_LTC2991_V4FactorString            "AKI2C_LTC2991_V4_FACTOR"
-#define AKI2C_LTC2991_V5ValueString             "AKI2C_LTC2991_V5_VALUE"
-#define AKI2C_LTC2991_V5OffsetString            "AKI2C_LTC2991_V5_OFFSET"
-#define AKI2C_LTC2991_V5FactorString            "AKI2C_LTC2991_V5_FACTOR"
-#define AKI2C_LTC2991_V6ValueString             "AKI2C_LTC2991_V6_VALUE"
-#define AKI2C_LTC2991_V6OffsetString            "AKI2C_LTC2991_V6_OFFSET"
-#define AKI2C_LTC2991_V6FactorString            "AKI2C_LTC2991_V6_FACTOR"
-#define AKI2C_LTC2991_V7ValueString             "AKI2C_LTC2991_V7_VALUE"
-#define AKI2C_LTC2991_V7OffsetString            "AKI2C_LTC2991_V7_OFFSET"
-#define AKI2C_LTC2991_V7FactorString            "AKI2C_LTC2991_V7_FACTOR"
-#define AKI2C_LTC2991_V8ValueString             "AKI2C_LTC2991_V8_VALUE"
-#define AKI2C_LTC2991_V8OffsetString            "AKI2C_LTC2991_V8_OFFSET"
-#define AKI2C_LTC2991_V8FactorString            "AKI2C_LTC2991_V8_FACTOR"
-#define AKI2C_LTC2991_VccValueString            "AKI2C_LTC2991_VCC_VALUE"
-#define AKI2C_LTC2991_VccOffsetString           "AKI2C_LTC2991_VCC_OFFSET"
-#define AKI2C_LTC2991_VccFactorString           "AKI2C_LTC2991_VCC_FACTOR"
-#define AKI2C_LTC2991_TIntValueString           "AKI2C_LTC2991_TINT_VALUE"
-#define AKI2C_LTC2991_TIntOffsetString          "AKI2C_LTC2991_TINT_OFFSET"
-#define AKI2C_LTC2991_TIntFactorString          "AKI2C_LTC2991_TINT_FACTOR"
+#define AKI2C_LTC2991_ReadString				"AKI2C_LTC2991_READ"
+#define AKI2C_LTC2991_TriggerString				"AKI2C_LTC2991_TRIGGER"
+#define AKI2C_LTC2991_V1ValueString				"AKI2C_LTC2991_V1_VALUE"
+#define AKI2C_LTC2991_V1OffsetString			"AKI2C_LTC2991_V1_OFFSET"
+#define AKI2C_LTC2991_V1FactorString			"AKI2C_LTC2991_V1_FACTOR"
+#define AKI2C_LTC2991_V2ValueString				"AKI2C_LTC2991_V2_VALUE"
+#define AKI2C_LTC2991_V2OffsetString			"AKI2C_LTC2991_V2_OFFSET"
+#define AKI2C_LTC2991_V2FactorString			"AKI2C_LTC2991_V2_FACTOR"
+#define AKI2C_LTC2991_V3ValueString				"AKI2C_LTC2991_V3_VALUE"
+#define AKI2C_LTC2991_V3OffsetString			"AKI2C_LTC2991_V3_OFFSET"
+#define AKI2C_LTC2991_V3FactorString			"AKI2C_LTC2991_V3_FACTOR"
+#define AKI2C_LTC2991_V4ValueString				"AKI2C_LTC2991_V4_VALUE"
+#define AKI2C_LTC2991_V4OffsetString			"AKI2C_LTC2991_V4_OFFSET"
+#define AKI2C_LTC2991_V4FactorString			"AKI2C_LTC2991_V4_FACTOR"
+#define AKI2C_LTC2991_V5ValueString				"AKI2C_LTC2991_V5_VALUE"
+#define AKI2C_LTC2991_V5OffsetString			"AKI2C_LTC2991_V5_OFFSET"
+#define AKI2C_LTC2991_V5FactorString			"AKI2C_LTC2991_V5_FACTOR"
+#define AKI2C_LTC2991_V6ValueString				"AKI2C_LTC2991_V6_VALUE"
+#define AKI2C_LTC2991_V6OffsetString			"AKI2C_LTC2991_V6_OFFSET"
+#define AKI2C_LTC2991_V6FactorString			"AKI2C_LTC2991_V6_FACTOR"
+#define AKI2C_LTC2991_V7ValueString				"AKI2C_LTC2991_V7_VALUE"
+#define AKI2C_LTC2991_V7OffsetString			"AKI2C_LTC2991_V7_OFFSET"
+#define AKI2C_LTC2991_V7FactorString			"AKI2C_LTC2991_V7_FACTOR"
+#define AKI2C_LTC2991_V8ValueString				"AKI2C_LTC2991_V8_VALUE"
+#define AKI2C_LTC2991_V8OffsetString			"AKI2C_LTC2991_V8_OFFSET"
+#define AKI2C_LTC2991_V8FactorString			"AKI2C_LTC2991_V8_FACTOR"
+#define AKI2C_LTC2991_VccValueString			"AKI2C_LTC2991_VCC_VALUE"
+#define AKI2C_LTC2991_VccOffsetString			"AKI2C_LTC2991_VCC_OFFSET"
+#define AKI2C_LTC2991_VccFactorString			"AKI2C_LTC2991_VCC_FACTOR"
+#define AKI2C_LTC2991_TIntValueString			"AKI2C_LTC2991_TINT_VALUE"
+#define AKI2C_LTC2991_TIntOffsetString			"AKI2C_LTC2991_TINT_OFFSET"
+#define AKI2C_LTC2991_TIntFactorString			"AKI2C_LTC2991_TINT_FACTOR"
 
 /*
- * Chip       : Linear LTC2991
- * Function   : voltage / temperature sensor
- * Bus        : I2C
- * Access     : TCP/IP socket on AK-NORD XT-PICO-SX
+ * Chip			: Linear LTC2991
+ * Function		: voltage / temperature sensor
+ * Bus			: I2C
+ * Access		: TCP/IP socket on AK-NORD XT-PICO-SX
  */
 class AKI2C_LTC2991: public AKI2C {
 public:
 	AKI2C_LTC2991(const char *portName, const char *ipPort,
-	        int devCount, const char *devInfos, int priority, int stackSize);
+		int devCount, const char *devInfos, int priority, int stackSize);
 	virtual ~AKI2C_LTC2991();
 
-    /* These are the methods that we override from AKI2C */
-    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-    void report(FILE *fp, int details);
-    /* These are new methods */
+	/* These are the methods that we override from AKI2C */
+	virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+	void report(FILE *fp, int details);
+	/* These are new methods */
 
 protected:
-    /* Our parameter list */
-    int AKI2C_LTC2991_Read;
+	/* Our parameter list */
+	int AKI2C_LTC2991_Read;
 #define FIRST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_Read
-    int AKI2C_LTC2991_Trigger;
-    int AKI2C_LTC2991_V1_Value;
-    int AKI2C_LTC2991_V1_Factor;
-    int AKI2C_LTC2991_V1_Offset;
-    int AKI2C_LTC2991_V2_Value;
-    int AKI2C_LTC2991_V2_Factor;
-    int AKI2C_LTC2991_V2_Offset;
-    int AKI2C_LTC2991_V3_Value;
-    int AKI2C_LTC2991_V3_Factor;
-    int AKI2C_LTC2991_V3_Offset;
-    int AKI2C_LTC2991_V4_Value;
-    int AKI2C_LTC2991_V4_Factor;
-    int AKI2C_LTC2991_V4_Offset;
-    int AKI2C_LTC2991_V5_Value;
-    int AKI2C_LTC2991_V5_Factor;
-    int AKI2C_LTC2991_V5_Offset;
-    int AKI2C_LTC2991_V6_Value;
-    int AKI2C_LTC2991_V6_Factor;
-    int AKI2C_LTC2991_V6_Offset;
-    int AKI2C_LTC2991_V7_Value;
-    int AKI2C_LTC2991_V7_Factor;
-    int AKI2C_LTC2991_V7_Offset;
-    int AKI2C_LTC2991_V8_Value;
-    int AKI2C_LTC2991_V8_Factor;
-    int AKI2C_LTC2991_V8_Offset;
-    int AKI2C_LTC2991_Vcc_Value;
-    int AKI2C_LTC2991_Vcc_Offset;
-    int AKI2C_LTC2991_Vcc_Factor;
-    int AKI2C_LTC2991_TInt_Value;
-    int AKI2C_LTC2991_TInt_Offset;
-    int AKI2C_LTC2991_TInt_Factor;
+	int AKI2C_LTC2991_Trigger;
+	int AKI2C_LTC2991_V1_Value;
+	int AKI2C_LTC2991_V1_Factor;
+	int AKI2C_LTC2991_V1_Offset;
+	int AKI2C_LTC2991_V2_Value;
+	int AKI2C_LTC2991_V2_Factor;
+	int AKI2C_LTC2991_V2_Offset;
+	int AKI2C_LTC2991_V3_Value;
+	int AKI2C_LTC2991_V3_Factor;
+	int AKI2C_LTC2991_V3_Offset;
+	int AKI2C_LTC2991_V4_Value;
+	int AKI2C_LTC2991_V4_Factor;
+	int AKI2C_LTC2991_V4_Offset;
+	int AKI2C_LTC2991_V5_Value;
+	int AKI2C_LTC2991_V5_Factor;
+	int AKI2C_LTC2991_V5_Offset;
+	int AKI2C_LTC2991_V6_Value;
+	int AKI2C_LTC2991_V6_Factor;
+	int AKI2C_LTC2991_V6_Offset;
+	int AKI2C_LTC2991_V7_Value;
+	int AKI2C_LTC2991_V7_Factor;
+	int AKI2C_LTC2991_V7_Offset;
+	int AKI2C_LTC2991_V8_Value;
+	int AKI2C_LTC2991_V8_Factor;
+	int AKI2C_LTC2991_V8_Offset;
+	int AKI2C_LTC2991_Vcc_Value;
+	int AKI2C_LTC2991_Vcc_Offset;
+	int AKI2C_LTC2991_Vcc_Factor;
+	int AKI2C_LTC2991_TInt_Value;
+	int AKI2C_LTC2991_TInt_Offset;
+	int AKI2C_LTC2991_TInt_Factor;
 #define LAST_AKI2C_LTC2991_PARAM AKI2C_LTC2991_TInt_Factor
 
 private:
-    void convertToVoltage(int addr, int valueParam,
-    		int offsetParam, int factorParam, unsigned int raw);
-    void convertToTemperature(int addr, int valueParam, unsigned int raw);
-    asynStatus write(int addr, unsigned char reg, unsigned char val, unsigned short len);
-    asynStatus read(int addr, unsigned char reg, unsigned char *val, unsigned short len);
-    asynStatus readAll(int addr);
-    asynStatus writeTrigger(int addr, unsigned short val);
+	void convertToVoltage(int addr, int valueParam,
+		int offsetParam, int factorParam, unsigned int raw);
+	void convertToTemperature(int addr, int valueParam, unsigned int raw);
+	asynStatus write(int addr, unsigned char reg, unsigned char val, unsigned short len);
+	asynStatus read(int addr, unsigned char reg, unsigned char *val, unsigned short len);
+	asynStatus readAll(int addr);
+	asynStatus writeTrigger(int addr, unsigned short val);
 };
 
 #define NUM_AKI2C_LTC2991_PARAMS ((int)(&LAST_AKI2C_LTC2991_PARAM - &FIRST_AKI2C_LTC2991_PARAM + 1))

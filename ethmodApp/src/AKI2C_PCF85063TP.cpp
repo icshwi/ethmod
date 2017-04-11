@@ -47,166 +47,166 @@ unsigned char AKI2C_PCF85063TP::decToBcd(unsigned char val) {
 }
 
 asynStatus AKI2C_PCF85063TP::write(int addr, unsigned char reg, unsigned char *val, unsigned short *len) {
-    asynStatus status = asynSuccess;
-    int devAddr;
+	asynStatus status = asynSuccess;
+	int devAddr;
 
-    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+	getIntegerParam(addr, AKI2CDevAddr, &devAddr);
 
-    status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, val, len, reg);
-    if (status) {
-    	return status;
-    }
+	status = xfer(addr, AK_REQ_TYPE_WRITE, devAddr, 1, val, len, reg);
+	if (status) {
+		return status;
+	}
 
-    return status;
+	return status;
 }
 
 asynStatus AKI2C_PCF85063TP::setDateTime(int addr) {
 	asynStatus status = asynSuccess;
-    unsigned char data[7] = {0};
-    int devAddr;
-    unsigned short len;
+	unsigned char data[7] = {0};
+	int devAddr;
+	unsigned short len;
 	int years, months, weekdays, days, hours, minutes, seconds;
 
-    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Seconds, &seconds);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Minutes, &minutes);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Hours, &hours);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Days, &days);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Weekdays, &weekdays);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Months, &months);
-    getIntegerParam(addr, AKI2C_PCF85063TP_Years, &years);
-    printf("%s::%s(): NEW DATE&TIME %d-%d-%d %d %d:%d:%d\n",
-    		driverName, __func__, years, months, weekdays, days, hours, minutes, seconds);
+	getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Seconds, &seconds);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Minutes, &minutes);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Hours, &hours);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Days, &days);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Weekdays, &weekdays);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Months, &months);
+	getIntegerParam(addr, AKI2C_PCF85063TP_Years, &years);
+	D(printf("NEW DATE&TIME %d-%d-%d %d %d:%d:%d\n",
+			years, months, weekdays, days, hours, minutes, seconds));
 
-    /* bit 7 is OS flag; set to 0 */
-    data[0] = decToBcd((unsigned char)(seconds & 0x7F));
-    data[1] = decToBcd((unsigned char)(minutes & 0x7F));
-    data[2] = decToBcd((unsigned char)(hours & 0x3F));
-    data[3] = decToBcd((unsigned char)(days & 0x3F));
-    data[4] = decToBcd((unsigned char)(weekdays & 0x07));
-    data[5] = decToBcd((unsigned char)(months & 0x1F));
-    data[6] = decToBcd((unsigned char)(years & 0xFF));
+	/* bit 7 is OS flag; set to 0 */
+	data[0] = decToBcd((unsigned char)(seconds & 0x7F));
+	data[1] = decToBcd((unsigned char)(minutes & 0x7F));
+	data[2] = decToBcd((unsigned char)(hours & 0x3F));
+	data[3] = decToBcd((unsigned char)(days & 0x3F));
+	data[4] = decToBcd((unsigned char)(weekdays & 0x07));
+	data[5] = decToBcd((unsigned char)(months & 0x1F));
+	data[6] = decToBcd((unsigned char)(years & 0xFF));
 	len = 7;
 	status = write(addr, AKI2C_PCF85063TP_SECONDS_REG, data, &len);
 	if (status) {
 		return status;
 	}
 
-    return status;
+	return status;
 }
 
 asynStatus AKI2C_PCF85063TP::read(int addr, unsigned char reg, unsigned char *val, unsigned short *len) {
-    asynStatus status = asynSuccess;
-    int devAddr;
+	asynStatus status = asynSuccess;
+	int devAddr;
 
-    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+	getIntegerParam(addr, AKI2CDevAddr, &devAddr);
 
-    status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, val, len, reg);
-    if (status) {
-    	return status;
-    }
+	status = xfer(addr, AK_REQ_TYPE_READ, devAddr, 1, val, len, reg);
+	if (status) {
+		return status;
+	}
 
 	return status;
 }
 
 asynStatus AKI2C_PCF85063TP::getDateTime(int addr) {
 	asynStatus status = asynSuccess;
-    unsigned char data[7] = {0};
-    int devAddr;
-    unsigned short len;
-    char dateTime[16];
+	unsigned char data[7] = {0};
+	int devAddr;
+	unsigned short len;
+	char dateTime[16];
 	int years, months, weekdays, days, hours, minutes, seconds;
 
-    getIntegerParam(addr, AKI2CDevAddr, &devAddr);
+	getIntegerParam(addr, AKI2CDevAddr, &devAddr);
 
 	/* Read all 7 registers that constitute date and time */
-    len = 7;
+	len = 7;
 	status = read(addr, AKI2C_PCF85063TP_SECONDS_REG, data, &len);
-    if (status) {
-    	return status;
-    }
+	if (status) {
+		return status;
+	}
 
-    printf("%s::%s(): RAW 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\n",
-    		driverName, __func__, data[0], data[1], data[2], data[3], data[3], data[4], data[5], data[6]);
+	D(printf("RAW 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\n",
+			data[0], data[1], data[2], data[3], data[4], data[5], data[6]));
 
-    seconds = bcdToDec(data[0] & 0xFF);
-    minutes = bcdToDec(data[1] & 0xFF);
-    hours = bcdToDec(data[2] & 0xFF);
-    days = bcdToDec(data[3] & 0xFF);
-    weekdays = bcdToDec(data[4] & 0xFF);
-    months = bcdToDec(data[5] & 0xFF);
-    years = bcdToDec(data[6] & 0xFF) + 2000;
+	seconds = bcdToDec(data[0] & 0xFF);
+	minutes = bcdToDec(data[1] & 0xFF);
+	hours = bcdToDec(data[2] & 0xFF);
+	days = bcdToDec(data[3] & 0xFF);
+	weekdays = bcdToDec(data[4] & 0xFF);
+	months = bcdToDec(data[5] & 0xFF);
+	years = bcdToDec(data[6] & 0xFF) + 2000;
 
-    printf("%s::%s(): DATE&TIME %d-%d-%d %d %d:%d:%d\n",
-    		driverName, __func__, years, months, days, weekdays, hours, minutes, seconds);
+	D(printf("DATE&TIME %d-%d-%d %d %d:%d:%d\n",
+			years, months, days, weekdays, hours, minutes, seconds));
 
-    setIntegerParam(addr, AKI2C_PCF85063TP_Seconds, seconds);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Minutes, minutes);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Hours, hours);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Days, days);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Weekdays, weekdays);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Months, months);
-    setIntegerParam(addr, AKI2C_PCF85063TP_Years, years);
-    memset(dateTime, 0, sizeof(dateTime));
-    sprintf(dateTime, "%d-%d-%d", years, months, days);
-    setStringParam(addr, AKI2C_PCF85063TP_Date, dateTime);
-    memset(dateTime, 0, sizeof(dateTime));
-    sprintf(dateTime, "%d:%d:%d", hours, minutes, seconds);
-    setStringParam(addr, AKI2C_PCF85063TP_Time, dateTime);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Seconds, seconds);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Minutes, minutes);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Hours, hours);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Days, days);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Weekdays, weekdays);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Months, months);
+	setIntegerParam(addr, AKI2C_PCF85063TP_Years, years);
+	memset(dateTime, 0, sizeof(dateTime));
+	sprintf(dateTime, "%d-%d-%d", years, months, days);
+	setStringParam(addr, AKI2C_PCF85063TP_Date, dateTime);
+	memset(dateTime, 0, sizeof(dateTime));
+	sprintf(dateTime, "%d:%d:%d", hours, minutes, seconds);
+	setStringParam(addr, AKI2C_PCF85063TP_Time, dateTime);
 
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
+	/* Do callbacks so higher layers see any changes */
+	callParamCallbacks(addr, addr);
 
-    return status;
+	return status;
 }
 
 asynStatus AKI2C_PCF85063TP::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
-    int function = pasynUser->reason;
-    int addr = 0;
-    asynStatus status = asynSuccess;
-    const char *functionName = "writeInt32";
+	int function = pasynUser->reason;
+	int addr = 0;
+	asynStatus status = asynSuccess;
+	const char *functionName = "writeInt32";
 
-    status = getAddress(pasynUser, &addr);
-    if (status != asynSuccess) {
-    	return(status);
-    }
+	status = getAddress(pasynUser, &addr);
+	if (status != asynSuccess) {
+		return(status);
+	}
 
-    printf("%s: function %d, addr %d, value %d\n", functionName, function, addr, value);
-    status = setIntegerParam(addr, function, value);
+	D(printf("function %d, addr %d, value %d\n", function, addr, value));
+	status = setIntegerParam(addr, function, value);
 
-    if (function == AKI2C_PCF85063TP_Read) {
-    	status = getDateTime(addr);
-    } else if (function == AKI2C_PCF85063TP_Write) {
-    	status = setDateTime(addr);
-    } else if (function < FIRST_AKI2C_PCF85063TP_PARAM) {
-        /* If this parameter belongs to a base class call its method */
-    	status = AKI2C::writeInt32(pasynUser, value);
-    }
+	if (function == AKI2C_PCF85063TP_Read) {
+		status = getDateTime(addr);
+	} else if (function == AKI2C_PCF85063TP_Write) {
+		status = setDateTime(addr);
+	} else if (function < FIRST_AKI2C_PCF85063TP_PARAM) {
+		/* If this parameter belongs to a base class call its method */
+		status = AKI2C::writeInt32(pasynUser, value);
+	}
 
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(addr, addr);
+	/* Do callbacks so higher layers see any changes */
+	callParamCallbacks(addr, addr);
 
-    if (status) {
-    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
-              "%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
-              driverName, functionName, status, function, addr, value);
-    } else {
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-              "%s:%s: function=%d, addr=%d, value=%d\n",
-              driverName, functionName, function, addr, value);
-    }
+	if (status) {
+		asynPrint(pasynUser, ASYN_TRACE_ERROR,
+			"%s:%s: error, status=%d function=%d, addr=%d, value=%d\n",
+			driverName, functionName, status, function, addr, value);
+	} else {
+		asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+			"%s:%s: function=%d, addr=%d, value=%d\n",
+			driverName, functionName, function, addr, value);
+	}
 
-    return status;
+	return status;
 }
 
 void AKI2C_PCF85063TP::report(FILE *fp, int details) {
 
-    fprintf(fp, "AKI2C_PCF85063TP %s\n", this->portName);
-    if (details > 0) {
-    }
-    /* Invoke the base class method */
-    AKI2C::report(fp, details);
+	fprintf(fp, "AKI2C_PCF85063TP %s\n", this->portName);
+	if (details > 0) {
+	}
+	/* Invoke the base class method */
+	AKI2C::report(fp, details);
 }
 
 /** Constructor for the AKI2C_PCF85063TP class.
@@ -214,60 +214,52 @@ void AKI2C_PCF85063TP::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKI2C base class.
   */
 AKI2C_PCF85063TP::AKI2C_PCF85063TP(const char *portName, const char *ipPort,
-        int devCount, const char *devInfos, int priority, int stackSize)
-   : AKI2C(portName,
-		   ipPort,
-		   devCount, devInfos,
-		   NUM_AKI2C_PCF85063TP_PARAMS,
-		   0, /* no new interface masks beyond those in AKBase */
-		   0, /* no new interrupt masks beyond those in AKBase */
-		   ASYN_CANBLOCK | ASYN_MULTIDEVICE, /* asynFlags: ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=0*/
-		   1, /* autoConnect YES */
-		   priority, stackSize)
+		int devCount, const char *devInfos, int priority, int stackSize)
+	: AKI2C(portName,
+		ipPort,
+		devCount, devInfos,
+		NUM_AKI2C_PCF85063TP_PARAMS,
+		0, /* no new interface masks beyond those in AKBase */
+		0, /* no new interrupt masks beyond those in AKBase */
+		ASYN_CANBLOCK | ASYN_MULTIDEVICE,
+		1, /* autoConnect YES */
+		priority, stackSize)
 {
-    const char *functionName = "AKI2C_PCF85063TP";
-
-    printf("%s: Handling %d devices\n", functionName, maxAddr);
-
 	/* Create an EPICS exit handler */
 	epicsAtExit(exitHandler, this);
 
-    createParam(AKI2C_PCF85063TP_ReadString,             asynParamInt32,   &AKI2C_PCF85063TP_Read);
-    createParam(AKI2C_PCF85063TP_WriteString,            asynParamInt32,   &AKI2C_PCF85063TP_Write);
-    createParam(AKI2C_PCF85063TP_SecondsString,          asynParamInt32,   &AKI2C_PCF85063TP_Seconds);
-    createParam(AKI2C_PCF85063TP_MinutesString,          asynParamInt32,   &AKI2C_PCF85063TP_Minutes);
-    createParam(AKI2C_PCF85063TP_HoursString,            asynParamInt32,   &AKI2C_PCF85063TP_Hours);
-    createParam(AKI2C_PCF85063TP_DaysString,             asynParamInt32,   &AKI2C_PCF85063TP_Days);
-    createParam(AKI2C_PCF85063TP_WeekdaysString,         asynParamInt32,   &AKI2C_PCF85063TP_Weekdays);
-    createParam(AKI2C_PCF85063TP_MonthsString,           asynParamInt32,   &AKI2C_PCF85063TP_Months);
-    createParam(AKI2C_PCF85063TP_YearsString,            asynParamInt32,   &AKI2C_PCF85063TP_Years);
-    createParam(AKI2C_PCF85063TP_DateString,             asynParamOctet,   &AKI2C_PCF85063TP_Date);
-    createParam(AKI2C_PCF85063TP_TimeString,             asynParamOctet,   &AKI2C_PCF85063TP_Time);
+	createParam(AKI2C_PCF85063TP_ReadString,		asynParamInt32,	&AKI2C_PCF85063TP_Read);
+	createParam(AKI2C_PCF85063TP_WriteString,		asynParamInt32,	&AKI2C_PCF85063TP_Write);
+	createParam(AKI2C_PCF85063TP_SecondsString,		asynParamInt32,	&AKI2C_PCF85063TP_Seconds);
+	createParam(AKI2C_PCF85063TP_MinutesString,		asynParamInt32,	&AKI2C_PCF85063TP_Minutes);
+	createParam(AKI2C_PCF85063TP_HoursString,		asynParamInt32,	&AKI2C_PCF85063TP_Hours);
+	createParam(AKI2C_PCF85063TP_DaysString,		asynParamInt32,	&AKI2C_PCF85063TP_Days);
+	createParam(AKI2C_PCF85063TP_WeekdaysString,	asynParamInt32,	&AKI2C_PCF85063TP_Weekdays);
+	createParam(AKI2C_PCF85063TP_MonthsString,		asynParamInt32,	&AKI2C_PCF85063TP_Months);
+	createParam(AKI2C_PCF85063TP_YearsString,		asynParamInt32,	&AKI2C_PCF85063TP_Years);
+	createParam(AKI2C_PCF85063TP_DateString,		asynParamOctet,	&AKI2C_PCF85063TP_Date);
+	createParam(AKI2C_PCF85063TP_TimeString,		asynParamOctet,	&AKI2C_PCF85063TP_Time);
 
-    for (int i = 0; i < devCount; i++) {
-    	setStringParam(i, AKI2C_PCF85063TP_Date, "");
-    	setStringParam(i, AKI2C_PCF85063TP_Time, "");
-    	setIntegerParam(i, AKI2C_PCF85063TP_Seconds, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Minutes, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Hours, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Days, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Weekdays, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Months, 0);
-    	setIntegerParam(i, AKI2C_PCF85063TP_Years, 0);
+	for (int i = 0; i < devCount; i++) {
+		setStringParam(i, AKI2C_PCF85063TP_Date, "");
+		setStringParam(i, AKI2C_PCF85063TP_Time, "");
+		setIntegerParam(i, AKI2C_PCF85063TP_Seconds, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Minutes, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Hours, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Days, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Weekdays, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Months, 0);
+		setIntegerParam(i, AKI2C_PCF85063TP_Years, 0);
 
-        /* Do callbacks so higher layers see any changes */
-    	callParamCallbacks(i, i);
-    }
+		/* Do callbacks so higher layers see any changes */
+		callParamCallbacks(i, i);
+	}
 
-    printf("%s: init complete OK!\n", functionName);
+	I(printf("init OK!\n"));
 }
 
 AKI2C_PCF85063TP::~AKI2C_PCF85063TP() {
-    const char *functionName = "~AKI2C_PCF85063TP";
-
-    printf("%s: shutting down ...\n", functionName);
-
-    printf("%s: shutdown complete!\n", functionName);
+	I(printf("shut down ..\n"));
 }
 
 /* Configuration routine.  Called directly, or from the iocsh function below */
@@ -275,22 +267,22 @@ AKI2C_PCF85063TP::~AKI2C_PCF85063TP() {
 extern "C" {
 
 int AKI2CPCF85063TPConfigure(const char *portName, const char *ipPort,
-        int devCount, const char *devInfos, int priority, int stackSize) {
-    new AKI2C_PCF85063TP(portName, ipPort, devCount, devInfos, priority, stackSize);
-    return(asynSuccess);
+		int devCount, const char *devInfos, int priority, int stackSize) {
+	new AKI2C_PCF85063TP(portName, ipPort, devCount, devInfos, priority, stackSize);
+	return(asynSuccess);
 }
 
 /* EPICS iocsh shell commands */
 
-static const iocshArg initArg0 = { "portName",        iocshArgString};
-static const iocshArg initArg1 = { "ipPort",          iocshArgString};
-static const iocshArg initArg2 = { "devCount",        iocshArgInt};
-static const iocshArg initArg3 = { "devInfos",        iocshArgString};
-static const iocshArg initArg4 = { "priority",        iocshArgInt};
-static const iocshArg initArg5 = { "stackSize",       iocshArgInt};
+static const iocshArg initArg0 = { "portName",		iocshArgString};
+static const iocshArg initArg1 = { "ipPort",		iocshArgString};
+static const iocshArg initArg2 = { "devCount",		iocshArgInt};
+static const iocshArg initArg3 = { "devInfos",		iocshArgString};
+static const iocshArg initArg4 = { "priority",		iocshArgInt};
+static const iocshArg initArg5 = { "stackSize",		iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
-                                            &initArg1,
-                                            &initArg2,
+											&initArg1,
+											&initArg2,
 											&initArg3,
 											&initArg4,
 											&initArg5};
@@ -301,13 +293,10 @@ static void initCallFunc(const iocshArgBuf *args) {
 }
 
 void AKI2CPCF85063TPRegister(void) {
-    iocshRegister(&initFuncDef, initCallFunc);
+	iocshRegister(&initFuncDef, initCallFunc);
 }
 
 epicsExportRegistrar(AKI2CPCF85063TPRegister);
 
 } /* extern "C" */
-
-
-
 

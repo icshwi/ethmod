@@ -5,6 +5,15 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
+
+#$(warning T_A = $(T_A))
+ifeq (debug,$(findstring debug, $(T_A)))
+	USR_CPPFLAGS += -D_DBG=1
+else
+	USR_CPPFLAGS += -D_DBG=0
+endif
+#$(warning USR_CPPFLAGS = $(USR_CPPFLAGS))
+
 #==================================================
 # build a support library
 

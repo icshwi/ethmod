@@ -153,7 +153,7 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 	l = 0;
 
 	if (devAddr > 0x7F) {
-	    sprintf(mStatusMsg, "Invalid I2C address");
+		sprintf(mStatusMsg, "Invalid I2C address");
 		return asynError;
 	}
 	if (addrWidth > 4) {
@@ -212,7 +212,7 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 		msg[l++] = off & 0xFF;
 		break;
 	}
-	msg[l++] = type;					// W - WRITE, R- READ
+	msg[l++] = type;					// W - WRITE, R - READ
 	msg[l++] = (len >> 8) & 0xFF;		// high byte count to write
 	msg[l++] = len & 0xFF;				// low byte count to write
 	if (type == AK_REQ_TYPE_WRITE) {
@@ -233,30 +233,31 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 	mRespSz = len + 2;
 	memcpy(mReq, msg, mReqSz);
 
-    return status;
+	return status;
 }
 
 asynStatus AKI2C::unpack(unsigned char type, unsigned char *data,
 		unsigned short *len, asynStatus status) {
-    const char *functionName = "unpack";
 
-    if (mRespActSz >= 2) {
-    	if (mResp[0] == AK_I2C_STATUS_FAIL) {
-    		printf("%s: FAIL - we got NAK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-	    	*len = 0;
-    	} else if (mResp[0] == AK_I2C_STATUS_OK) {
-    		printf("%s:  OK  - we got ACK! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    	    if ((type == AK_REQ_TYPE_READ) && data && len) {
-    	    	memcpy(data, &mResp[AK_I2C_RESP_HDR_SZ], *len * sizeof(unsigned char));
-    	    }
-    		status = asynSuccess;
-    	} else {
-    		printf("%s: FAIL - unknown response code! %02X %02X\n", functionName, mResp[0], mResp[1]);
-    	}
-    	sprintf(mStatusMsg, "%s", status2Msg(mResp[0], mResp[1]));
-    } else {
-    	sprintf(mStatusMsg, "Invalid I2C response size received");
-    }
+	if (mRespActSz >= 2) {
+		if (mResp[0] == AK_I2C_STATUS_FAIL) {
+			E(printf("FAIL - we got NAK! %02X %02X\n", mResp[0], mResp[1]));
+			*len = 0;
+		} else if (mResp[0] == AK_I2C_STATUS_OK) {
+			D(printf("OK  - we got ACK! %02X %02X\n", mResp[0], mResp[1]));
+			if ((type == AK_REQ_TYPE_READ) && data && len) {
+				memcpy(data, &mResp[AK_I2C_RESP_HDR_SZ],
+					*len * sizeof(unsigned char));
+			}
+			status = asynSuccess;
+		} else {
+			E(printf("FAIL - unknown response code! %02X %02X\n",
+				mResp[0], mResp[1]));
+		}
+		sprintf(mStatusMsg, "%s", status2Msg(mResp[0], mResp[1]));
+	} else {
+		sprintf(mStatusMsg, "Invalid I2C response size received");
+	}
 
 	return status;
 }
@@ -268,7 +269,7 @@ asynStatus AKI2C::doXfer(int asynAddr, unsigned char type, unsigned char devAddr
 
 	if ((type != AK_REQ_TYPE_WRITE) && (type != AK_REQ_TYPE_READ)) {
 		sprintf(mStatusMsg, "Invalid request type");
-	    status = asynError;
+		status = asynError;
 	}
 
 	if (status == asynSuccess) {
@@ -280,19 +281,19 @@ asynStatus AKI2C::doXfer(int asynAddr, unsigned char type, unsigned char devAddr
 		status = unpack(type, data, len, status);
 	}
 
-    if (status) {
-    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, status=%d\n",
-                driverName, __func__, status);
-    }
+	if (status) {
+		asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::%s, status=%d\n",
+			driverName, __func__, status);
+	}
 
-    setStringParam(asynAddr, AKStatusMessage, mStatusMsg);
-    char m[AK_MAX_MSG_SZ] = {0};
-    getStringParam(asynAddr, AKStatusMessage, AK_MAX_MSG_SZ, m);
-    printf("Status message: '%s'\n", m);
+	setStringParam(asynAddr, AKStatusMessage, mStatusMsg);
+	char m[AK_MAX_MSG_SZ] = {0};
+	getStringParam(asynAddr, AKStatusMessage, AK_MAX_MSG_SZ, m);
+	D(printf("Status message: '%s'\n", m));
 
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks(asynAddr, asynAddr);
+	/* Do callbacks so higher layers see any changes */
+	callParamCallbacks(asynAddr, asynAddr);
 
 	return status;
 }
@@ -311,30 +312,28 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 }
 
 asynStatus AKI2C::setMuxBus(int asynAddr, int devAddr) {
-    unsigned char data;
-    unsigned short len;
-    int muxAddr;
-    int muxBus;
+	unsigned char data;
+	unsigned short len;
+	int muxAddr;
+	int muxBus;
 	asynStatus status = asynSuccess;
 
 
-    getIntegerParam(asynAddr, AKI2CMuxAddr, &muxAddr);
-    getIntegerParam(asynAddr, AKI2CMuxBus, &muxBus);
-    printf("%s::%s(): DEV 0x%02X WANTS MUX 0x%02X : %d\n",
-    		driverName, __func__, devAddr, muxAddr, muxBus);
+	getIntegerParam(asynAddr, AKI2CMuxAddr, &muxAddr);
+	getIntegerParam(asynAddr, AKI2CMuxBus, &muxBus);
+	D(printf("DEV 0x%02X WANTS MUX 0x%02X : %d\n", devAddr, muxAddr, muxBus));
 
 	/* No MUX bus to setup */
 	if (muxAddr == 0) {
-		printf("%s::%s(): MUX setup NOT required (MUX addr == 0)\n",
-				driverName, __func__);
+		D(printf("MUX setup NOT required (MUX addr == 0)\n"));
 		return asynSuccess;
 	}
 
-	printf("%s::%s(): Known MUXes:\n", driverName, __func__);
+	D(printf("Known MUXes:\n"));
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
 		if (mMuxInfo[i].addr != -1) {
-			printf("%s::%s(): [%d] MUX 0x%02X : %d\n",
-					driverName, __func__, i, mMuxInfo[i].addr, mMuxInfo[i].bus);
+			D(printf("[%d] MUX 0x%02X : %d\n",
+				i, mMuxInfo[i].addr, mMuxInfo[i].bus));
 		}
 	}
 
@@ -342,8 +341,8 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int devAddr) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
 		if ((mMuxInfo[i].addr == muxAddr) && (mMuxInfo[i].bus == muxBus)) {
 			/* MUX bus already setup */
-		    printf("%s::%s(): DEV 0x%02X ALREADY USING MUX 0x%02X : %d\n",
-		    		driverName, __func__, devAddr, muxAddr, muxBus);
+			D(printf("DEV 0x%02X ALREADY USING MUX 0x%02X : %d\n",
+				devAddr, muxAddr, muxBus));
 			return asynSuccess;
 		}
 	}
@@ -360,29 +359,29 @@ asynStatus AKI2C::setMuxBus(int asynAddr, int devAddr) {
 	for (int i = 0; i < AK_I2C_MUX_MAX; i++) {
 		if (mMuxInfo[i].addr == muxAddr) {
 			mMuxInfo[i].bus = muxBus;
-			printf("%s::%s(): [%d] UPDATED MUX 0x%02X : %d\n",
-					driverName, __func__, i, mMuxInfo[i].addr, mMuxInfo[i].bus);
+			D(printf("[%d] UPDATED MUX 0x%02X : %d\n",
+				i, mMuxInfo[i].addr, mMuxInfo[i].bus));
 		} else {
 			if (mMuxInfo[i].addr != -1) {
-				printf("%s::%s(): [%d] MUX 0x%02X : %d\n",
-					driverName, __func__, i, mMuxInfo[i].addr, mMuxInfo[i].bus);
+				D(printf("[%d] MUX 0x%02X : %d\n",
+					i, mMuxInfo[i].addr, mMuxInfo[i].bus));
 			}
 		}
 	}
 
-    printf("%s::%s(): DEV 0x%02X NOW USING MUX 0x%02X : %d\n",
-    		driverName, __func__, devAddr, muxAddr, muxBus);
+	D(printf("DEV 0x%02X NOW USING MUX 0x%02X : %d\n",
+		devAddr, muxAddr, muxBus));
 
 	return status;
 }
 
 void AKI2C::report(FILE *fp, int details) {
 
-    fprintf(fp, "AKI2C %s\n", this->portName);
-    if (details > 0) {
-    }
-    /* Invoke the base class method */
-    AKBase::report(fp, details);
+	fprintf(fp, "AKI2C %s\n", this->portName);
+	if (details > 0) {
+	}
+	/* Invoke the base class method */
+	AKBase::report(fp, details);
 }
 
 /** Constructor for the AKI2C class.
@@ -390,104 +389,110 @@ void AKI2C::report(FILE *fp, int details) {
   * All the arguments are simply passed to the AKBase base class.
   */
 AKI2C::AKI2C(const char *portName, const char *ipPort,
-        int devCount, const char *devInfos,
+		int devCount, const char *devInfos,
 		int numParams, int interfaceMask, int interruptMask,
-        int asynFlags, int autoConnect, int priority, int stackSize)
-   : AKBase(portName,
-		   ipPort,
-		   AK_IP_PORT_I2C,
-		   devCount,
-		   numParams + NUM_AKI2C_PARAMS,
-		   interfaceMask,
-		   interruptMask,
-		   asynFlags, autoConnect, priority, stackSize)
+		int asynFlags, int autoConnect, int priority, int stackSize)
+	: AKBase(portName,
+		ipPort,
+		AK_IP_PORT_I2C,
+		devCount,
+		numParams + NUM_AKI2C_PARAMS,
+		interfaceMask,
+		interruptMask,
+		asynFlags, autoConnect, priority, stackSize)
 {
-    int devAddr;
-    int muxAddr;
-    int muxBusNr;
-    char *end_str, *end_token;
-    char *devs = strdup(devInfos);
-    char *devTuple = NULL;
-    char *dev = NULL;
-    char *devStr = NULL;
-    char *muxStr = NULL;
-    char *muxBusStr = NULL;
-    bool muxStored = false;
+	int devAddr;
+	int muxAddr;
+	int muxBusNr;
+	char *end_str, *end_token;
+	char *devs = strdup(devInfos);
+	char *devTuple = NULL;
+	char *dev = NULL;
+	char *devStr = NULL;
+	char *muxStr = NULL;
+	char *muxBusStr = NULL;
+	bool muxStored = false;
 
-    createParam(AKI2CDevAddrString,          asynParamInt32,   &AKI2CDevAddr);
-    createParam(AKI2CMuxAddrString,          asynParamInt32,   &AKI2CMuxAddr);
-    createParam(AKI2CMuxBusString,           asynParamInt32,   &AKI2CMuxBus);
+	D(printf("Handling %d devices: '%s'\n", maxAddr, devInfos));
 
-    /* Device address, MUX address and MUX bus number are packed in tuples
-     * as follows, with ',' as a separator:
-     * A: 'dev_addr, mux_addr, mux_busnr' (MUX present)
-     * B: 'dev_addr, mux_addr' (MUX present, assume MUX bus number = 0)
-     * C: 'dev_addr' (no MUX present)
-     *
-     * Multiple tuples are separated using ';' as follows:
-     * "A1; C1; B1; A2; C2"
-     */
-    for (int i = 0; i < devCount; i++) {
-    	if (devStr == NULL) {
-    		devTuple = strtok_r(devs, ";", &end_str);
-    	} else {
-    		devTuple = strtok_r(NULL, ";", &end_str);
-    	}
-    	assert(devTuple != NULL);
+	createParam(AKI2CDevAddrString,		asynParamInt32,		&AKI2CDevAddr);
+	createParam(AKI2CMuxAddrString,		asynParamInt32,		&AKI2CMuxAddr);
+	createParam(AKI2CMuxBusString,		asynParamInt32,		&AKI2CMuxBus);
 
-    	dev = strdup(devTuple);
-    	devStr = strtok_r(dev, ", ", &end_token);
-    	muxStr = strtok_r(NULL, ", ", &end_token);
-    	muxBusStr = strtok_r(NULL, ", ", &end_token);
-    	devAddr = strtol(devStr, NULL, 0);
-    	/* MUX address can be missing; set to invalid MUX address */
-    	muxAddr = 0;
-    	if (muxStr) {
-    		muxAddr = strtol(muxStr, NULL, 0);
-    	}
-    	/* MUX bus can be missing; default to bus 0 */
-    	muxBusNr = 0;
-    	if (muxBusStr) {
-    		muxBusNr = strtol(muxBusStr, NULL, 0);
-    	}
-    	free(dev);
+	if (devCount < 1) {
+		E(printf("Device count must be > 0!\n"));
+		disconnect(pasynUserSelf);
+		return;
+	}
+	
+	/* Device address, MUX address and MUX bus number are packed in tuples
+	 * as follows, with ',' as a separator:
+	 * A: 'dev_addr, mux_addr, mux_busnr' (MUX present)
+	 * B: 'dev_addr, mux_addr' (MUX present, assume MUX bus number = 0)
+	 * C: 'dev_addr' (no MUX present)
+	 *
+	 * Multiple tuples are separated using ';' as follows:
+	 * "A1; C1; B1; A2; C2"
+	 */
+	for (int i = 0; i < devCount; i++) {
+		if (devStr == NULL) {
+			devTuple = strtok_r(devs, ";", &end_str);
+		} else {
+			devTuple = strtok_r(NULL, ";", &end_str);
+		}
+		assert(devTuple != NULL);
 
-        /* Store the MUX address if one is specified (non zero value). */
-    	muxStored = false;
-        if (muxAddr > 0) {
-    		for (int j = 0; j < AK_I2C_MUX_MAX; j++) {
-    			/* If MUX address is already listed there is nothing to do.. */
-    			if (mMuxInfo[j].addr == muxAddr) {
-    				muxStored = true;
-    				break;
-    			}
-    			/* Store MUX address in first empty slot.. */
-    			if (mMuxInfo[j].addr == -1) {
-    				mMuxInfo[j].addr = muxAddr;
-    				muxStored = true;
-    				break;
-    			}
-    		}
-    		assert(muxStored == true);
-        }
+		dev = strdup(devTuple);
+		devStr = strtok_r(dev, ", ", &end_token);
+		muxStr = strtok_r(NULL, ", ", &end_token);
+		muxBusStr = strtok_r(NULL, ", ", &end_token);
+		devAddr = strtol(devStr, NULL, 0);
+		/* MUX address can be missing; set to invalid MUX address */
+		muxAddr = 0;
+		if (muxStr) {
+			muxAddr = strtol(muxStr, NULL, 0);
+		}
+		/* MUX bus can be missing; default to bus 0 */
+		muxBusNr = 0;
+		if (muxBusStr) {
+			muxBusNr = strtol(muxBusStr, NULL, 0);
+		}
+		free(dev);
 
-    	setIntegerParam(i, AKI2CDevAddr, devAddr);
-    	setIntegerParam(i, AKI2CMuxAddr, muxAddr);
-    	setIntegerParam(i, AKI2CMuxBus, muxBusNr);
-        printf("%s::%s(): PORT %s DEV 0x%02X, MUX 0x%02X : %d\n",
-        		driverName, __func__, portName, devAddr, muxAddr, muxBusNr);
+		/* Store the MUX address if one is specified (non zero value). */
+		muxStored = false;
+		if (muxAddr > 0) {
+			for (int j = 0; j < AK_I2C_MUX_MAX; j++) {
+				/* If MUX address is already listed there is nothing to do.. */
+				if (mMuxInfo[j].addr == muxAddr) {
+					muxStored = true;
+					break;
+				}
+				/* Store MUX address in first empty slot.. */
+				if (mMuxInfo[j].addr == -1) {
+					mMuxInfo[j].addr = muxAddr;
+					muxStored = true;
+					break;
+				}
+			}
+			assert(muxStored == true);
+		}
 
-        /* Do callbacks so higher layers see any changes */
-    	callParamCallbacks(i, i);
-    }
+		setIntegerParam(i, AKI2CDevAddr, devAddr);
+		setIntegerParam(i, AKI2CMuxAddr, muxAddr);
+		setIntegerParam(i, AKI2CMuxBus, muxBusNr);
+		D(printf("PORT %s DEV 0x%02X, MUX 0x%02X : %d\n",
+				portName, devAddr, muxAddr, muxBusNr));
 
-    free(devs);
+		/* Do callbacks so higher layers see any changes */
+		callParamCallbacks(i, i);
+	}
 
-    printf("%s::%s(): init complete OK!\n", driverName, __func__);
+	free(devs);
+
+	I(printf("init OK!\n"));
 }
 
 AKI2C::~AKI2C() {
-    printf("%s::%s(): shutting down ...\n", driverName, __func__);
-
-    printf("%s::%s(): shutdown complete!\n", driverName, __func__);
+	I(printf("shut down ..\n"));
 }
