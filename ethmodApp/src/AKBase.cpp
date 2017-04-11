@@ -83,9 +83,11 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
 	D(printf("response (%ld bytes):\n", mRespActSz));
 	D0(hexdump(mResp, mRespActSz));
 
-	if (status) {
+	/* XXX: We seem to be getting timeout status (1) while everything
+	 *		seems fine (eomReason == 0, data readback is valid..) ?! */
+	if ((status > 1) && (eomReason != 0)) {
 		asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-			"%s:%s, status=%d\n", driverName, functionName, status);
+			"%s:%s, status=%d, eomReason %d\n", driverName, functionName, status, eomReason);
 	}
 
 	return status;
