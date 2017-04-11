@@ -9,4 +9,4 @@ TODO:
 
 Sample OPI:
 
-![Screenshot_2016-05-26_15-07-09.png](https://bitbucket.org/repo/zkaz5r/images/461379777-Screenshot_2016-05-26_15-07-09.png)
+![Screenshot_2017-04-11_13-43-11.png](https://bitbucket.org/repo/rpKLkag/images/606404051-Screenshot_2017-04-11_13-43-11.png)
