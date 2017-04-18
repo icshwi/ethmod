@@ -40,11 +40,19 @@
 /* Enable all Vx channels for voltage monitoring,
  * enable Internal temperature and Vcc monitoring */
 #define AKI2C_LTC2991_CH_ENABLE_VAL				0xF8
-/* Use filtering for Vx channels */
-#define AKI2C_LTC2991_CONTROL1_VAL				0x88
-#define AKI2C_LTC2991_CONTROL2_VAL				0x88
-/* Use filtering for Internal Temperature */
-#define AKI2C_LTC2991_CONTROL3_VAL				0x08
+/* Use defaults for Vx channels:
+ * - no filtering
+ * - temperature in Celsius,
+ * - measure voltage,
+ * - single ended
+ */
+#define AKI2C_LTC2991_CONTROL1_VAL				0x00
+#define AKI2C_LTC2991_CONTROL2_VAL				0x00
+/* Use defaults for internal temperature measurement:
+ * - no filtering
+ * - temperature in Celsius,
+ */
+#define AKI2C_LTC2991_CONTROL3_VAL				0x00
 
 #define AKI2C_LTC2991_ReadString				"AKI2C_LTC2991_READ"
 #define AKI2C_LTC2991_TriggerString				"AKI2C_LTC2991_TRIGGER"
