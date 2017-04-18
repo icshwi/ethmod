@@ -228,9 +228,16 @@ asynStatus AKI2C::pack(unsigned char type, unsigned char devAddr,
 	mRespActSz = 0;
 	mReqSz = l;
 	// maximum bytes received:
-	//  READ  two status bytes + data (in case of ACK,NAK)
-	//  WRITE two status bytes + data (in case of NAK)
-	mRespSz = len + 2;
+	if (type == AK_REQ_TYPE_WRITE) {
+		// ACK: two status bytes received
+		// NAK: we will try to read out any outstanding data and discard it
+		mRespSz = 2;
+	} else if (type == AK_REQ_TYPE_READ) {
+		// ACK: two status bytes + data
+		// NAK: we will try to read out any outstanding data and discard it
+		mRespSz = len + 2;
+	}
+
 	memcpy(mReq, msg, mReqSz);
 
 	return status;
@@ -276,9 +283,15 @@ asynStatus AKI2C::doXfer(int asynAddr, unsigned char type, unsigned char devAddr
 		status = pack(type, devAddr, addrWidth, data, *len, off);
 	}
 	if (status == asynSuccess) {
-		status = ipPortWriteRead(timeout);
-		// status is checked in the unpack() below
-		status = unpack(type, data, len, status);
+		if (data) {
+			status = ipPortWriteRead(timeout);
+			// status is checked in the unpack() below
+			status = unpack(type, data, len, status);
+		} else {
+			// this is to read out any outstanding data that might be left
+			// after receiving NAK (on either read or write access)
+			return ipPortRead(timeout);
+		}
 	}
 
 	if (status) {
@@ -308,7 +321,18 @@ asynStatus AKI2C::xfer(int asynAddr, unsigned char type, unsigned char devAddr,
 		return status;
 	}
 
-	return doXfer(asynAddr, type, devAddr, addrWidth, data, len, off, timeout);
+	status = doXfer(asynAddr, type, devAddr, addrWidth, data, len, off, timeout);
+	if (status == asynSuccess) {
+		return status;
+	}
+
+	/* there could be some data left to read out even if NAK was returned,
+	 * read & discard */
+	unsigned short tmplen = AK_MAX_MSG_SZ - 2;
+	doXfer(asynAddr, AK_REQ_TYPE_READ, devAddr, addrWidth, NULL, &tmplen, 0, timeout);
+
+	/* return error status of the previous access */
+	return status;
 }
 
 asynStatus AKI2C::setMuxBus(int asynAddr, int devAddr) {

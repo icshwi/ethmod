@@ -73,19 +73,17 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
 	asynStatus status;
 	const char *functionName="ipPortWriteRead";
 
-	D(printf("request (%ld bytes):\n", mReqSz));
+	D(printf("request mReqSz = %ld, timeout = %f:\n", mReqSz, timeout));
 	D0(hexdump(mReq, mReqSz));
 
 	status = pasynOctetSyncIO->writeRead(mAsynUserCommand,
 		mReq, mReqSz, mResp, mRespSz,
 		timeout, &mReqActSz, &mRespActSz, &eomReason);
 
-	D(printf("response (%ld bytes):\n", mRespActSz));
+	D(printf("response mRespSz = %ld, mRespActSz = %ld, eomReason = %d:\n", mRespSz, mRespActSz, eomReason));
 	D0(hexdump(mResp, mRespActSz));
 
-	/* XXX: We seem to be getting timeout status (1) while everything
-	 *		seems fine (eomReason == 0, data readback is valid..) ?! */
-	if ((status > 1) && (eomReason != 0)) {
+	if (status) {
 		asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s:%s, status=%d, eomReason %d\n", driverName, functionName, status, eomReason);
 	}
@@ -120,12 +118,12 @@ asynStatus AKBase::ipPortRead(double timeout) {
 	status = pasynOctetSyncIO->read(mAsynUserCommand,
 		mResp, mRespSz, timeout, &mRespActSz, &eomReason);
 
-	D(printf("response (%ld bytes):\n", mRespActSz));
+	D(printf("response mRespSz = %ld, mRespActSz = %ld, eomReason = %d:\n", mRespSz, mRespActSz, eomReason));
 	D0(hexdump(mResp, mRespActSz));
 
 	if (status) {
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-			"%s:%s, status=%d\n", driverName, functionName, status);
+			"%s:%s, status=%d, eomReason %d\n", driverName, functionName, status, eomReason);
 	}
 
 	return status;
