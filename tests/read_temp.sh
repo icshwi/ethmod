@@ -13,5 +13,5 @@ do
 		caget -aS ETHMOD:I2C1:Temp${i}:StatusMessage_RBV
 	
 	done
-	sleep 1
+#	sleep 1
 done
