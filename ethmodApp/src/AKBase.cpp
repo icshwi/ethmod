@@ -69,8 +69,8 @@ void AKBase::hexdump(void *mem, unsigned int len) {
 }
 
 asynStatus AKBase::ipPortWriteRead(double timeout) {
-	int eomReason;
-	asynStatus status;
+	int eomReason = 0;
+	asynStatus status = asynSuccess;
 	const char *functionName="ipPortWriteRead";
 
 	D(printf("request mReqSz = %ld, timeout = %f:\n", mReqSz, timeout));
@@ -92,7 +92,7 @@ asynStatus AKBase::ipPortWriteRead(double timeout) {
 }
 
 asynStatus AKBase::ipPortWrite(double timeout) {
-	asynStatus status;
+	asynStatus status = asynSuccess;
 	const char *functionName="ipPortWrite";
 
 	D(printf("request (%ld bytes):\n", mReqSz));
@@ -111,8 +111,8 @@ asynStatus AKBase::ipPortWrite(double timeout) {
 }
 
 asynStatus AKBase::ipPortRead(double timeout) {
-	int eomReason;
-	asynStatus status;
+	int eomReason = 0;
+	asynStatus status = asynSuccess;
 	const char *functionName = "ipPortRead";
 
 	status = pasynOctetSyncIO->read(mAsynUserCommand,

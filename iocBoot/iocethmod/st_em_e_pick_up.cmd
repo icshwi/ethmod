@@ -21,6 +21,7 @@ epicsEnvSet("I2C_PCF85063TP_PORT",  "AK_I2C_PCF85063TP")
 epicsEnvSet("I2C_TCA9555_PORT",     "AK_I2C_TCA9555")
 epicsEnvSet("I2C_LTC2991_PORT",     "AK_I2C_LTC2991")
 epicsEnvSet("I2C_M24M02_PORT",      "AK_I2C_M24M02")
+epicsEnvSet("I2C_AD527X_PORT",      "AK_I2C_AD527X")
 epicsEnvSet("I2C_IP_PORT",          "AK_I2C_COMM")
 
 # Supported IP port types (see AKBase.h)
@@ -47,23 +48,8 @@ drvAsynIPPortConfigure($(I2C_IP_PORT),"192.168.1.100:1002")
 
 # AKI2CTMP100Configure(const char *portName, const char *ipPort,
 #        int devCount, const char *devInfos, int priority, int stackSize);
-#AKI2CTempConfigure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 8, "0x48 0x49 0x4A 0x4B 0x4C 0x4D 0x4E 0x4F", 0x70, 0, 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 1, "0x48", 0x73, 3, 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 2, "0x48 0x49", 0x73, 3, 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 1, "0x48", 0x73, 3, 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 8, "0x48 0x49 0x4A 0x4B 0x4C 0x4D 0x4E 0x4F", 0x73, 3, 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 8, "0x48, 0x73, 3; 0x49, 0x73, 3; 0x4A, 0x73, 3; 0x4B, 0x73, 3; 0x4C, 0x73, 3; 0x4D, 0x73, 3; 0x4E, 0x73, 3; 0x4F, 0x73, 3;", 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 1, "0x48", 1, 0, 0)
-#AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 1, "0x49", 1, 0, 0)
-AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 7, "0x49; 0x4A; 0x4B; 0x4C; 0x4D; 0x4E; 0x4F", 1, 0, 0)
+AKI2CTMP100Configure($(I2C_TMP100_PORT), $(I2C_IP_PORT), 1, "0x49", 1, 0, 0)
 dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp1:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp2:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=1,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp3:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=2,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp4:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=3,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp5:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=4,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp6:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=5,TIMEOUT=1")
-dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp7:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=6,TIMEOUT=1")
-#dbLoadRecords("$(ETHMOD)/db/AKI2C_TMP100.db",       "P=$(PREFIX),R=I2C1:Temp8:,PORT=$(I2C_TMP100_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=7,TIMEOUT=1")
 #asynSetTraceIOMask($(I2C_TMP100_PORT),0,255)
 #asynSetTraceMask($(I2C_TMP100_PORT),0,255)
 
@@ -85,6 +71,13 @@ dbLoadRecords("$(ETHMOD)/db/AKI2C_TCA9555.db",        "P=$(PREFIX),R=I2C1:IOExp1
 #        int devCount, const char *devInfos, int priority, int stackSize);
 AKI2CLTC2991Configure($(I2C_LTC2991_PORT), $(I2C_IP_PORT), 1, "0x48", 0, 0, 1, 0, 0)
 dbLoadRecords("$(ETHMOD)/db/AKI2C_LTC2991.db",        "P=$(PREFIX),R=I2C1:VMon1:,PORT=$(I2C_LTC2991_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
+#asynSetTraceIOMask($(I2C_LTC2991_PORT),0,255)
+#asynSetTraceMask($(I2C_LTC2991_PORT),0,255)
+
+# AKI2CAD527xConfigure(const char *portName, const char *ipPort,
+#        int devCount, const char *devInfos, int priority, int stackSize);
+AKI2CAD527xConfigure($(I2C_AD527X_PORT), $(I2C_IP_PORT), 1, "0x2E", 0, 0, 1, 0, 0)
+dbLoadRecords("$(ETHMOD)/db/AKI2C_AD527x.db",        "P=$(PREFIX),R=I2C1:Res1:,PORT=$(I2C_AD527X_PORT),IP_PORT=$(I2C_IP_PORT),ADDR=0,TIMEOUT=1")
 #asynSetTraceIOMask($(I2C_LTC2991_PORT),0,255)
 #asynSetTraceMask($(I2C_LTC2991_PORT),0,255)
 

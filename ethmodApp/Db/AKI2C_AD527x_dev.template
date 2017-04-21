@@ -1,0 +1,80 @@
+# This template is for Analog AD5272/AD5274 I2C digital resistor on an AK-NORD
+# XT-Pico-SXL I2C bus, behind I2C mux
+
+include "AKBase.template"
+include "AKI2C.template"
+
+record(ao, "$(P)$(R)Value")
+{
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_VALUE")
+    field(PREC, "1")
+}
+
+record(ai, "$(P)$(R)Value_RBV")
+{
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_VALUE")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)Read")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_READ")
+    field(SCAN, "Passive")
+    field(VAL, "1")
+}
+
+record(mbbo, "$(P)$(R)Type")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_TYPE")
+    field(SCAN, "Passive")
+    field(ZRVL, "0")
+    field(ZRST, "AD5272")
+    field(ONVL, "1")
+    field(ONST, "AD5274")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
+record(mbbi, "$(P)$(R)Type_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_TYPE")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "AD5272")
+    field(ONVL, "1")
+    field(ONST, "AD5274")
+}
+
+record(mbbo, "$(P)$(R)MaxRes")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_MAXRES")
+    field(SCAN, "Passive")
+    field(ZRVL, "0")
+    field(ZRST, "20 k")
+    field(ONVL, "1")
+    field(ONST, "50 k")
+    field(TWVL, "2")
+    field(TWST, "100 k")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
+record(mbbi, "$(P)$(R)MaxRes_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AKI2C_AD527x_MAXRES")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "20 k")
+    field(ONVL, "1")
+    field(ONST, "50 k")
+    field(TWVL, "2")
+    field(TWST, "100 k")
+}

@@ -1,0 +1,5 @@
+file AKI2C_AD527x_dev.template
+{
+   pattern { P    ,R    ,PORT    ,ADDR     ,TIMEOUT     }
+           { $(P) ,$(R) ,$(PORT) ,$(ADDR)  ,$(TIMEOUT)  }
+}

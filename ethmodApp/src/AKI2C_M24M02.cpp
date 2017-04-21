@@ -120,7 +120,11 @@ asynStatus AKI2C_M24M02::writeInt8Array(asynUser *pasynUser, epicsInt8 *value,
 	if (function == AKI2C_M24M02_Data) {
 		getIntegerParam(addr, AKI2C_M24M02_Length, &length);
 		getIntegerParam(addr, AKI2C_M24M02_Offset, &offset);
-		status = write(addr, (unsigned char*)value, (unsigned short)length, offset);
+		if ((offset + length) >= AKI2C_M24M02_MAX_SZ) {
+			status = asynError;
+		} else {
+			status = write(addr, (unsigned char*)value, (unsigned short)length, offset);
+		}
 	} else {
 		status = AKI2C::writeInt8Array(pasynUser, value, nElements);
 	}
